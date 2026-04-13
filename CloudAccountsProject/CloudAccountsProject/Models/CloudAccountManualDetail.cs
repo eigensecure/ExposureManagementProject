@@ -8,7 +8,7 @@ public partial class CloudAccountManualDetail
 
     public int CloudAccountId { get; set; }
 
-    public string? BusinessFunctionId { get; set; }
+    public int? BusinessFunctionId { get; set; }
 
     public string? AccountType { get; set; }
 
@@ -31,7 +31,4 @@ public partial class CloudAccountManualDetail
     public DateTime DateCreated { get; set; }
 
     public DateTime DateModified { get; set; }
-
-    [JsonIgnore]
-    public virtual CloudAccount? CloudAccount { get; set; }
 }

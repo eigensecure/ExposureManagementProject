@@ -176,16 +176,16 @@
             <MudText Typo="Typo.subtitle1" Class="mb-3">Business Function</MudText>
 
             <MudAutocomplete T="string"
-                             Label="Business Function Name"
-                             Variant="Variant.Outlined"
-                             Class="mb-3"
-                             Value="@editingAccount.BusinessFunctionId"
-                             ValueChanged="OnBusinessFunctionChanged"
-                             SearchFunc="SearchBusinessFunctions"
-                             Clearable="true"
-                             ResetValueOnEmptyText="true"
-                             CoerceText="true"
-                             Dense="true" />
+                 Label="Business Function Name"
+                 Variant="Variant.Outlined"
+                 Class="mb-3"
+                 Value="@editingAccount.BusinessFunctionName"
+                 ValueChanged="OnBusinessFunctionChanged"
+                 SearchFunc="SearchBusinessFunctions"
+                 Clearable="true"
+                 ResetValueOnEmptyText="true"
+                 CoerceText="true"
+                 Dense="true" />
 
             <MudTextField T="string"
                           Label="Owner"
@@ -305,56 +305,44 @@
 
     private const string ApiBase = "api/CloudAccounts";
 
-    private List<BusinessFunctionLookup> BusinessFunctions = new()
-    {
-        new()
-        {
-            BusinessFunctionName = "1234",
-            Owner = "Tony",
-            LtMember = "Steve",
-            Spoc = "Odinson"
-        },
-        new()
-        {
-            BusinessFunctionName = "5678",
-            Owner = "Billy",
-            LtMember = "hugie",
-            Spoc = "Frenchie"
-        },
-        new()
-        {
-            BusinessFunctionName = "9012",
-            Owner = "Wayne",
-            LtMember = "Clark",
-            Spoc = "Diana"
-        }
-    };
+    private List<BusinessFunction> BusinessFunctions = new();
 
     protected override async Task OnInitializedAsync()
-{
-    try
     {
-        isLoading = true;
+        try
+        {
+            isLoading = true;
 
-        Accounts = await Http.GetFromJsonAsync<List<CloudAccount>>(ApiBase) ?? new();
+            var accountsTask = Http.GetFromJsonAsync<List<CloudAccount>>(ApiBase);
+            var businessFunctionsTask = Http.GetFromJsonAsync<List<BusinessFunction>>("api/BusinessFunction");
+
+            await Task.WhenAll(accountsTask!, businessFunctionsTask!);
+
+            Accounts = accountsTask?.Result ?? new();
+            BusinessFunctions = businessFunctionsTask?.Result ?? new();
+        }
+        finally
+        {
+            isLoading = false;
+        }
     }
-    finally
-    {
-        isLoading = false;
-    }
-}
 
     private Task<IEnumerable<string>> SearchBusinessFunctions(string value, CancellationToken token)
     {
         if (string.IsNullOrWhiteSpace(value))
         {
             return Task.FromResult(
-                BusinessFunctions.Select(x => x.BusinessFunctionName).AsEnumerable());
+                BusinessFunctions
+                    .Where(x => !string.IsNullOrWhiteSpace(x.BusinessFunctionName))
+                    .Select(x => x.BusinessFunctionName!)
+                    .AsEnumerable());
         }
 
         var result = BusinessFunctions
-            .Where(x => x.BusinessFunctionName.Contains(value, StringComparison.OrdinalIgnoreCase))
-            .Select(x => x.BusinessFunctionName);
+            .Where(x =>
+                !string.IsNullOrWhiteSpace(x.BusinessFunctionName) &&
+                x.BusinessFunctionName.Contains(value, StringComparison.OrdinalIgnoreCase))
+            .Select(x => x.BusinessFunctionName!);
 
         return Task.FromResult(result);
     }
@@ -364,19 +352,21 @@
         if (editingAccount is null)
             return;
 
-        editingAccount.BusinessFunctionId = value;
+        editingAccount.BusinessFunctionName = value;
 
         var selected = BusinessFunctions
             .FirstOrDefault(x => x.BusinessFunctionName == value);
 
         if (selected is not null)
         {
-            editingAccount.BusinessFunctionOwner = selected.Owner;
-            editingAccount.BusinessFunctionLtMember = selected.LtMember;
-            editingAccount.BusinessFunctionSpoc = selected.Spoc;
+            editingAccount.BusinessFunctionId = selected.Id;
+            editingAccount.BusinessFunctionOwner = selected.BusinessFunctionOwner;
+            editingAccount.BusinessFunctionLtMember = selected.BusinessFunctionLtMember;
+            editingAccount.BusinessFunctionSpoc = selected.BusinessFunctionSpoc;
         }
         else
         {
+            editingAccount.BusinessFunctionId = null;
             editingAccount.BusinessFunctionOwner = string.Empty;
             editingAccount.BusinessFunctionLtMember = string.Empty;
             editingAccount.BusinessFunctionSpoc = string.Empty;
@@ -385,8 +375,14 @@
         StateHasChanged();
     }
 
-    private void OpenDrawer(CloudAccount account)
+    private async Task OpenDrawer(CloudAccount account)
     {
+        drawerOpen = false;
+        await Task.Delay(50);
+
+        var selectedBusinessFunction = BusinessFunctions.FirstOrDefault(x =>
+            x.Id == account.CloudAccountManualDetail?.BusinessFunctionId);
+
         editingAccount = new CloudAccountEditModel
         {
             Id = account.Id,
@@ -396,19 +392,16 @@
             RealTimeVisibilityAndDetectionStatus = account.RealTimeVisibilityAndDetectionStatus,
 
             BusinessFunctionId = account.CloudAccountManualDetail?.BusinessFunctionId,
+            BusinessFunctionName = selectedBusinessFunction?.BusinessFunctionName,
+            BusinessFunctionOwner = selectedBusinessFunction?.BusinessFunctionOwner,
+            BusinessFunctionLtMember = selectedBusinessFunction?.BusinessFunctionLtMember,
+            BusinessFunctionSpoc = selectedBusinessFunction?.BusinessFunctionSpoc,
+
             AccountType = account.CloudAccountManualDetail?.AccountType,
             OverallStatus = account.CloudAccountManualDetail?.OverallStatus,
             Remarks = account.CloudAccountManualDetail?.Remarks,
             CloudTagEmail = account.CloudAccountManualDetail?.CloudTagEmail
         };
-
-        if (!string.IsNullOrWhiteSpace(editingAccount.BusinessFunctionId))
-        {
-            OnBusinessFunctionChanged(editingAccount.BusinessFunctionId);
-        }
-
-        drawerOpen = false;
-        StateHasChanged();
 
         drawerOpen = true;
     }
@@ -420,43 +413,43 @@
     }
 
     private async Task SaveEdit()
-{
-    if (editingAccount is null)
-        return;
-
-    var existing = Accounts.FirstOrDefault(x => x.Id == editingAccount.Id);
-
-    if (existing is null)
-        return;
-
-    existing.CloudName = editingAccount.CloudName;
-    existing.CloudOrgId = editingAccount.CloudOrgId;
-    existing.Iomstatus = editingAccount.Iomstatus;
-    existing.RealTimeVisibilityAndDetectionStatus =
-        editingAccount.RealTimeVisibilityAndDetectionStatus;
-
-    existing.DateModified = DateTime.UtcNow;
-
-    existing.CloudAccountManualDetail ??= new CloudAccountManualDetail();
-
-    existing.CloudAccountManualDetail.CloudAccountId = existing.Id;
-    existing.CloudAccountManualDetail.BusinessFunctionId = editingAccount.BusinessFunctionId;
-    existing.CloudAccountManualDetail.AccountType = editingAccount.AccountType;
-    existing.CloudAccountManualDetail.OverallStatus = editingAccount.OverallStatus;
-    existing.CloudAccountManualDetail.Remarks = editingAccount.Remarks;
-    existing.CloudAccountManualDetail.CloudTagEmail = editingAccount.CloudTagEmail;
-
-    var response = await Http.PutAsJsonAsync($"{ApiBase}/{existing.Id}", existing);
-
-    if (response.IsSuccessStatusCode)
     {
-        Accounts = await Http.GetFromJsonAsync<List<CloudAccount>>(ApiBase) ?? new();
-        CloseDrawer();
+        if (editingAccount is null)
+            return;
+
+        var existing = Accounts.FirstOrDefault(x => x.Id == editingAccount.Id);
+
+        if (existing is null)
+            return;
+
+        existing.CloudName = editingAccount.CloudName;
+        existing.CloudOrgId = editingAccount.CloudOrgId;
+        existing.Iomstatus = editingAccount.Iomstatus;
+        existing.RealTimeVisibilityAndDetectionStatus =
+            editingAccount.RealTimeVisibilityAndDetectionStatus;
+
+        existing.DateModified = DateTime.UtcNow;
+
+        existing.CloudAccountManualDetail ??= new CloudAccountManualDetail();
+
+        existing.CloudAccountManualDetail.CloudAccountId = existing.Id;
+        existing.CloudAccountManualDetail.BusinessFunctionId = editingAccount.BusinessFunctionId;
+        existing.CloudAccountManualDetail.AccountType = editingAccount.AccountType;
+        existing.CloudAccountManualDetail.OverallStatus = editingAccount.OverallStatus;
+        existing.CloudAccountManualDetail.Remarks = editingAccount.Remarks;
+        existing.CloudAccountManualDetail.CloudTagEmail = editingAccount.CloudTagEmail;
+
+        var response = await Http.PutAsJsonAsync($"{ApiBase}/{existing.Id}", existing);
+
+        if (response.IsSuccessStatusCode)
+        {
+            Accounts = await Http.GetFromJsonAsync<List<CloudAccount>>(ApiBase) ?? new();
+            CloseDrawer();
+        }
+        else
+        {
+            var error = await response.Content.ReadAsStringAsync();
+            Console.WriteLine($"Save failed: {error}");
+        }
     }
-    else
-    {
-        var error = await response.Content.ReadAsStringAsync();
-        Console.WriteLine($"Save failed: {error}");
-    }
-}
 }

@@ -6,7 +6,7 @@ public class CloudAccountManualDetail
 
     public int CloudAccountId { get; set; }
 
-    public string? BusinessFunctionId { get; set; }
+    public int? BusinessFunctionId { get; set; }
 
     public string? BusinessFunctionOwner { get; set; }
 

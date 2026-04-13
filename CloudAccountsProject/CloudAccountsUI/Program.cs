@@ -10,11 +10,12 @@ builder.RootComponents.Add<HeadOutlet>("head::after");
 
 builder.Services.AddMudServices();
 
-var apiBaseUrl = builder.Configuration["ApiSettings:BaseUrl"];
+var apiBaseUrl = builder.Configuration["ServerURL:ActiveUrl"];
+var activeBaseUrl = builder.Configuration[$"ServerURL:{apiBaseUrl}"];
 
 builder.Services.AddScoped(sp => new HttpClient
 {
-    BaseAddress = new Uri(apiBaseUrl!)
+    BaseAddress = new Uri(activeBaseUrl!)
 });
 
 await builder.Build().RunAsync();

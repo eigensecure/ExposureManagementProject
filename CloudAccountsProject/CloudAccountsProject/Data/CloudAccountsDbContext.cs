@@ -22,7 +22,7 @@ public partial class CloudAccountsDbContext : DbContext
 
     public virtual DbSet<CloudAccountManualDetail> CloudAccountManualDetails { get; set; }
 
-    public virtual DbSet<BusinessFunctionMaster> BusinessFunctionMasters { get; set; }
+    public virtual DbSet<BusinessFunction> BusinessFunctions { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
@@ -93,51 +93,25 @@ public partial class CloudAccountsDbContext : DbContext
 
             entity.Property(e => e.AccountType).HasMaxLength(100);
             entity.Property(e => e.AttachmentPath).HasMaxLength(500);
-            entity.Property(e => e.BusinessFunctionId).HasMaxLength(255);
             entity.Property(e => e.CloudTagEmail).HasMaxLength(255);
             entity.Property(e => e.DateCreated).HasDefaultValueSql("(getutcdate())");
             entity.Property(e => e.DateModified).HasDefaultValueSql("(getutcdate())");
             entity.Property(e => e.FirstUpdatedBy).HasMaxLength(255);
             entity.Property(e => e.LastUpdatedBy).HasMaxLength(255);
             entity.Property(e => e.OverallStatus).HasMaxLength(100);
-
-            entity.HasOne(d => d.CloudAccount).WithOne(p => p.CloudAccountManualDetail)
-                .HasForeignKey<CloudAccountManualDetail>(d => d.CloudAccountId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_CloudAccountManualDetails_CloudAccounts");
         });
 
-        modelBuilder.Entity<BusinessFunctionMaster>(entity =>
+        modelBuilder.Entity<BusinessFunction>(entity =>
         {
-            entity.ToTable("BusinessFunctionMaster");
+            entity.HasKey(e => e.Id).HasName("PK_Business_Function");
 
-            entity.HasKey(e => e.Id);
+            entity.ToTable("BusinessFunction");
 
-            entity.HasIndex(e => e.BusinessFunctionName)
-                .IsUnique()
-                .HasDatabaseName("UX_BusinessFunctionMaster_Name");
-
-            entity.HasIndex(e => e.BusinessTagValue)
-                .IsUnique()
-                .HasDatabaseName("UX_BusinessFunctionMaster_Tag");
-
-            entity.Property(e => e.BusinessFunctionName)
-                .HasMaxLength(255);
-
-            entity.Property(e => e.BusinessFunctionLtMember)
-                .HasMaxLength(255);
-
-            entity.Property(e => e.BusinessFunctionOwner)
-                .HasMaxLength(255);
-
-            entity.Property(e => e.BusinessTagValue)
-                .HasMaxLength(255);
-
-            entity.Property(e => e.DateCreated)
-                .HasColumnType("datetime2");
-
-            entity.Property(e => e.DateModified)
-                .HasColumnType("datetime2");
+            entity.Property(e => e.BusinessFunctionGroupDl).HasColumnName("BusinessFunctionGroupDL");
+            entity.Property(e => e.BusinessFunctionLtMember).HasMaxLength(255);
+            entity.Property(e => e.BusinessFunctionName).HasMaxLength(255);
+            entity.Property(e => e.BusinessFunctionOwner).HasMaxLength(255);
+            entity.Property(e => e.BusinessTagValue).HasMaxLength(255);
         });
 
         OnModelCreatingPartial(modelBuilder);

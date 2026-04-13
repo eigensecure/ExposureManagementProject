@@ -21,6 +21,7 @@ builder.Services.AddDbContext<CloudAccountsDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("AzureConnection")));
 
 builder.Services.AddScoped<ICloudAccountRepository, CloudAccountRepository>();
+builder.Services.AddScoped<IBusinessFunctionRepository, BusinessFunctionRepository>();
 
 builder.Services.AddControllers();
 

@@ -1,0 +1,274 @@
+﻿@page "/businessfunction"
+@using CloudAccountsUI.Models
+@inject HttpClient Http
+
+<MudPaper Class="pa-4">
+
+    <MudStack Row="true"
+              Justify="Justify.SpaceBetween"
+              AlignItems="AlignItems.Center"
+              Class="mb-4">
+
+        <MudText Typo="Typo.h5">Business Function</MudText>
+
+        <MudButton Variant="Variant.Filled"
+                   Color="Color.Primary"
+                   StartIcon="@Icons.Material.Filled.Add"
+                   OnClick="OpenCreateDrawer">
+            Add Business Function
+        </MudButton>
+    </MudStack>
+
+    @if (isLoading)
+    {
+        <MudPaper Class="pa-6 d-flex flex-column align-center justify-center"
+                  Style="height:650px;">
+
+            <MudProgressCircular Indeterminate="true"
+                                 Color="Color.Primary"
+                                 Size="Size.Large" />
+
+            <MudText Class="mt-4">
+                Loading Business Functions...
+            </MudText>
+        </MudPaper>
+    }
+    else
+    {
+        <MudDataGrid T="BusinessFunction"
+                     Items="@businessFunctions"
+                     Dense="true"
+                     Hover="true"
+                     Bordered="true"
+                     Striped="true"
+                     Filterable="true"
+                     ShowColumnOptions="false"
+                     FixedHeader="true"
+                     Height="650px"
+                     RowsPerPage="10">
+
+            <Columns>
+
+                <PropertyColumn Property="x => x.BusinessFunctionName"
+                                Title="Business Function Name" />
+
+                <PropertyColumn Property="x => x.BusinessFunctionLtMember"
+                                Title="LT Member" />
+
+                <PropertyColumn Property="x => x.BusinessFunctionOwner"
+                                Title="Owner" />
+
+                <PropertyColumn Property="x => x.BusinessFunctionSpoc"
+                                Title="SPOC" />
+
+                <PropertyColumn Property="x => x.BusinessFunctionGroupDl"
+                                Title="Group DL" />
+
+                <PropertyColumn Property="x => x.BusinessTagValue"
+                                Title="Business Tag Value" />
+
+                <PropertyColumn Property="x => x.Remarks"
+                                Title="Remarks" />
+
+                <TemplateColumn Title="Actions">
+                    <CellTemplate>
+                        <MudButton Variant="Variant.Filled"
+                                   Size="Size.Small"
+                                   Color="Color.Primary"
+                                   OnClick="@(() => OpenEditDrawer(context.Item))">
+                            Edit
+                        </MudButton>
+                    </CellTemplate>
+                </TemplateColumn>
+
+            </Columns>
+
+        </MudDataGrid>
+    }
+
+</MudPaper>
+
+<MudDrawer @bind-Open="drawerOpen"
+           Anchor="Anchor.Right"
+           Width="700px"
+           Elevation="1"
+           Variant="DrawerVariant.Temporary">
+
+    <MudPaper Class="pa-4 d-flex flex-column"
+              Style="height:100%; background:white;">
+
+        <MudText Typo="Typo.h6" Class="mb-4">
+            @(isCreate ? "Add Business Function" : "Edit Business Function")
+        </MudText>
+
+        <div style="flex:1; overflow-y:auto; padding-right:8px;">
+
+            <MudStack Spacing="2">
+
+                <MudTextField @bind-Value="editingItem.BusinessFunctionName"
+                              Label="Business Function Name"
+                              Variant="Variant.Outlined"
+                              Required="true" />
+
+                <MudTextField @bind-Value="editingItem.BusinessFunctionLtMember"
+                              Label="LT Member"
+                              Variant="Variant.Outlined"
+                              Required="true" />
+
+                <MudTextField @bind-Value="editingItem.BusinessFunctionOwner"
+                              Label="Owner"
+                              Variant="Variant.Outlined"
+                              Required="true" />
+
+                <MudTextField @bind-Value="editingItem.BusinessFunctionSpoc"
+                              Label="SPOC"
+                              Variant="Variant.Outlined"
+                              Lines="3"
+                              Required="true" />
+
+                <MudTextField @bind-Value="editingItem.BusinessFunctionGroupDl"
+                              Label="Group DL"
+                              Variant="Variant.Outlined" />
+
+                <MudTextField @bind-Value="editingItem.BusinessTagValue"
+                              Label="Business Tag Value"
+                              Variant="Variant.Outlined"
+                              Required="true" />
+
+                <MudTextField @bind-Value="editingItem.Remarks"
+                              Label="Remarks"
+                              Variant="Variant.Outlined"
+                              Lines="3" />
+
+            </MudStack>
+
+        </div>
+
+        <div class="drawer-footer">
+            <MudButton Variant="Variant.Text"
+                       OnClick="CloseDrawer">
+                Cancel
+            </MudButton>
+
+            <MudButton Variant="Variant.Filled"
+                       Color="Color.Primary"
+                       OnClick="Save">
+                Save
+            </MudButton>
+        </div>
+
+    </MudPaper>
+
+</MudDrawer>
+
+<style id="jyf2sm">
+    .drawer-footer {
+        display: flex;
+        justify-content: flex-end;
+        gap: 12px;
+        padding-top: 16px;
+        margin-top: 16px;
+        border-top: 1px solid #e0e0e0;
+        background: white;
+        position: sticky;
+        bottom: 0;
+    }
+</style>
+
+@code {
+    private const string ApiBase = "api/BusinessFunction";
+
+    private List<BusinessFunction> businessFunctions = new();
+
+    private BusinessFunction editingItem = new();
+
+    private bool isLoading = true;
+    private bool drawerOpen;
+    private bool isCreate;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadData();
+    }
+
+    private async Task LoadData()
+    {
+        try
+        {
+            isLoading = true;
+
+            businessFunctions =
+                await Http.GetFromJsonAsync<List<BusinessFunction>>(ApiBase) ?? new();
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private async Task OpenCreateDrawer()
+    {
+        drawerOpen = false;
+        await Task.Delay(50);
+
+        isCreate = true;
+
+        editingItem = new BusinessFunction();
+
+        drawerOpen = true;
+    }
+
+    private async Task OpenEditDrawer(BusinessFunction item)
+    {
+        drawerOpen = false;
+        await Task.Delay(50);
+
+        isCreate = false;
+
+        editingItem = new BusinessFunction
+        {
+            Id = item.Id,
+            BusinessFunctionName = item.BusinessFunctionName,
+            BusinessFunctionLtMember = item.BusinessFunctionLtMember,
+            BusinessFunctionOwner = item.BusinessFunctionOwner,
+            BusinessFunctionSpoc = item.BusinessFunctionSpoc,
+            BusinessFunctionGroupDl = item.BusinessFunctionGroupDl,
+            BusinessTagValue = item.BusinessTagValue,
+            Remarks = item.Remarks
+        };
+
+        drawerOpen = true;
+    }
+
+    private void CloseDrawer()
+    {
+        drawerOpen = false;
+    }
+
+    private async Task Save()
+    {
+        HttpResponseMessage response;
+
+        if (isCreate)
+        {
+            response = await Http.PostAsJsonAsync(ApiBase, editingItem);
+        }
+        else
+        {
+            response = await Http.PutAsJsonAsync(
+                $"{ApiBase}/{editingItem.Id}",
+                editingItem);
+        }
+
+        if (response.IsSuccessStatusCode)
+        {
+            await LoadData();
+            CloseDrawer();
+        }
+        else
+        {
+            var error = await response.Content.ReadAsStringAsync();
+            Console.WriteLine($"Save failed: {error}");
+        }
+    }
+}
