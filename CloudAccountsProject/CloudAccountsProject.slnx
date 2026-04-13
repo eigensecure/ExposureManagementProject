@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="CloudAccountsProject/CloudAccountsProject.csproj" />
+  <Project Path="CloudAccountsUI/CloudAccountsUI.csproj" />
+</Solution>

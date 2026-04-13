@@ -1,0 +1,6 @@
+@CloudAccountsProject_HostAddress = http://localhost:5033
+
+GET {{CloudAccountsProject_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

@@ -1,0 +1,15 @@
+[
+  {
+    "Name": "New Profile",
+    "Projects": [
+      {
+        "Path": "CloudAccountsProject\\CloudAccountsProject.csproj",
+        "Action": "Start"
+      },
+      {
+        "Path": "CloudAccountsUI\\CloudAccountsUI.csproj",
+        "Action": "Start"
+      }
+    ]
+  }
+]
