@@ -87,18 +87,21 @@ public partial class CloudAccountsDbContext : DbContext
 
         modelBuilder.Entity<CloudAccountManualDetail>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__CloudAcc__3214EC078C0C72C8");
-
-            entity.HasIndex(e => e.CloudAccountId, "UQ__CloudAcc__B8D5FE8F805CBBBB").IsUnique();
+            entity.HasIndex(e => e.CloudAccountId, "UQ__CloudAcc__B8D5FE8F0BDA72B7").IsUnique();
 
             entity.Property(e => e.AccountType).HasMaxLength(100);
             entity.Property(e => e.AttachmentPath).HasMaxLength(500);
             entity.Property(e => e.CloudTagEmail).HasMaxLength(255);
-            entity.Property(e => e.DateCreated).HasDefaultValueSql("(getutcdate())");
-            entity.Property(e => e.DateModified).HasDefaultValueSql("(getutcdate())");
-            entity.Property(e => e.FirstUpdatedBy).HasMaxLength(255);
-            entity.Property(e => e.LastUpdatedBy).HasMaxLength(255);
             entity.Property(e => e.OverallStatus).HasMaxLength(100);
+
+            entity.HasOne(d => d.BusinessFunction).WithMany(p => p.CloudAccountManualDetails)
+                .HasForeignKey(d => d.BusinessFunctionId)
+                .HasConstraintName("FK_CloudAccountManualDetails_BusinessFunction");
+
+            entity.HasOne(d => d.CloudAccount).WithOne(p => p.CloudAccountManualDetail)
+                .HasForeignKey<CloudAccountManualDetail>(d => d.CloudAccountId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_CloudAccountManualDetails_CloudAccounts");
         });
 
         modelBuilder.Entity<BusinessFunction>(entity =>

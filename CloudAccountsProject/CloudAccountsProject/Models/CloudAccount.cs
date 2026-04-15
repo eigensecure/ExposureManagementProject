@@ -45,3 +45,4 @@ public partial class CloudAccount
 
     public virtual CloudAccountManualDetail? CloudAccountManualDetail { get; set; }
 }
+

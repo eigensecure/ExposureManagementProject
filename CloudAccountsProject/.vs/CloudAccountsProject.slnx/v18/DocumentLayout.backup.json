@@ -3,38 +3,6 @@
   "WorkspaceRootPath": "C:\\Users\\Capzod\\Downloads\\Work Environment\\CloudAccountsProject\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{AAE86E63-E33D-1D89-C4E0-CB51C2A9E914}|CloudAccountsUI\\CloudAccountsUI.csproj|c:\\users\\capzod\\downloads\\work environment\\cloudaccountsproject\\cloudaccountsui\\pages\\cloudaccounts.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{AAE86E63-E33D-1D89-C4E0-CB51C2A9E914}|CloudAccountsUI\\CloudAccountsUI.csproj|solutionrelative:cloudaccountsui\\pages\\cloudaccounts.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{AAE86E63-E33D-1D89-C4E0-CB51C2A9E914}|CloudAccountsUI\\CloudAccountsUI.csproj|c:\\users\\capzod\\downloads\\work environment\\cloudaccountsproject\\cloudaccountsui\\pages\\businessfunctionui.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{AAE86E63-E33D-1D89-C4E0-CB51C2A9E914}|CloudAccountsUI\\CloudAccountsUI.csproj|solutionrelative:cloudaccountsui\\pages\\businessfunctionui.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{AAE86E63-E33D-1D89-C4E0-CB51C2A9E914}|CloudAccountsUI\\CloudAccountsUI.csproj|c:\\users\\capzod\\downloads\\work environment\\cloudaccountsproject\\cloudaccountsui\\models\\businessfunction.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{AAE86E63-E33D-1D89-C4E0-CB51C2A9E914}|CloudAccountsUI\\CloudAccountsUI.csproj|solutionrelative:cloudaccountsui\\models\\businessfunction.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{AAE86E63-E33D-1D89-C4E0-CB51C2A9E914}|CloudAccountsUI\\CloudAccountsUI.csproj|c:\\users\\capzod\\downloads\\work environment\\cloudaccountsproject\\cloudaccountsui\\models\\businessfunctionlookup.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{AAE86E63-E33D-1D89-C4E0-CB51C2A9E914}|CloudAccountsUI\\CloudAccountsUI.csproj|solutionrelative:cloudaccountsui\\models\\businessfunctionlookup.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{AAE86E63-E33D-1D89-C4E0-CB51C2A9E914}|CloudAccountsUI\\CloudAccountsUI.csproj|c:\\users\\capzod\\downloads\\work environment\\cloudaccountsproject\\cloudaccountsui\\wwwroot\\css\\app.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}",
-      "RelativeMoniker": "D:0:0:{AAE86E63-E33D-1D89-C4E0-CB51C2A9E914}|CloudAccountsUI\\CloudAccountsUI.csproj|solutionrelative:cloudaccountsui\\wwwroot\\css\\app.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{AAE86E63-E33D-1D89-C4E0-CB51C2A9E914}|CloudAccountsUI\\CloudAccountsUI.csproj|c:\\users\\capzod\\downloads\\work environment\\cloudaccountsproject\\cloudaccountsui\\models\\cloudaccounteditmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{AAE86E63-E33D-1D89-C4E0-CB51C2A9E914}|CloudAccountsUI\\CloudAccountsUI.csproj|solutionrelative:cloudaccountsui\\models\\cloudaccounteditmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{AAE86E63-E33D-1D89-C4E0-CB51C2A9E914}|CloudAccountsUI\\CloudAccountsUI.csproj|c:\\users\\capzod\\downloads\\work environment\\cloudaccountsproject\\cloudaccountsui\\models\\cloudaccountmanualdetail.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{AAE86E63-E33D-1D89-C4E0-CB51C2A9E914}|CloudAccountsUI\\CloudAccountsUI.csproj|solutionrelative:cloudaccountsui\\models\\cloudaccountmanualdetail.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{8EC806F2-B20F-65EF-C59F-647970AADFDE}|CloudAccountsProject\\CloudAccountsProject.csproj|c:\\users\\capzod\\downloads\\work environment\\cloudaccountsproject\\cloudaccountsproject\\data\\cloudaccountsdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{8EC806F2-B20F-65EF-C59F-647970AADFDE}|CloudAccountsProject\\CloudAccountsProject.csproj|solutionrelative:cloudaccountsproject\\data\\cloudaccountsdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{8EC806F2-B20F-65EF-C59F-647970AADFDE}|CloudAccountsProject\\CloudAccountsProject.csproj|c:\\users\\capzod\\downloads\\work environment\\cloudaccountsproject\\cloudaccountsproject\\models\\cloudaccountmanualdetail.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{8EC806F2-B20F-65EF-C59F-647970AADFDE}|CloudAccountsProject\\CloudAccountsProject.csproj|solutionrelative:cloudaccountsproject\\models\\cloudaccountmanualdetail.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
@@ -43,12 +11,56 @@
       "RelativeMoniker": "D:0:0:{8EC806F2-B20F-65EF-C59F-647970AADFDE}|CloudAccountsProject\\CloudAccountsProject.csproj|solutionrelative:cloudaccountsproject\\models\\cloudaccount.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
+      "AbsoluteMoniker": "D:0:0:{AAE86E63-E33D-1D89-C4E0-CB51C2A9E914}|CloudAccountsUI\\CloudAccountsUI.csproj|c:\\users\\capzod\\downloads\\work environment\\cloudaccountsproject\\cloudaccountsui\\models\\cloudaccountmanualdetail.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{AAE86E63-E33D-1D89-C4E0-CB51C2A9E914}|CloudAccountsUI\\CloudAccountsUI.csproj|solutionrelative:cloudaccountsui\\models\\cloudaccountmanualdetail.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{AAE86E63-E33D-1D89-C4E0-CB51C2A9E914}|CloudAccountsUI\\CloudAccountsUI.csproj|c:\\users\\capzod\\downloads\\work environment\\cloudaccountsproject\\cloudaccountsui\\models\\cloudaccounteditmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{AAE86E63-E33D-1D89-C4E0-CB51C2A9E914}|CloudAccountsUI\\CloudAccountsUI.csproj|solutionrelative:cloudaccountsui\\models\\cloudaccounteditmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{AAE86E63-E33D-1D89-C4E0-CB51C2A9E914}|CloudAccountsUI\\CloudAccountsUI.csproj|c:\\users\\capzod\\downloads\\work environment\\cloudaccountsproject\\cloudaccountsui\\models\\businessfunction.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{AAE86E63-E33D-1D89-C4E0-CB51C2A9E914}|CloudAccountsUI\\CloudAccountsUI.csproj|solutionrelative:cloudaccountsui\\models\\businessfunction.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{AAE86E63-E33D-1D89-C4E0-CB51C2A9E914}|CloudAccountsUI\\CloudAccountsUI.csproj|c:\\users\\capzod\\downloads\\work environment\\cloudaccountsproject\\cloudaccountsui\\models\\cloudaccount.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{AAE86E63-E33D-1D89-C4E0-CB51C2A9E914}|CloudAccountsUI\\CloudAccountsUI.csproj|solutionrelative:cloudaccountsui\\models\\cloudaccount.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8EC806F2-B20F-65EF-C59F-647970AADFDE}|CloudAccountsProject\\CloudAccountsProject.csproj|c:\\users\\capzod\\downloads\\work environment\\cloudaccountsproject\\cloudaccountsproject\\repositories\\cloudaccountrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8EC806F2-B20F-65EF-C59F-647970AADFDE}|CloudAccountsProject\\CloudAccountsProject.csproj|solutionrelative:cloudaccountsproject\\repositories\\cloudaccountrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8EC806F2-B20F-65EF-C59F-647970AADFDE}|CloudAccountsProject\\CloudAccountsProject.csproj|c:\\users\\capzod\\downloads\\work environment\\cloudaccountsproject\\cloudaccountsproject\\data\\cloudaccountsdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8EC806F2-B20F-65EF-C59F-647970AADFDE}|CloudAccountsProject\\CloudAccountsProject.csproj|solutionrelative:cloudaccountsproject\\data\\cloudaccountsdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8EC806F2-B20F-65EF-C59F-647970AADFDE}|CloudAccountsProject\\CloudAccountsProject.csproj|c:\\users\\capzod\\downloads\\work environment\\cloudaccountsproject\\cloudaccountsproject\\models\\businessfunction.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8EC806F2-B20F-65EF-C59F-647970AADFDE}|CloudAccountsProject\\CloudAccountsProject.csproj|solutionrelative:cloudaccountsproject\\models\\businessfunction.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{8EC806F2-B20F-65EF-C59F-647970AADFDE}|CloudAccountsProject\\CloudAccountsProject.csproj|c:\\users\\capzod\\downloads\\work environment\\cloudaccountsproject\\cloudaccountsproject\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
       "RelativeMoniker": "D:0:0:{8EC806F2-B20F-65EF-C59F-647970AADFDE}|CloudAccountsProject\\CloudAccountsProject.csproj|solutionrelative:cloudaccountsproject\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{8EC806F2-B20F-65EF-C59F-647970AADFDE}|CloudAccountsProject\\CloudAccountsProject.csproj|c:\\users\\capzod\\downloads\\work environment\\cloudaccountsproject\\cloudaccountsproject\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{8EC806F2-B20F-65EF-C59F-647970AADFDE}|CloudAccountsProject\\CloudAccountsProject.csproj|solutionrelative:cloudaccountsproject\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{AAE86E63-E33D-1D89-C4E0-CB51C2A9E914}|CloudAccountsUI\\CloudAccountsUI.csproj|c:\\users\\capzod\\downloads\\work environment\\cloudaccountsproject\\cloudaccountsui\\pages\\cloudaccounts.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{AAE86E63-E33D-1D89-C4E0-CB51C2A9E914}|CloudAccountsUI\\CloudAccountsUI.csproj|solutionrelative:cloudaccountsui\\pages\\cloudaccounts.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{AAE86E63-E33D-1D89-C4E0-CB51C2A9E914}|CloudAccountsUI\\CloudAccountsUI.csproj|c:\\users\\capzod\\downloads\\work environment\\cloudaccountsproject\\cloudaccountsui\\pages\\businessfunctionui.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{AAE86E63-E33D-1D89-C4E0-CB51C2A9E914}|CloudAccountsUI\\CloudAccountsUI.csproj|solutionrelative:cloudaccountsui\\pages\\businessfunctionui.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{AAE86E63-E33D-1D89-C4E0-CB51C2A9E914}|CloudAccountsUI\\CloudAccountsUI.csproj|c:\\users\\capzod\\downloads\\work environment\\cloudaccountsproject\\cloudaccountsui\\models\\businessfunctionlookup.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{AAE86E63-E33D-1D89-C4E0-CB51C2A9E914}|CloudAccountsUI\\CloudAccountsUI.csproj|solutionrelative:cloudaccountsui\\models\\businessfunctionlookup.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{AAE86E63-E33D-1D89-C4E0-CB51C2A9E914}|CloudAccountsUI\\CloudAccountsUI.csproj|c:\\users\\capzod\\downloads\\work environment\\cloudaccountsproject\\cloudaccountsui\\wwwroot\\css\\app.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}",
+      "RelativeMoniker": "D:0:0:{AAE86E63-E33D-1D89-C4E0-CB51C2A9E914}|CloudAccountsUI\\CloudAccountsUI.csproj|solutionrelative:cloudaccountsui\\wwwroot\\css\\app.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{AAE86E63-E33D-1D89-C4E0-CB51C2A9E914}|CloudAccountsUI\\CloudAccountsUI.csproj|c:\\users\\capzod\\downloads\\work environment\\cloudaccountsproject\\cloudaccountsui\\cloudaccountsui.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
@@ -67,10 +79,6 @@
       "RelativeMoniker": "D:0:0:{AAE86E63-E33D-1D89-C4E0-CB51C2A9E914}|CloudAccountsUI\\CloudAccountsUI.csproj|solutionrelative:cloudaccountsui\\layout\\navmenu.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{8EC806F2-B20F-65EF-C59F-647970AADFDE}|CloudAccountsProject\\CloudAccountsProject.csproj|c:\\users\\capzod\\downloads\\work environment\\cloudaccountsproject\\cloudaccountsproject\\models\\businessfunction.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{8EC806F2-B20F-65EF-C59F-647970AADFDE}|CloudAccountsProject\\CloudAccountsProject.csproj|solutionrelative:cloudaccountsproject\\models\\businessfunction.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{AAE86E63-E33D-1D89-C4E0-CB51C2A9E914}|CloudAccountsUI\\CloudAccountsUI.csproj|c:\\users\\capzod\\downloads\\work environment\\cloudaccountsproject\\cloudaccountsui\\app.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
       "RelativeMoniker": "D:0:0:{AAE86E63-E33D-1D89-C4E0-CB51C2A9E914}|CloudAccountsUI\\CloudAccountsUI.csproj|solutionrelative:cloudaccountsui\\app.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
@@ -79,16 +87,8 @@
       "RelativeMoniker": "D:0:0:{8EC806F2-B20F-65EF-C59F-647970AADFDE}|CloudAccountsProject\\CloudAccountsProject.csproj|solutionrelative:cloudaccountsproject\\controllers\\cloudaccountscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{AAE86E63-E33D-1D89-C4E0-CB51C2A9E914}|CloudAccountsUI\\CloudAccountsUI.csproj|c:\\users\\capzod\\downloads\\work environment\\cloudaccountsproject\\cloudaccountsui\\models\\cloudaccount.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{AAE86E63-E33D-1D89-C4E0-CB51C2A9E914}|CloudAccountsUI\\CloudAccountsUI.csproj|solutionrelative:cloudaccountsui\\models\\cloudaccount.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{8EC806F2-B20F-65EF-C59F-647970AADFDE}|CloudAccountsProject\\CloudAccountsProject.csproj|c:\\users\\capzod\\downloads\\work environment\\cloudaccountsproject\\cloudaccountsproject\\repositories\\businessfunctionrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{8EC806F2-B20F-65EF-C59F-647970AADFDE}|CloudAccountsProject\\CloudAccountsProject.csproj|solutionrelative:cloudaccountsproject\\repositories\\businessfunctionrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{8EC806F2-B20F-65EF-C59F-647970AADFDE}|CloudAccountsProject\\CloudAccountsProject.csproj|c:\\users\\capzod\\downloads\\work environment\\cloudaccountsproject\\cloudaccountsproject\\repositories\\cloudaccountrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{8EC806F2-B20F-65EF-C59F-647970AADFDE}|CloudAccountsProject\\CloudAccountsProject.csproj|solutionrelative:cloudaccountsproject\\repositories\\cloudaccountrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{8EC806F2-B20F-65EF-C59F-647970AADFDE}|CloudAccountsProject\\CloudAccountsProject.csproj|c:\\users\\capzod\\downloads\\work environment\\cloudaccountsproject\\cloudaccountsproject\\controllers\\businessfunctioncontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -154,11 +154,11 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 0,
+          "SelectedChildIndex": 14,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 11,
               "Title": "CloudAccounts.razor",
               "DocumentMoniker": "C:\\Users\\Capzod\\Downloads\\Work Environment\\CloudAccountsProject\\CloudAccountsUI\\Pages\\CloudAccounts.razor",
               "RelativeDocumentMoniker": "CloudAccountsUI\\Pages\\CloudAccounts.razor",
@@ -167,6 +167,20 @@
               "ViewState": "AgIAAH0BAAAAAAAAAAAAAIUBAAAsAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
               "WhenOpened": "2026-04-08T09:28:03.672Z",
+              "IsPinned": true,
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "CloudAccountRepository.cs",
+              "DocumentMoniker": "C:\\Users\\Capzod\\Downloads\\Work Environment\\CloudAccountsProject\\CloudAccountsProject\\Repositories\\CloudAccountRepository.cs",
+              "RelativeDocumentMoniker": "CloudAccountsProject\\Repositories\\CloudAccountRepository.cs",
+              "ToolTip": "C:\\Users\\Capzod\\Downloads\\Work Environment\\CloudAccountsProject\\CloudAccountsProject\\Repositories\\CloudAccountRepository.cs",
+              "RelativeToolTip": "CloudAccountsProject\\Repositories\\CloudAccountRepository.cs",
+              "ViewState": "AgIAAN8AAAAAAAAAAADwv+4AAABHAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-08T08:10:29.29Z",
               "IsPinned": true,
               "EditorCaption": ""
             },
@@ -204,20 +218,20 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "BusinessFunctionUI.razor",
-              "DocumentMoniker": "C:\\Users\\Capzod\\Downloads\\Work Environment\\CloudAccountsProject\\CloudAccountsUI\\Pages\\BusinessFunctionUI.razor",
-              "RelativeDocumentMoniker": "CloudAccountsUI\\Pages\\BusinessFunctionUI.razor",
-              "ToolTip": "C:\\Users\\Capzod\\Downloads\\Work Environment\\CloudAccountsProject\\CloudAccountsUI\\Pages\\BusinessFunctionUI.razor",
-              "RelativeToolTip": "CloudAccountsUI\\Pages\\BusinessFunctionUI.razor",
-              "ViewState": "AgIAAF0AAAAAAAAAAAAiwGcAAAArAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2026-04-13T13:55:15.245Z",
+              "DocumentIndex": 5,
+              "Title": "CloudAccount.cs",
+              "DocumentMoniker": "C:\\Users\\Capzod\\Downloads\\Work Environment\\CloudAccountsProject\\CloudAccountsUI\\Models\\CloudAccount.cs",
+              "RelativeDocumentMoniker": "CloudAccountsUI\\Models\\CloudAccount.cs",
+              "ToolTip": "C:\\Users\\Capzod\\Downloads\\Work Environment\\CloudAccountsProject\\CloudAccountsUI\\Models\\CloudAccount.cs",
+              "RelativeToolTip": "CloudAccountsUI\\Models\\CloudAccount.cs",
+              "ViewState": "AgIAAAEAAAAAAAAAAAAcwBUAAABLAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-08T09:29:16.486Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 4,
               "Title": "BusinessFunction.cs",
               "DocumentMoniker": "C:\\Users\\Capzod\\Downloads\\Work Environment\\CloudAccountsProject\\CloudAccountsUI\\Models\\BusinessFunction.cs",
               "RelativeDocumentMoniker": "CloudAccountsUI\\Models\\BusinessFunction.cs",
@@ -230,41 +244,54 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 3,
               "Title": "CloudAccountEditModel.cs",
               "DocumentMoniker": "C:\\Users\\Capzod\\Downloads\\Work Environment\\CloudAccountsProject\\CloudAccountsUI\\Models\\CloudAccountEditModel.cs",
               "RelativeDocumentMoniker": "CloudAccountsUI\\Models\\CloudAccountEditModel.cs",
               "ToolTip": "C:\\Users\\Capzod\\Downloads\\Work Environment\\CloudAccountsProject\\CloudAccountsUI\\Models\\CloudAccountEditModel.cs",
               "RelativeToolTip": "CloudAccountsUI\\Models\\CloudAccountEditModel.cs",
-              "ViewState": "AgIAAA4AAAAAAAAAAAAuwBYAAAABAAAAAAAAAA==",
+              "ViewState": "AgIAAAgAAAAAAAAAAAA9wBYAAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-04-09T09:06:46.904Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "BusinessFunctionLookup.cs",
-              "DocumentMoniker": "C:\\Users\\Capzod\\Downloads\\Work Environment\\CloudAccountsProject\\CloudAccountsUI\\Models\\BusinessFunctionLookup.cs",
-              "RelativeDocumentMoniker": "CloudAccountsUI\\Models\\BusinessFunctionLookup.cs",
-              "ToolTip": "C:\\Users\\Capzod\\Downloads\\Work Environment\\CloudAccountsProject\\CloudAccountsUI\\Models\\BusinessFunctionLookup.cs",
-              "RelativeToolTip": "CloudAccountsUI\\Models\\BusinessFunctionLookup.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAcAAAAAAAAAAAAAAA==",
+              "DocumentIndex": 1,
+              "Title": "CloudAccount.cs",
+              "DocumentMoniker": "C:\\Users\\Capzod\\Downloads\\Work Environment\\CloudAccountsProject\\CloudAccountsProject\\Models\\CloudAccount.cs",
+              "RelativeDocumentMoniker": "CloudAccountsProject\\Models\\CloudAccount.cs",
+              "ToolTip": "C:\\Users\\Capzod\\Downloads\\Work Environment\\CloudAccountsProject\\CloudAccountsProject\\Models\\CloudAccount.cs",
+              "RelativeToolTip": "CloudAccountsProject\\Models\\CloudAccount.cs",
+              "ViewState": "AgIAACUAAAAAAAAAAAAAAC8AAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-04-13T08:26:47.134Z",
+              "WhenOpened": "2026-04-08T08:11:30.868Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
-              "Title": "app.css",
-              "DocumentMoniker": "C:\\Users\\Capzod\\Downloads\\Work Environment\\CloudAccountsProject\\CloudAccountsUI\\wwwroot\\css\\app.css",
-              "RelativeDocumentMoniker": "CloudAccountsUI\\wwwroot\\css\\app.css",
-              "ToolTip": "C:\\Users\\Capzod\\Downloads\\Work Environment\\CloudAccountsProject\\CloudAccountsUI\\wwwroot\\css\\app.css",
-              "RelativeToolTip": "CloudAccountsUI\\wwwroot\\css\\app.css",
-              "ViewState": "AgIAAFEAAAAAAAAAAAAAAEgAAAAVAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
-              "WhenOpened": "2026-04-09T09:10:23.605Z",
+              "DocumentIndex": 0,
+              "Title": "CloudAccountManualDetail.cs",
+              "DocumentMoniker": "C:\\Users\\Capzod\\Downloads\\Work Environment\\CloudAccountsProject\\CloudAccountsProject\\Models\\CloudAccountManualDetail.cs",
+              "RelativeDocumentMoniker": "CloudAccountsProject\\Models\\CloudAccountManualDetail.cs",
+              "ToolTip": "C:\\Users\\Capzod\\Downloads\\Work Environment\\CloudAccountsProject\\CloudAccountsProject\\Models\\CloudAccountManualDetail.cs",
+              "RelativeToolTip": "CloudAccountsProject\\Models\\CloudAccountManualDetail.cs",
+              "ViewState": "AgIAABYAAAAAAAAAAAAzwBsAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-09T08:57:20.042Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "CloudAccountManualDetail.cs",
+              "DocumentMoniker": "C:\\Users\\Capzod\\Downloads\\Work Environment\\CloudAccountsProject\\CloudAccountsUI\\Models\\CloudAccountManualDetail.cs",
+              "RelativeDocumentMoniker": "CloudAccountsUI\\Models\\CloudAccountManualDetail.cs",
+              "ToolTip": "C:\\Users\\Capzod\\Downloads\\Work Environment\\CloudAccountsProject\\CloudAccountsUI\\Models\\CloudAccountManualDetail.cs",
+              "RelativeToolTip": "CloudAccountsUI\\Models\\CloudAccountManualDetail.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAACEAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-09T09:06:15.705Z",
               "EditorCaption": ""
             },
             {
@@ -275,40 +302,40 @@
               "RelativeDocumentMoniker": "CloudAccountsProject\\Data\\CloudAccountsDbContext.cs",
               "ToolTip": "C:\\Users\\Capzod\\Downloads\\Work Environment\\CloudAccountsProject\\CloudAccountsProject\\Data\\CloudAccountsDbContext.cs",
               "RelativeToolTip": "CloudAccountsProject\\Data\\CloudAccountsDbContext.cs",
-              "ViewState": "AgIAAFQAAAAAAAAAAAAswGUAAAALAAAAAAAAAA==",
+              "ViewState": "AgIAAHIAAAAAAAAAAADwv2gAAAALAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-04-08T08:09:38.704Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 6,
-              "Title": "CloudAccountManualDetail.cs",
-              "DocumentMoniker": "C:\\Users\\Capzod\\Downloads\\Work Environment\\CloudAccountsProject\\CloudAccountsUI\\Models\\CloudAccountManualDetail.cs",
-              "RelativeDocumentMoniker": "CloudAccountsUI\\Models\\CloudAccountManualDetail.cs",
-              "ToolTip": "C:\\Users\\Capzod\\Downloads\\Work Environment\\CloudAccountsProject\\CloudAccountsUI\\Models\\CloudAccountManualDetail.cs",
-              "RelativeToolTip": "CloudAccountsUI\\Models\\CloudAccountManualDetail.cs",
-              "ViewState": "AgIAABMAAAAAAAAAAAAcwCEAAAABAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-04-09T09:06:15.705Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
               "DocumentIndex": 8,
-              "Title": "CloudAccountManualDetail.cs",
-              "DocumentMoniker": "C:\\Users\\Capzod\\Downloads\\Work Environment\\CloudAccountsProject\\CloudAccountsProject\\Models\\CloudAccountManualDetail.cs",
-              "RelativeDocumentMoniker": "CloudAccountsProject\\Models\\CloudAccountManualDetail.cs",
-              "ToolTip": "C:\\Users\\Capzod\\Downloads\\Work Environment\\CloudAccountsProject\\CloudAccountsProject\\Models\\CloudAccountManualDetail.cs",
-              "RelativeToolTip": "CloudAccountsProject\\Models\\CloudAccountManualDetail.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAACIAAAAAAAAAAAAAAA==",
+              "Title": "BusinessFunction.cs",
+              "DocumentMoniker": "C:\\Users\\Capzod\\Downloads\\Work Environment\\CloudAccountsProject\\CloudAccountsProject\\Models\\BusinessFunction.cs",
+              "RelativeDocumentMoniker": "CloudAccountsProject\\Models\\BusinessFunction.cs",
+              "ToolTip": "C:\\Users\\Capzod\\Downloads\\Work Environment\\CloudAccountsProject\\CloudAccountsProject\\Models\\BusinessFunction.cs",
+              "RelativeToolTip": "CloudAccountsProject\\Models\\BusinessFunction.cs",
+              "ViewState": "AgIAAAcAAAAAAAAAAADwvxoAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-04-09T08:57:20.042Z",
+              "WhenOpened": "2026-04-13T12:35:13.622Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 11,
+              "DocumentIndex": 9,
+              "Title": "appsettings.json",
+              "DocumentMoniker": "C:\\Users\\Capzod\\Downloads\\Work Environment\\CloudAccountsProject\\CloudAccountsProject\\appsettings.json",
+              "RelativeDocumentMoniker": "CloudAccountsProject\\appsettings.json",
+              "ToolTip": "C:\\Users\\Capzod\\Downloads\\Work Environment\\CloudAccountsProject\\CloudAccountsProject\\appsettings.json",
+              "RelativeToolTip": "CloudAccountsProject\\appsettings.json",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAMAAAAYAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2026-04-08T08:14:27.479Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
               "Title": "Program.cs",
               "DocumentMoniker": "C:\\Users\\Capzod\\Downloads\\Work Environment\\CloudAccountsProject\\CloudAccountsProject\\Program.cs",
               "RelativeDocumentMoniker": "CloudAccountsProject\\Program.cs",
@@ -321,33 +348,43 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 10,
-              "Title": "appsettings.json",
-              "DocumentMoniker": "C:\\Users\\Capzod\\Downloads\\Work Environment\\CloudAccountsProject\\CloudAccountsProject\\appsettings.json",
-              "RelativeDocumentMoniker": "CloudAccountsProject\\appsettings.json",
-              "ToolTip": "C:\\Users\\Capzod\\Downloads\\Work Environment\\CloudAccountsProject\\CloudAccountsProject\\appsettings.json",
-              "RelativeToolTip": "CloudAccountsProject\\appsettings.json",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAMAAADJAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
-              "WhenOpened": "2026-04-08T08:14:27.479Z",
-              "EditorCaption": ""
+              "DocumentIndex": 14,
+              "Title": "app.css",
+              "DocumentMoniker": "C:\\Users\\Capzod\\Downloads\\Work Environment\\CloudAccountsProject\\CloudAccountsUI\\wwwroot\\css\\app.css",
+              "RelativeDocumentMoniker": "CloudAccountsUI\\wwwroot\\css\\app.css",
+              "ToolTip": "C:\\Users\\Capzod\\Downloads\\Work Environment\\CloudAccountsProject\\CloudAccountsUI\\wwwroot\\css\\app.css",
+              "RelativeToolTip": "CloudAccountsUI\\wwwroot\\css\\app.css",
+              "ViewState": "AgIAAFEAAAAAAAAAAAAAAEgAAAAVAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
+              "WhenOpened": "2026-04-09T09:10:23.605Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 9,
-              "Title": "CloudAccount.cs",
-              "DocumentMoniker": "C:\\Users\\Capzod\\Downloads\\Work Environment\\CloudAccountsProject\\CloudAccountsProject\\Models\\CloudAccount.cs",
-              "RelativeDocumentMoniker": "CloudAccountsProject\\Models\\CloudAccount.cs",
-              "ToolTip": "C:\\Users\\Capzod\\Downloads\\Work Environment\\CloudAccountsProject\\CloudAccountsProject\\Models\\CloudAccount.cs",
-              "RelativeToolTip": "CloudAccountsProject\\Models\\CloudAccount.cs",
-              "ViewState": "AgIAABsAAAAAAAAAAAA7wC4AAAABAAAAAAAAAA==",
+              "DocumentIndex": 13,
+              "Title": "BusinessFunctionLookup.cs",
+              "DocumentMoniker": "C:\\Users\\Capzod\\Downloads\\Work Environment\\CloudAccountsProject\\CloudAccountsUI\\Models\\BusinessFunctionLookup.cs",
+              "RelativeDocumentMoniker": "CloudAccountsUI\\Models\\BusinessFunctionLookup.cs",
+              "ToolTip": "C:\\Users\\Capzod\\Downloads\\Work Environment\\CloudAccountsProject\\CloudAccountsUI\\Models\\BusinessFunctionLookup.cs",
+              "RelativeToolTip": "CloudAccountsUI\\Models\\BusinessFunctionLookup.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAcAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-04-08T08:11:30.868Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-04-13T08:26:47.134Z"
             },
             {
               "$type": "Document",
               "DocumentIndex": 12,
+              "Title": "BusinessFunctionUI.razor",
+              "DocumentMoniker": "C:\\Users\\Capzod\\Downloads\\Work Environment\\CloudAccountsProject\\CloudAccountsUI\\Pages\\BusinessFunctionUI.razor",
+              "RelativeDocumentMoniker": "CloudAccountsUI\\Pages\\BusinessFunctionUI.razor",
+              "ToolTip": "C:\\Users\\Capzod\\Downloads\\Work Environment\\CloudAccountsProject\\CloudAccountsUI\\Pages\\BusinessFunctionUI.razor",
+              "RelativeToolTip": "CloudAccountsUI\\Pages\\BusinessFunctionUI.razor",
+              "ViewState": "AgIAAF0AAAAAAAAAAAAiwGcAAAArAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-04-13T13:55:15.245Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 15,
               "Title": "CloudAccountsUI.csproj",
               "DocumentMoniker": "C:\\Users\\Capzod\\Downloads\\Work Environment\\CloudAccountsProject\\CloudAccountsUI\\CloudAccountsUI.csproj",
               "RelativeDocumentMoniker": "CloudAccountsUI\\CloudAccountsUI.csproj",
@@ -359,7 +396,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 13,
+              "DocumentIndex": 16,
               "Title": "Program.cs",
               "DocumentMoniker": "C:\\Users\\Capzod\\Downloads\\Work Environment\\CloudAccountsProject\\CloudAccountsUI\\Program.cs",
               "RelativeDocumentMoniker": "CloudAccountsUI\\Program.cs",
@@ -371,7 +408,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 14,
+              "DocumentIndex": 17,
               "Title": "appsettings.json",
               "DocumentMoniker": "C:\\Users\\Capzod\\Downloads\\Work Environment\\CloudAccountsProject\\CloudAccountsUI\\wwwroot\\appsettings.json",
               "RelativeDocumentMoniker": "CloudAccountsUI\\wwwroot\\appsettings.json",
@@ -383,7 +420,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 15,
+              "DocumentIndex": 18,
               "Title": "NavMenu.razor",
               "DocumentMoniker": "C:\\Users\\Capzod\\Downloads\\Work Environment\\CloudAccountsProject\\CloudAccountsUI\\Layout\\NavMenu.razor",
               "RelativeDocumentMoniker": "CloudAccountsUI\\Layout\\NavMenu.razor",
@@ -395,7 +432,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 17,
+              "DocumentIndex": 19,
               "Title": "App.razor",
               "DocumentMoniker": "C:\\Users\\Capzod\\Downloads\\Work Environment\\CloudAccountsProject\\CloudAccountsUI\\App.razor",
               "RelativeDocumentMoniker": "CloudAccountsUI\\App.razor",
@@ -407,19 +444,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 16,
-              "Title": "BusinessFunction.cs",
-              "DocumentMoniker": "C:\\Users\\Capzod\\Downloads\\Work Environment\\CloudAccountsProject\\CloudAccountsProject\\Models\\BusinessFunction.cs",
-              "RelativeDocumentMoniker": "CloudAccountsProject\\Models\\BusinessFunction.cs",
-              "ToolTip": "C:\\Users\\Capzod\\Downloads\\Work Environment\\CloudAccountsProject\\CloudAccountsProject\\Models\\BusinessFunction.cs",
-              "RelativeToolTip": "CloudAccountsProject\\Models\\BusinessFunction.cs",
-              "ViewState": "AgIAAAgAAAAAAAAAAAA9wBMAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-04-13T12:35:13.622Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 18,
+              "DocumentIndex": 20,
               "Title": "CloudAccountsController.cs",
               "DocumentMoniker": "C:\\Users\\Capzod\\Downloads\\Work Environment\\CloudAccountsProject\\CloudAccountsProject\\Controllers\\CloudAccountsController.cs",
               "RelativeDocumentMoniker": "CloudAccountsProject\\Controllers\\CloudAccountsController.cs",
@@ -428,30 +453,6 @@
               "ViewState": "AgIAAAAAAAAAAAAAAAAAABYAAAAtAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-04-08T08:08:40.673Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 19,
-              "Title": "CloudAccount.cs",
-              "DocumentMoniker": "C:\\Users\\Capzod\\Downloads\\Work Environment\\CloudAccountsProject\\CloudAccountsUI\\Models\\CloudAccount.cs",
-              "RelativeDocumentMoniker": "CloudAccountsUI\\Models\\CloudAccount.cs",
-              "ToolTip": "C:\\Users\\Capzod\\Downloads\\Work Environment\\CloudAccountsProject\\CloudAccountsUI\\Models\\CloudAccount.cs",
-              "RelativeToolTip": "CloudAccountsUI\\Models\\CloudAccount.cs",
-              "ViewState": "AgIAAAMAAAAAAAAAAAAmwBUAAABLAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-04-08T09:29:16.486Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 21,
-              "Title": "CloudAccountRepository.cs",
-              "DocumentMoniker": "C:\\Users\\Capzod\\Downloads\\Work Environment\\CloudAccountsProject\\CloudAccountsProject\\Repositories\\CloudAccountRepository.cs",
-              "RelativeDocumentMoniker": "CloudAccountsProject\\Repositories\\CloudAccountRepository.cs",
-              "ToolTip": "C:\\Users\\Capzod\\Downloads\\Work Environment\\CloudAccountsProject\\CloudAccountsProject\\Repositories\\CloudAccountRepository.cs",
-              "RelativeToolTip": "CloudAccountsProject\\Repositories\\CloudAccountRepository.cs",
-              "ViewState": "AgIAAOcAAAAAAAAAAAAqwL8AAAAlAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-04-08T08:10:29.29Z"
             },
             {
               "$type": "Document",
@@ -467,7 +468,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 20,
+              "DocumentIndex": 21,
               "Title": "BusinessFunctionRepository.cs",
               "DocumentMoniker": "C:\\Users\\Capzod\\Downloads\\Work Environment\\CloudAccountsProject\\CloudAccountsProject\\Repositories\\BusinessFunctionRepository.cs",
               "RelativeDocumentMoniker": "CloudAccountsProject\\Repositories\\BusinessFunctionRepository.cs",
