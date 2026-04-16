@@ -1,190 +1,841 @@
 ﻿@page "/businessfunction"
-@using CloudAccountsUI.Models
+@using CloudAccountsShared.Models
+@using MudBlazor
 @inject HttpClient Http
+@inject ISnackbar Snackbar
+@inject IDialogService DialogService
 
-<MudPaper Class="pa-4">
-
-    <MudStack Row="true"
-              Justify="Justify.SpaceBetween"
-              AlignItems="AlignItems.Center"
-              Class="mb-4">
-
-        <MudText Typo="Typo.h5">Business Function</MudText>
-
-        <MudButton Variant="Variant.Filled"
-                   Color="Color.Primary"
-                   StartIcon="@Icons.Material.Filled.Add"
-                   OnClick="OpenCreateDrawer">
-            Add Business Function
-        </MudButton>
-    </MudStack>
-
-    @if (isLoading)
-    {
-        <MudPaper Class="pa-6 d-flex flex-column align-center justify-center"
-                  Style="height:650px;">
-
-            <MudProgressCircular Indeterminate="true"
-                                 Color="Color.Primary"
-                                 Size="Size.Large" />
-
-            <MudText Class="mt-4">
-                Loading Business Functions...
-            </MudText>
-        </MudPaper>
-    }
-    else
-    {
-        <MudDataGrid T="BusinessFunction"
-                     Items="@businessFunctions"
-                     Dense="true"
-                     Hover="true"
-                     Bordered="true"
-                     Striped="true"
-                     Filterable="true"
-                     ShowColumnOptions="false"
-                     FixedHeader="true"
-                     Height="650px"
-                     RowsPerPage="10">
-
-            <Columns>
-
-                <PropertyColumn Property="x => x.BusinessFunctionName"
-                                Title="Business Function Name" />
-
-                <PropertyColumn Property="x => x.BusinessFunctionLtMember"
-                                Title="LT Member" />
-
-                <PropertyColumn Property="x => x.BusinessFunctionOwner"
-                                Title="Owner" />
-
-                <PropertyColumn Property="x => x.BusinessFunctionSpoc"
-                                Title="SPOC" />
-
-                <PropertyColumn Property="x => x.BusinessFunctionGroupDl"
-                                Title="Group DL" />
-
-                <PropertyColumn Property="x => x.BusinessTagValue"
-                                Title="Business Tag Value" />
-
-                <PropertyColumn Property="x => x.Remarks"
-                                Title="Remarks" />
-
-                <TemplateColumn Title="Actions">
-                    <CellTemplate>
-                        <MudButton Variant="Variant.Filled"
-                                   Size="Size.Small"
-                                   Color="Color.Primary"
-                                   OnClick="@(() => OpenEditDrawer(context.Item))">
-                            Edit
-                        </MudButton>
-                    </CellTemplate>
-                </TemplateColumn>
-
-            </Columns>
-
-        </MudDataGrid>
+<style>
+    ::deep .mud-layout {
+        padding: 0 !important;
+        margin: 0 !important;
     }
 
-</MudPaper>
+    ::deep .mud-main-content {
+        padding: 0 !important;
+        margin: 0 !important;
+    }
 
-<MudDrawer @bind-Open="drawerOpen"
-           Anchor="Anchor.Right"
-           Width="700px"
-           Elevation="1"
-           Variant="DrawerVariant.Temporary">
+    .full-page-container {
+        width: 100%;
+        height: 100vh;
+        padding: 0;
+        margin: 0;
+        overflow: hidden;
+        background: white;
+        display: flex;
+        flex-direction: column;
+    }
 
-    <MudPaper Class="pa-4 d-flex flex-column"
-              Style="height:100%; background:white;">
+    .main-wrapper {
+        flex: 1;
+        display: flex;
+        overflow: hidden;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
 
-        <MudText Typo="Typo.h6" Class="mb-4">
-            @(isCreate ? "Add Business Function" : "Edit Business Function")
-        </MudText>
+    .pushed-content {
+        flex: 1;
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
 
-        <div style="flex:1; overflow-y:auto; padding-right:8px;">
+    .header-toolbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 16px 20px;
+        border-bottom: 1px solid #E2E8F0;
+        flex-shrink: 0;
+        background: white;
+    }
 
-            <MudStack Spacing="2">
+    .title-section {
+        flex: 1;
+    }
 
-                <MudTextField @bind-Value="editingItem.BusinessFunctionName"
-                              Label="Business Function Name"
-                              Variant="Variant.Outlined"
-                              Required="true" />
+    .cs-title {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif;
+        font-size: 20px;
+        font-weight: 600;
+        color: #1A1D2E;
+        letter-spacing: -0.3px;
+    }
 
-                <MudTextField @bind-Value="editingItem.BusinessFunctionLtMember"
-                              Label="LT Member"
-                              Variant="Variant.Outlined"
-                              Required="true" />
+    .cs-subtitle {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif;
+        font-size: 13px;
+        color: #5A6A85;
+        margin-top: 4px;
+    }
 
-                <MudTextField @bind-Value="editingItem.BusinessFunctionOwner"
-                              Label="Owner"
-                              Variant="Variant.Outlined"
-                              Required="true" />
+    .actions-section {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+    }
 
-                <MudTextField @bind-Value="editingItem.BusinessFunctionSpoc"
-                              Label="SPOC"
-                              Variant="Variant.Outlined"
-                              Lines="3"
-                              Required="true" />
+    .grid-container {
+        flex: 1;
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        padding: 20px;
+    }
 
-                <MudTextField @bind-Value="editingItem.BusinessFunctionGroupDl"
-                              Label="Group DL"
-                              Variant="Variant.Outlined" />
+    .drawer-container {
+        width: 0;
+        flex-shrink: 0;
+        overflow: hidden;
+        transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        background: white;
+        border-left: 1px solid #E2E8F0;
+        height: calc(100vh - 63px);
+        position: fixed;
+        right: 0;
+        top: 63px;
+        z-index: 1000;
+    }
 
-                <MudTextField @bind-Value="editingItem.BusinessTagValue"
-                              Label="Business Tag Value"
-                              Variant="Variant.Outlined"
-                              Required="true" />
+        .drawer-container.open {
+            width: 50%;
+            min-width: 500px;
+            max-width: 700px;
+        }
 
-                <MudTextField @bind-Value="editingItem.Remarks"
-                              Label="Remarks"
-                              Variant="Variant.Outlined"
-                              Lines="3" />
+    .main-wrapper.drawer-open {
+        margin-right: 50%;
+        min-width: calc(100% - 700px);
+        max-width: calc(100% - 500px);
+    }
 
-            </MudStack>
+    .drawer-container.fullscreen {
+        width: 100% !important;
+        min-width: 100%;
+        max-width: 100%;
+        height: calc(100vh - 63px);
+        top: 63px;
+    }
 
-        </div>
+    .main-wrapper.drawer-open.fullscreen-active {
+        margin-right: 0 !important;
+        display: none;
+    }
 
-        <div class="drawer-footer">
-            <MudButton Variant="Variant.Text"
-                       OnClick="CloseDrawer">
-                Cancel
-            </MudButton>
+    .drawer-content {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        padding: 20px;
+    }
 
-            <MudButton Variant="Variant.Filled"
-                       Color="Color.Primary"
-                       OnClick="Save">
-                Save
-            </MudButton>
-        </div>
+    .drawer-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        flex-shrink: 0;
+        padding-bottom: 10px;
+        border-bottom: 1px solid #E2E8F0;
+    }
 
-    </MudPaper>
+    .drawer-title {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif;
+        font-size: 18px;
+        font-weight: 600;
+        color: #1A1D2E;
+    }
 
-</MudDrawer>
+    .drawer-buttons {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+    }
 
-<style id="jyf2sm">
     .drawer-footer {
         display: flex;
         justify-content: flex-end;
         gap: 12px;
         padding-top: 16px;
         margin-top: 16px;
-        border-top: 1px solid #e0e0e0;
+        border-top: 1px solid #E2E8F0;
         background: white;
-        position: sticky;
+        flex-shrink: 0;
+    }
+
+    .mud-table-container {
+        max-height: 100% !important;
+        overflow: auto !important;
+        position: relative !important;
+        height: 100% !important;
+    }
+
+    .mud-table {
+        width: 100%;
+        table-layout: fixed !important;
+    }
+
+        .mud-table table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+    .mud-table-head .mud-table-cell {
+        font-weight: 600 !important;
+        white-space: nowrap !important;
+        background: #F8F9FC !important;
+        color: #1A1D2E !important;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif;
+        font-size: 12px !important;
+        letter-spacing: 0.3px;
+        text-transform: uppercase;
+        border-bottom: 1px solid #E2E8F0 !important;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .mud-table-body .mud-table-cell {
+        color: #1A1D2E !important;
+        border-bottom: 1px solid #EDF2F7 !important;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif;
+        font-size: 13px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .mud-table-body .mud-table-row:hover {
+        background: #F8F9FC !important;
+    }
+
+    .tags-container {
+        background: #F8F9FC;
+        border-radius: 6px;
+        padding: 8px;
+        margin-top: 6px;
+        border: 1px solid #E2E8F0;
+    }
+
+        .tags-container .mud-input-control {
+            margin-bottom: 0 !important;
+        }
+
+        .tags-container .mud-input {
+            background: white !important;
+            border: 1px solid #E2E8F0 !important;
+            border-radius: 4px !important;
+            font-size: 12px !important;
+            padding: 4px 6px !important;
+            min-height: 28px !important;
+        }
+
+        .tags-container .mud-input-label {
+            font-size: 10px !important;
+            color: #5A6A85 !important;
+            margin-bottom: 2px !important;
+            font-weight: 500;
+        }
+
+    .compact-input .mud-input {
+        font-size: 12px !important;
+        padding: 4px 6px !important;
+        min-height: 28px !important;
+    }
+
+    .mud-chip {
+        background: #F0F4F9 !important;
+        color: #1A1D2E !important;
+        border: 1px solid #E2E8F0 !important;
+        font-size: 11px !important;
+        padding: 2px 8px !important;
+        border-radius: 4px !important;
+    }
+
+    .mud-input {
+        color: #1A1D2E !important;
+    }
+
+    .mud-input-outlined .mud-input-outlined-border {
+        border-color: #E2E8F0 !important;
+    }
+
+    .mud-input-outlined:hover .mud-input-outlined-border {
+        border-color: #00A3FF !important;
+    }
+
+    .mud-input-outlined.mud-input-focused .mud-input-outlined-border {
+        border-color: #00A3FF !important;
+        border-width: 2px !important;
+    }
+
+    .mud-input-label {
+        color: #5A6A85 !important;
+        font-size: 12px !important;
+        font-weight: 500 !important;
+    }
+
+    .mud-table-pagination {
+        display: flex !important;
+        justify-content: flex-end;
+        align-items: center;
+        width: 100%;
+        padding: 8px 16px;
+        background: white;
+    }
+
+    .column-selector-dialog {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+        z-index: 2000;
+        width: 350px;
+        max-width: 90%;
+        padding: 20px;
+        border: 1px solid #E2E8F0;
+    }
+
+    .overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
         bottom: 0;
+        background: rgba(0,0,0,0.5);
+        z-index: 1999;
+    }
+
+    .mud-switch {
+        --mud-switch-checked-color: #00A3FF !important;
+    }
+
+        .mud-switch .mud-switch-track {
+            background-color: #E2E8F0 !important;
+        }
+
+        .mud-switch .mud-switch-thumb {
+            background-color: white !important;
+        }
+
+        .mud-switch.mud-switch-checked .mud-switch-track {
+            background-color: #00A3FF !important;
+        }
+
+        .mud-switch.mud-switch-checked .mud-switch-thumb {
+            background-color: white !important;
+        }
+
+    ::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+        background: #F1F5F9;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background: #CBD5E1;
+        border-radius: 4px;
+    }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94A3B8;
+        }
+
+    .cell-content {
+        width: 100%;
+        white-space: normal;
+        word-break: break-word;
+        padding: 4px;
+    }
+
+    .truncate-text {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 100%;
+        display: block;
     }
 </style>
 
+<div class="full-page-container">
+    <div class="main-wrapper @(drawerOpen && !drawerFullscreen ? "drawer-open" : "") @(drawerFullscreen ? "fullscreen-active" : "")">
+        <div class="pushed-content">
+            <div class="header-toolbar">
+                <div class="title-section">
+                    <div class="cs-title">
+                        <MudIcon Icon="@Icons.Material.Filled.Business" Class="mr-2" Style="color: #00A3FF;" />
+                        Business Function Management
+                    </div>
+                    <div class="cs-subtitle">
+                        Manage business functions, owners, and SPOC information
+                    </div>
+                </div>
+                <div class="actions-section">
+                    <MudTooltip Text="Column Settings" Arrow="true" Placement="Placement.Top">
+                        <MudIconButton Icon="@Icons.Material.Filled.Settings"
+                                       Style="color: #5A6A85;"
+                                       Size="Size.Small"
+                                       OnClick="OpenColumnSelector" />
+                    </MudTooltip>
+                    <MudButton Variant="Variant.Filled"
+                               Style="background: #00A3FF; color: white; font-weight: 600; text-transform: none; letter-spacing: 0.3px; font-size: 13px;"
+                               StartIcon="@Icons.Material.Filled.Add"
+                               OnClick="OpenCreateDrawer">
+                        Add Business Function
+                    </MudButton>
+                </div>
+            </div>
+
+            <div class="grid-container">
+                <MudDataGrid T="BusinessFunction"
+                             @ref="_dataGrid"
+                             Items="@businessFunctions"
+                             Dense="true"
+                             Hover="true"
+                             Bordered="true"
+                             Striped="true"
+                             Filterable="true"
+                             FilterMode="DataGridFilterMode.ColumnFilterRow"
+                             FilterCaseSensitivity="DataGridFilterCaseSensitivity.CaseInsensitive"
+                             ShowColumnOptions="false"
+                             FixedHeader="true"
+                             @bind-PageSize="PageSize"
+                             RowsPerPageOptions="@PageSizeOptions"
+                             Height="100%"
+                             Width="100%"
+                             Loading="@isLoading"
+                             ColumnResizeMode="ResizeMode.Column"
+                             DragDropColumnReordering="true"
+                             ColumnsPanelReordering="true"
+                             ShowMenuIcon="false"
+                             RowContextMenuClick="OpenContextMenu">
+
+                    <Columns>
+                        @foreach (var column in GetOrderedColumns())
+                        {
+                            if (column.Title == "Actions")
+                            {
+                                <TemplateColumn Title="Actions"
+                                                Resizable="false">
+                                    <CellTemplate Context="cell">
+                                        <MudIconButton Icon="@Icons.Material.Filled.Edit"
+                                                       Size="Size.Small"
+                                                       Color="Color.Primary"
+                                                       OnClick="@(() => OpenEditDrawer(cell.Item))" />
+                                    </CellTemplate>
+                                </TemplateColumn>
+                            }
+                            else if (column.Title == "Business Function Name")
+                            {
+                                <PropertyColumn Property="x => x.BusinessFunctionName"
+                                                Title="Business Function Name"
+                                                Resizable="true">
+                                    <CellTemplate Context="cell">
+                                        <div class="cell-content">
+                                            <MudTooltip Text="@cell.Item.BusinessFunctionName" Placement="Placement.Top">
+                                                <span class="truncate-text">@cell.Item.BusinessFunctionName</span>
+                                            </MudTooltip>
+                                        </div>
+                                    </CellTemplate>
+                                </PropertyColumn>
+                            }
+                            else if (column.Title == "LT Member")
+                            {
+                                <PropertyColumn Property="x => x.BusinessFunctionLtMember"
+                                                Title="LT Member"
+                                                Resizable="true">
+                                    <CellTemplate Context="cell">
+                                        <div class="cell-content">
+                                            <MudTooltip Text="@cell.Item.BusinessFunctionLtMember" Placement="Placement.Top">
+                                                <span class="truncate-text">@cell.Item.BusinessFunctionLtMember</span>
+                                            </MudTooltip>
+                                        </div>
+                                    </CellTemplate>
+                                </PropertyColumn>
+                            }
+                            else if (column.Title == "Owner")
+                            {
+                                <PropertyColumn Property="x => x.BusinessFunctionOwner"
+                                                Title="Owner"
+                                                Resizable="true">
+                                    <CellTemplate Context="cell">
+                                        <div class="cell-content">
+                                            <MudTooltip Text="@cell.Item.BusinessFunctionOwner" Placement="Placement.Top">
+                                                <span class="truncate-text">@cell.Item.BusinessFunctionOwner</span>
+                                            </MudTooltip>
+                                        </div>
+                                    </CellTemplate>
+                                </PropertyColumn>
+                            }
+                            else if (column.Title == "SPOC")
+                            {
+                                <PropertyColumn Property="x => x.BusinessFunctionSpoc"
+                                                Title="SPOC"
+                                                Resizable="true">
+                                    <CellTemplate Context="cell">
+                                        <div class="cell-content">
+                                            <MudTooltip Text="@cell.Item.BusinessFunctionSpoc" Placement="Placement.Top">
+                                                <span class="truncate-text">@cell.Item.BusinessFunctionSpoc</span>
+                                            </MudTooltip>
+                                        </div>
+                                    </CellTemplate>
+                                </PropertyColumn>
+                            }
+                            else if (column.Title == "Group DL")
+                            {
+                                <PropertyColumn Property="x => x.BusinessFunctionGroupDl"
+                                                Title="Group DL"
+                                                Resizable="true">
+                                    <CellTemplate Context="cell">
+                                        <div class="cell-content">
+                                            <MudTooltip Text="@cell.Item.BusinessFunctionGroupDl" Placement="Placement.Top">
+                                                <span class="truncate-text">@cell.Item.BusinessFunctionGroupDl</span>
+                                            </MudTooltip>
+                                        </div>
+                                    </CellTemplate>
+                                </PropertyColumn>
+                            }
+                            else if (column.Title == "Business Tags")
+                            {
+                                <PropertyColumn Property="x => x.BusinessTagValue"
+                                                Title="Business Tags"
+                                                Resizable="true">
+                                    <CellTemplate Context="cell">
+                                        <div class="cell-content">
+                                            <MudTooltip Text="@cell.Item.BusinessTagValue" Placement="Placement.Top">
+                                                <span class="truncate-text">@cell.Item.BusinessTagValue</span>
+                                            </MudTooltip>
+                                        </div>
+                                    </CellTemplate>
+                                </PropertyColumn>
+                            }
+                            else if (column.Title == "Remarks")
+                            {
+                                <PropertyColumn Property="x => x.Remarks"
+                                                Title="Remarks"
+                                                Resizable="true">
+                                    <CellTemplate Context="cell">
+                                        <div class="cell-content">
+                                            <MudTooltip Text="@cell.Item.Remarks" Placement="Placement.Top">
+                                                <span class="truncate-text">@cell.Item.Remarks</span>
+                                            </MudTooltip>
+                                        </div>
+                                    </CellTemplate>
+                                </PropertyColumn>
+                            }
+                        }
+                    </Columns>
+
+                    <NoRecordsContent>
+                        <MudText Class="pa-4" Style="color: #5A6A85;">No matching records found</MudText>
+                    </NoRecordsContent>
+
+                    <PagerContent>
+                        <MudDataGridPager T="BusinessFunction" PageSizeOptions="@PageSizeOptions" />
+                    </PagerContent>
+                </MudDataGrid>
+            </div>
+        </div>
+    </div>
+
+    <div class="drawer-container @(drawerOpen ? "open" : "") @(drawerFullscreen ? "fullscreen" : "")">
+        @if (drawerOpen)
+        {
+            <div class="drawer-content">
+                <div class="drawer-header">
+                    <div class="drawer-title">@(isCreate ? "Add Business Function" : "Edit Business Function")</div>
+                    <div class="drawer-buttons">
+                        <MudIconButton Icon="@(drawerFullscreen ? Icons.Material.Filled.FullscreenExit : Icons.Material.Filled.Fullscreen)"
+                                       Size="Size.Medium"
+                                       Color="Color.Default"
+                                       OnClick="ToggleFullscreen" />
+                        <MudIconButton Icon="@Icons.Material.Filled.Close"
+                                       Size="Size.Medium"
+                                       Color="Color.Default"
+                                       OnClick="CloseDrawer" />
+                    </div>
+                </div>
+
+                <div style="flex: 1; overflow-y: auto; padding-right: 8px;">
+                    <MudStack Spacing="2">
+                        <MudAutocomplete T="string"
+                                         @key="@("bfname")"
+                                         Label="Business Function Name"
+                                         Variant="Variant.Outlined"
+                                         @bind-Value="editingItem.BusinessFunctionName"
+                                         SearchFunc="SearchBusinessFunctionNames"
+                                         Dense="true"
+                                         Clearable="true"
+                                         ResetValueOnEmptyText="false"
+                                         Strict="false"
+                                         CoerceText="false"
+                                         CoerceValue="true"
+                                         Required="true" />
+
+                        <MudAutocomplete T="string"
+                                         @key="@("ltmember")"
+                                         Label="LT Member"
+                                         Variant="Variant.Outlined"
+                                         @bind-Value="editingItem.BusinessFunctionLtMember"
+                                         SearchFunc="SearchLtMembers"
+                                         Dense="true"
+                                         Clearable="true"
+                                         ResetValueOnEmptyText="false"
+                                         Strict="false"
+                                         CoerceText="false"
+                                         CoerceValue="true"
+                                         Required="true" />
+
+                        <MudAutocomplete T="string"
+                                         @key="@("owner")"
+                                         Label="Owner"
+                                         Variant="Variant.Outlined"
+                                         @bind-Value="editingItem.BusinessFunctionOwner"
+                                         SearchFunc="SearchOwners"
+                                         Dense="true"
+                                         Clearable="true"
+                                         ResetValueOnEmptyText="false"
+                                         Strict="false"
+                                         CoerceText="false"
+                                         CoerceValue="true"
+                                         Required="true" />
+
+                        <MudAutocomplete T="string"
+                                         Label="Add SPOC"
+                                         SearchFunc="SearchSpocs"
+                                         @bind-Value="spocInput"
+                                         Variant="Variant.Outlined"
+                                         Dense="true"
+                                         Clearable="true"
+                                         Strict="false"
+                                         CoerceText="false"
+                                         CoerceValue="true"
+                                         ResetValueOnEmptyText="false"
+                                         OnBlur="AddCurrentSpoc" />
+
+                        <MudChipSet T="string" Class="mb-3">
+                            @foreach (var spoc in SelectedSpocs)
+                            {
+                                <MudChip T="string"
+                                         Text="@spoc"
+                                         Closeable="true"
+                                         OnClose="@(() => RemoveSpoc(spoc))" />
+                            }
+                        </MudChipSet>
+
+                        <MudAutocomplete T="string"
+                                         Label="Group DL"
+                                         Variant="Variant.Outlined"
+                                         @bind-Value="editingItem.BusinessFunctionGroupDl"
+                                         SearchFunc="SearchGroupDl"
+                                         Dense="true"
+                                         Clearable="true"
+                                         ResetValueOnEmptyText="false"
+                                         Strict="false"
+                                         CoerceText="false"
+                                         CoerceValue="true" />
+
+                        <MudText Typo="Typo.subtitle2" Class="mb-2 mt-2" Style="color: #1A1D2E; font-size: 13px; font-weight: 600;">Business Tags</MudText>
+                        <MudText Typo="Typo.body2" Class="mb-3" Style="color: #5A6A85; font-size: 12px;">
+                            Tags are name/value pairs that enable you to categorize resources and view consolidated billing
+                        </MudText>
+
+                        <div class="tags-container">
+                            @foreach (var tag in BusinessTags)
+                            {
+                                <MudGrid Class="mb-2" @key="tag">
+                                    <MudItem xs="5">
+                                        <MudTextField T="string"
+                                                      @key="@($"name-{BusinessTags.IndexOf(tag)}")"
+                                                      Label="Name"
+                                                      Variant="Variant.Outlined"
+                                                      Dense="true"
+                                                      @bind-Value="tag.Name"
+                                                      Placeholder="e.g., Environment"
+                                                      Class="compact-input" />
+                                    </MudItem>
+
+                                    <MudItem xs="5">
+                                        <MudTextField T="string"
+                                                      @key="@($"value-{BusinessTags.IndexOf(tag)}")"
+                                                      Label="Value"
+                                                      Variant="Variant.Outlined"
+                                                      Dense="true"
+                                                      @bind-Value="tag.Value"
+                                                      Placeholder="e.g., Production"
+                                                      Class="compact-input" />
+                                    </MudItem>
+
+                                    <MudItem xs="2" Class="d-flex align-center">
+                                        <MudIconButton Icon="@Icons.Material.Filled.Delete"
+                                                       Color="Color.Error"
+                                                       Size="Size.Small"
+                                                       OnClick="@(() => RemoveTag(tag))" />
+                                    </MudItem>
+                                </MudGrid>
+                            }
+
+                            <MudButton Variant="Variant.Outlined"
+                                       StartIcon="@Icons.Material.Filled.Add"
+                                       OnClick="AddTag"
+                                       Size="Size.Small"
+                                       Class="mt-2"
+                                       Style="border-color: #00A3FF; color: #00A3FF; font-size: 11px; padding: 2px 8px;">
+                                Add Tag
+                            </MudButton>
+                        </div>
+
+                        <MudTextField T="string"
+                                      @bind-Value="editingItem.Remarks"
+                                      Label="Remarks"
+                                      Variant="Variant.Outlined"
+                                      Lines="3" />
+                    </MudStack>
+                </div>
+
+                <div class="drawer-footer">
+                    <MudButton Variant="Variant.Text"
+                               OnClick="CloseDrawer"
+                               Style="color: #5A6A85;">
+                        Cancel
+                    </MudButton>
+
+                    <MudButton Variant="Variant.Filled"
+                               Style="background: #00A3FF; color: white; font-weight: 600;"
+                               OnClick="Save">
+                        Save
+                    </MudButton>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+@if (showColumnDialog)
+{
+    <div class="overlay" @onclick="CloseColumnSelector"></div>
+    <div class="column-selector-dialog">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+            <MudText Typo="Typo.h6" Style="color: #1A1D2E; font-weight: 600;">Select Columns</MudText>
+            <MudIconButton Icon="@Icons.Material.Filled.Close" Size="Size.Small" OnClick="CloseColumnSelector" Style="color: #5A6A85;" />
+        </div>
+        <MudDivider Class="mb-3" />
+        @foreach (var column in AvailableColumns.Where(c => c.Title != "Actions"))
+        {
+            <MudSwitch @bind-Value="column.IsVisible" Label="@column.Title" Size="Size.Small" Class="mb-2" Color="Color.Primary" />
+        }
+        <MudDivider Class="mt-2 mb-3" />
+        <div style="display: flex; justify-content: flex-end; gap: 8px;">
+            <MudButton Variant="Variant.Text" Size="Size.Small" OnClick="ResetColumns">Reset</MudButton>
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" Size="Size.Small" OnClick="ApplyColumnVisibility">Apply</MudButton>
+        </div>
+    </div>
+}
+
+<MudMenu PositionAtCursor="true" @ref="_contextMenu" id="_contextMenu">
+    <MudMenuItem Icon="@Icons.Material.Filled.Edit" OnClick="@(() => EditFromContext())">
+        Edit @_contextRow?.BusinessFunctionName
+    </MudMenuItem>
+    <MudMenuItem Icon="@Icons.Material.Filled.Info" OnClick="@ShowDetails">
+        View Details
+    </MudMenuItem>
+    <MudMenuItem Icon="@Icons.Material.Filled.Delete" OnClick="@ConfirmDelete">
+        Delete
+    </MudMenuItem>
+</MudMenu>
+
 @code {
-    private const string ApiBase = "api/BusinessFunction";
+    public class BusinessTagItem
+    {
+        public string? Name { get; set; }
+        public string? Value { get; set; }
+    }
 
-    private List<BusinessFunction> businessFunctions = new();
+    public class ColumnDefinition
+    {
+        public string Title { get; set; } = string.Empty;
+        public bool IsVisible { get; set; } = true;
+        public int Order { get; set; }
+    }
 
-    private BusinessFunction editingItem = new();
-
+    private MudDataGrid<BusinessFunction> _dataGrid = null!;
+    private MudMenu _contextMenu = null!;
+    private BusinessFunction? _contextRow;
     private bool isLoading = true;
+    private int PageSize = 10;
+    private int[] PageSizeOptions = new[] { 10, 25, 50, 100 };
+    private bool drawerFullscreen = false;
+    private bool showColumnDialog = false;
+
+    private const string ApiBase = "api/BusinessFunction";
+    private List<BusinessFunction> businessFunctions = new();
+    private BusinessFunction editingItem = new();
     private bool drawerOpen;
     private bool isCreate;
+    private List<string> SelectedSpocs = new();
+    private List<BusinessTagItem> BusinessTags = new();
+    private string? spocInput;
+
+    private List<ColumnDefinition> AvailableColumns = new()
+    {
+        new() { Title = "Business Function Name", IsVisible = true, Order = 1 },
+        new() { Title = "LT Member", IsVisible = true, Order = 2 },
+        new() { Title = "Owner", IsVisible = true, Order = 3 },
+        new() { Title = "SPOC", IsVisible = true, Order = 4 },
+        new() { Title = "Group DL", IsVisible = true, Order = 5 },
+        new() { Title = "Business Tags", IsVisible = true, Order = 6 },
+        new() { Title = "Remarks", IsVisible = true, Order = 7 },
+        new() { Title = "Actions", IsVisible = true, Order = 999 }
+    };
+
+    private List<ColumnDefinition> GetOrderedColumns()
+    {
+        return AvailableColumns
+            .Where(c => c.IsVisible)
+            .OrderBy(c => c.Order)
+            .ToList();
+    }
+
+    private bool IsColumnVisible(string title)
+    {
+        return AvailableColumns.FirstOrDefault(c => c.Title == title)?.IsVisible ?? true;
+    }
+
+    private void OpenColumnSelector()
+    {
+        showColumnDialog = true;
+        StateHasChanged();
+    }
+
+    private void CloseColumnSelector()
+    {
+        showColumnDialog = false;
+        StateHasChanged();
+    }
+
+    private void ResetColumns()
+    {
+        foreach (var column in AvailableColumns)
+        {
+            column.IsVisible = true;
+        }
+        StateHasChanged();
+    }
+
+    private void ApplyColumnVisibility()
+    {
+        showColumnDialog = false;
+        StateHasChanged();
+    }
 
     protected override async Task OnInitializedAsync()
     {
@@ -196,35 +847,211 @@
         try
         {
             isLoading = true;
+            StateHasChanged();
 
-            businessFunctions =
-                await Http.GetFromJsonAsync<List<BusinessFunction>>(ApiBase) ?? new();
+            businessFunctions = await Http.GetFromJsonAsync<List<BusinessFunction>>(ApiBase) ?? new();
         }
         finally
         {
             isLoading = false;
+            StateHasChanged();
         }
+    }
+
+    private void ToggleFullscreen()
+    {
+        drawerFullscreen = !drawerFullscreen;
+        StateHasChanged();
+    }
+
+    private async Task OpenContextMenu(DataGridRowClickEventArgs<BusinessFunction> args)
+    {
+        _contextRow = args.Item;
+        await _contextMenu.OpenMenuAsync(args.MouseEventArgs);
+    }
+
+    private void EditFromContext()
+    {
+        if (_contextRow is not null)
+        {
+            OpenEditDrawer(_contextRow);
+        }
+    }
+
+    private void ShowDetails()
+    {
+        if (_contextRow is not null)
+        {
+            Snackbar.Add($"Business Function: {_contextRow.BusinessFunctionName} | Owner: {_contextRow.BusinessFunctionOwner} | SPOC: {_contextRow.BusinessFunctionSpoc}", Severity.Info);
+        }
+    }
+
+    private async Task ConfirmDelete()
+    {
+        if (_contextRow is null) return;
+
+        var parameters = new DialogParameters
+        {
+            ["ContentText"] = $"Are you sure you want to delete '{_contextRow.BusinessFunctionName}'?",
+            ["ButtonText"] = "Delete",
+            ["Color"] = Color.Error
+        };
+
+        var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.ExtraSmall };
+        var dialog = await DialogService.ShowAsync<MudDialog>("Delete Confirmation", parameters, options);
+        var result = await dialog.Result;
+
+        if (!result.Canceled)
+        {
+            await DeleteBusinessFunction();
+        }
+    }
+
+    private async Task DeleteBusinessFunction()
+    {
+        if (_contextRow is null) return;
+
+        var response = await Http.DeleteAsync($"{ApiBase}/{_contextRow.Id}");
+
+        if (response.IsSuccessStatusCode)
+        {
+            await LoadData();
+            Snackbar.Add($"Business function '{_contextRow.BusinessFunctionName}' deleted successfully", Severity.Success);
+        }
+        else
+        {
+            var error = await response.Content.ReadAsStringAsync();
+            Snackbar.Add($"Delete failed: {error}", Severity.Error);
+        }
+    }
+
+    private Task<IEnumerable<string>> SearchBusinessFunctionNames(string value, CancellationToken token)
+    {
+        IEnumerable<string> result = businessFunctions
+            .Where(x => !string.IsNullOrWhiteSpace(x.BusinessFunctionName))
+            .Select(x => x.BusinessFunctionName!)
+            .Distinct();
+
+        if (!string.IsNullOrWhiteSpace(value))
+            result = result.Where(x => x.Contains(value, StringComparison.OrdinalIgnoreCase));
+
+        return Task.FromResult(result);
+    }
+
+    private Task<IEnumerable<string>> SearchLtMembers(string value, CancellationToken token)
+    {
+        IEnumerable<string> result = businessFunctions
+            .Where(x => !string.IsNullOrWhiteSpace(x.BusinessFunctionLtMember))
+            .Select(x => x.BusinessFunctionLtMember!)
+            .Distinct();
+
+        if (!string.IsNullOrWhiteSpace(value))
+            result = result.Where(x => x.Contains(value, StringComparison.OrdinalIgnoreCase));
+
+        return Task.FromResult(result);
+    }
+
+    private Task<IEnumerable<string>> SearchOwners(string value, CancellationToken token)
+    {
+        IEnumerable<string> result = businessFunctions
+            .Where(x => !string.IsNullOrWhiteSpace(x.BusinessFunctionOwner))
+            .Select(x => x.BusinessFunctionOwner!)
+            .Distinct();
+
+        if (!string.IsNullOrWhiteSpace(value))
+            result = result.Where(x => x.Contains(value, StringComparison.OrdinalIgnoreCase));
+
+        return Task.FromResult(result);
+    }
+
+    private Task<IEnumerable<string>> SearchSpocs(string value, CancellationToken token)
+    {
+        var allSpocs = businessFunctions
+            .Where(x => !string.IsNullOrWhiteSpace(x.BusinessFunctionSpoc))
+            .SelectMany(x => x.BusinessFunctionSpoc!
+                .Split(';', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
+            .Distinct()
+            .Where(x => !SelectedSpocs.Contains(x));
+
+        if (!string.IsNullOrWhiteSpace(value))
+        {
+            allSpocs = allSpocs.Where(x =>
+                x.Contains(value, StringComparison.OrdinalIgnoreCase));
+        }
+
+        return Task.FromResult(allSpocs);
+    }
+
+    private Task<IEnumerable<string>> SearchGroupDl(string value, CancellationToken token)
+    {
+        IEnumerable<string> result = businessFunctions
+            .Where(x => !string.IsNullOrWhiteSpace(x.BusinessFunctionGroupDl))
+            .Select(x => x.BusinessFunctionGroupDl!)
+            .Distinct();
+
+        if (!string.IsNullOrWhiteSpace(value))
+            result = result.Where(x => x.Contains(value, StringComparison.OrdinalIgnoreCase));
+
+        return Task.FromResult(result);
+    }
+
+    private void AddCurrentSpoc(FocusEventArgs _)
+    {
+        if (string.IsNullOrWhiteSpace(spocInput))
+            return;
+
+        var value = spocInput.Trim();
+
+        if (!SelectedSpocs.Any(x => x.Equals(value, StringComparison.OrdinalIgnoreCase)))
+        {
+            SelectedSpocs.Add(value);
+        }
+
+        editingItem.BusinessFunctionSpoc = string.Join(";", SelectedSpocs);
+
+        spocInput = string.Empty;
+    }
+
+    private void RemoveSpoc(string spoc)
+    {
+        SelectedSpocs.Remove(spoc);
+        editingItem.BusinessFunctionSpoc = string.Join(";", SelectedSpocs);
+        StateHasChanged();
+    }
+
+    private void AddTag()
+    {
+        BusinessTags.Add(new BusinessTagItem());
+    }
+
+    private void RemoveTag(BusinessTagItem tag)
+    {
+        BusinessTags.Remove(tag);
     }
 
     private async Task OpenCreateDrawer()
     {
+        drawerFullscreen = false;
         drawerOpen = false;
         await Task.Delay(50);
 
         isCreate = true;
-
         editingItem = new BusinessFunction();
-
+        SelectedSpocs = new List<string>();
+        BusinessTags = new List<BusinessTagItem>();
+        BusinessTags.Add(new BusinessTagItem());
+        spocInput = string.Empty;
         drawerOpen = true;
+        StateHasChanged();
     }
 
     private async Task OpenEditDrawer(BusinessFunction item)
     {
+        drawerFullscreen = false;
         drawerOpen = false;
         await Task.Delay(50);
 
         isCreate = false;
-
         editingItem = new BusinessFunction
         {
             Id = item.Id,
@@ -237,16 +1064,57 @@
             Remarks = item.Remarks
         };
 
+        SelectedSpocs = string.IsNullOrWhiteSpace(editingItem.BusinessFunctionSpoc)
+            ? new List<string>()
+            : editingItem.BusinessFunctionSpoc
+                .Split(';', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+                .ToList();
+
+        BusinessTags = new List<BusinessTagItem>();
+        if (!string.IsNullOrWhiteSpace(editingItem.BusinessTagValue))
+        {
+            BusinessTags = editingItem.BusinessTagValue
+                .Split(';', StringSplitOptions.RemoveEmptyEntries)
+                .Select(x =>
+                {
+                    var parts = x.Split('=', 2);
+                    return new BusinessTagItem
+                    {
+                        Name = parts[0],
+                        Value = parts.Length > 1 ? parts[1] : ""
+                    };
+                })
+                .ToList();
+        }
+
+        if (!BusinessTags.Any())
+        {
+            BusinessTags.Add(new BusinessTagItem());
+        }
+
+        spocInput = string.Empty;
         drawerOpen = true;
+        StateHasChanged();
     }
 
     private void CloseDrawer()
     {
         drawerOpen = false;
+        drawerFullscreen = false;
+        editingItem = new BusinessFunction();
+        SelectedSpocs = new List<string>();
+        BusinessTags = new List<BusinessTagItem>();
+        spocInput = string.Empty;
+        StateHasChanged();
     }
 
     private async Task Save()
     {
+        editingItem.BusinessTagValue = string.Join(";",
+            BusinessTags
+                .Where(x => !string.IsNullOrWhiteSpace(x.Name))
+                .Select(x => $"{x.Name}={x.Value}"));
+
         HttpResponseMessage response;
 
         if (isCreate)
@@ -255,20 +1123,19 @@
         }
         else
         {
-            response = await Http.PutAsJsonAsync(
-                $"{ApiBase}/{editingItem.Id}",
-                editingItem);
+            response = await Http.PutAsJsonAsync($"{ApiBase}/{editingItem.Id}", editingItem);
         }
 
         if (response.IsSuccessStatusCode)
         {
             await LoadData();
             CloseDrawer();
+            Snackbar.Add(isCreate ? "Business function added successfully" : "Business function updated successfully", Severity.Success);
         }
         else
         {
             var error = await response.Content.ReadAsStringAsync();
-            Console.WriteLine($"Save failed: {error}");
+            Snackbar.Add($"Save failed: {error}", Severity.Error);
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿using CloudAccountsProject.Models;
+﻿using CloudAccountsShared.Models;
 namespace CloudAccountsProject.Repositories.Contracts;
 
 public interface IBusinessFunctionRepository

@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace CloudAccountsProject.Models;
+namespace CloudAccountsShared.Models;
 
-public partial class AuditTable
+public partial class AuditTableMaster
 {
     public int Id { get; set; }
 
@@ -11,9 +11,9 @@ public partial class AuditTable
 
     public string? TableName { get; set; }
 
-    public string? ModifiedByUser { get; set; }
-
     public string? CloudAccountId { get; set; }
+
+    public string? ModifiedByUser { get; set; }
 
     public string? Type { get; set; }
 
@@ -25,4 +25,3 @@ public partial class AuditTable
 
     public string? AffectedColumns { get; set; }
 }
-

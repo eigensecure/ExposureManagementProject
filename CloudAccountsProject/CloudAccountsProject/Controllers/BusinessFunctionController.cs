@@ -1,12 +1,10 @@
-﻿using CloudAccountsProject.Models;
-using CloudAccountsProject.Repositories.Contracts;
+﻿using CloudAccountsProject.Repositories.Contracts;
+using CloudAccountsShared.Models;
 using Microsoft.AspNetCore.Mvc;
 
-namespace CloudAccounts.Controllers;
+namespace CloudAccountsProject.Controllers;
 
-[ApiController]
-[Route("api/[controller]")]
-public class BusinessFunctionController : ControllerBase
+public class BusinessFunctionController : BaseApiController
 {
     private readonly IBusinessFunctionRepository _repository;
 

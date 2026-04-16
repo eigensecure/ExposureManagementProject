@@ -1,4 +1,4 @@
-﻿namespace CloudAccountsUI.Models;
+﻿namespace CloudAccountsShared.Models.DTOs;
 
 public class CloudAccountEditModel
 {

@@ -1,10 +1,10 @@
-﻿using CloudAccountsProject.Data;
-using CloudAccountsProject.Models;
+﻿using CloudAccountsProjects.Data;
+using CloudAccountsShared.Models;
 using CloudAccountsProject.Repositories.Contracts;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json;
 
-namespace CloudAccounts.Repositories;
+namespace CloudAccountsProject.Repositories;
 
 public class CloudAccountRepository : ICloudAccountRepository
 {
@@ -202,10 +202,81 @@ public class CloudAccountRepository : ICloudAccountRepository
         await _context.SaveChangesAsync();
     }
 
+    //public async Task UpdateAsync(CloudAccount account)
+    //{
+    //    var existing = await _context.CloudAccounts
+    //        .Include(x => x.CloudAccountManualDetail)
+    //        .FirstOrDefaultAsync(x => x.Id == account.Id);
+
+    //    if (existing == null)
+    //        return;
+
+    //    existing.CloudName = account.CloudName;
+    //    existing.CloudOrgId = account.CloudOrgId;
+    //    existing.CloudRootAccountId = account.CloudRootAccountId;
+    //    existing.RegistrationType = account.RegistrationType;
+    //    existing.DeploymentMethod = account.DeploymentMethod;
+
+    //    existing.Iomstatus = account.Iomstatus;
+    //    existing.RealTimeVisibilityAndDetectionStatus = account.RealTimeVisibilityAndDetectionStatus;
+    //    existing.OneClickSensorStatus = account.OneClickSensorStatus;
+    //    existing.IdentityProtectionStatus = account.IdentityProtectionStatus;
+    //    existing.Dspmstatus = account.Dspmstatus;
+    //    existing.VulnerabilityScanningStatus = account.VulnerabilityScanningStatus;
+
+    //    existing.DateModified = DateTime.UtcNow;
+
+    //    if (account.CloudAccountManualDetail != null)
+    //    {
+    //        if (existing.CloudAccountManualDetail == null)
+    //        {
+    //            existing.CloudAccountManualDetail = new CloudAccountManualDetail
+    //            {
+    //                CloudAccountId = existing.Id,
+    //                BusinessFunctionId = account.CloudAccountManualDetail.BusinessFunctionId,
+    //                AccountType = account.CloudAccountManualDetail.AccountType,
+    //                OverallStatus = account.CloudAccountManualDetail.OverallStatus,
+    //                Remarks = account.CloudAccountManualDetail.Remarks,
+    //                AttachmentPath = account.CloudAccountManualDetail.AttachmentPath,
+    //                CloudTagEmail = account.CloudAccountManualDetail.CloudTagEmail,
+    //                FirstUpdatedDate = DateTime.UtcNow,
+    //                LastUpdatedDate = DateTime.UtcNow,
+    //                DateCreated = DateTime.UtcNow,
+    //                DateModified = DateTime.UtcNow
+    //            };
+    //            _context.CloudAccountManualDetails.Add(existing.CloudAccountManualDetail);
+    //        }
+    //        else
+    //        {
+    //            existing.CloudAccountManualDetail.BusinessFunctionId =
+    //                account.CloudAccountManualDetail.BusinessFunctionId;
+
+    //            existing.CloudAccountManualDetail.AccountType =
+    //                account.CloudAccountManualDetail.AccountType;
+
+    //            existing.CloudAccountManualDetail.OverallStatus =
+    //                account.CloudAccountManualDetail.OverallStatus;
+
+    //            existing.CloudAccountManualDetail.Remarks =
+    //                account.CloudAccountManualDetail.Remarks;
+
+    //            existing.CloudAccountManualDetail.AttachmentPath =
+    //                account.CloudAccountManualDetail.AttachmentPath;
+
+    //            existing.CloudAccountManualDetail.CloudTagEmail =
+    //                account.CloudAccountManualDetail.CloudTagEmail;
+
+    //            existing.CloudAccountManualDetail.DateModified = DateTime.UtcNow;
+    //            existing.CloudAccountManualDetail.LastUpdatedDate = DateTime.UtcNow;
+    //        }
+    //    }
+
+    //    await _context.SaveChangesAsync();
+    //}
     public async Task UpdateAsync(CloudAccount account)
     {
         var existing = await _context.CloudAccounts
-            .Include(x => x.CloudAccountManualDetail)
+            .Include(x => x.CloudAccountManualDetails) 
             .FirstOrDefaultAsync(x => x.Id == account.Id);
 
         if (existing == null)
@@ -226,48 +297,43 @@ public class CloudAccountRepository : ICloudAccountRepository
 
         existing.DateModified = DateTime.UtcNow;
 
-        if (account.CloudAccountManualDetail != null)
+        if (account.CloudAccountManualDetails != null && account.CloudAccountManualDetails.Any())
         {
-            if (existing.CloudAccountManualDetail == null)
+            foreach (var incoming in account.CloudAccountManualDetails)
             {
-                existing.CloudAccountManualDetail = new CloudAccountManualDetail
+                var existingDetail = existing.CloudAccountManualDetails
+                    .FirstOrDefault(x => x.Id == incoming.Id);
+
+                if (existingDetail == null)
                 {
-                    CloudAccountId = existing.Id,
-                    BusinessFunctionId = account.CloudAccountManualDetail.BusinessFunctionId,
-                    AccountType = account.CloudAccountManualDetail.AccountType,
-                    OverallStatus = account.CloudAccountManualDetail.OverallStatus,
-                    Remarks = account.CloudAccountManualDetail.Remarks,
-                    AttachmentPath = account.CloudAccountManualDetail.AttachmentPath,
-                    CloudTagEmail = account.CloudAccountManualDetail.CloudTagEmail,
-                    FirstUpdatedDate = DateTime.UtcNow,
-                    LastUpdatedDate = DateTime.UtcNow,
-                    DateCreated = DateTime.UtcNow,
-                    DateModified = DateTime.UtcNow
-                };
-                _context.CloudAccountManualDetails.Add(existing.CloudAccountManualDetail);
-            }
-            else
-            {
-                existing.CloudAccountManualDetail.BusinessFunctionId =
-                    account.CloudAccountManualDetail.BusinessFunctionId;
+                    var newDetail = new CloudAccountManualDetail
+                    {
+                        CloudAccountId = existing.Id,
+                        BusinessFunctionId = incoming.BusinessFunctionId,
+                        AccountType = incoming.AccountType,
+                        OverallStatus = incoming.OverallStatus,
+                        Remarks = incoming.Remarks,
+                        AttachmentPath = incoming.AttachmentPath,
+                        CloudTagEmail = incoming.CloudTagEmail,
+                        FirstUpdatedDate = DateTime.UtcNow,
+                        LastUpdatedDate = DateTime.UtcNow,
+                        DateCreated = DateTime.UtcNow,
+                        DateModified = DateTime.UtcNow
+                    };
 
-                existing.CloudAccountManualDetail.AccountType =
-                    account.CloudAccountManualDetail.AccountType;
-
-                existing.CloudAccountManualDetail.OverallStatus =
-                    account.CloudAccountManualDetail.OverallStatus;
-
-                existing.CloudAccountManualDetail.Remarks =
-                    account.CloudAccountManualDetail.Remarks;
-
-                existing.CloudAccountManualDetail.AttachmentPath =
-                    account.CloudAccountManualDetail.AttachmentPath;
-
-                existing.CloudAccountManualDetail.CloudTagEmail =
-                    account.CloudAccountManualDetail.CloudTagEmail;
-
-                existing.CloudAccountManualDetail.DateModified = DateTime.UtcNow;
-                existing.CloudAccountManualDetail.LastUpdatedDate = DateTime.UtcNow;
+                    existing.CloudAccountManualDetails.Add(newDetail);
+                }
+                else
+                {
+                    existingDetail.BusinessFunctionId = incoming.BusinessFunctionId;
+                    existingDetail.AccountType = incoming.AccountType;
+                    existingDetail.OverallStatus = incoming.OverallStatus;
+                    existingDetail.Remarks = incoming.Remarks;
+                    existingDetail.AttachmentPath = incoming.AttachmentPath;
+                    existingDetail.CloudTagEmail = incoming.CloudTagEmail;
+                    existingDetail.DateModified = DateTime.UtcNow;
+                    existingDetail.LastUpdatedDate = DateTime.UtcNow;
+                }
             }
         }
 

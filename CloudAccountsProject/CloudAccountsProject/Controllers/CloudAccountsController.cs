@@ -1,12 +1,11 @@
-﻿using CloudAccountsProject.Models;
+﻿using CloudAccountsProject.Controllers;
 using CloudAccountsProject.Repositories.Contracts;
+using CloudAccountsShared.Models;
 using Microsoft.AspNetCore.Mvc;
 
-namespace CloudAccounts.Controllers;
+namespace CloudAccountsProject.Controllers;
 
-[ApiController]
-[Route("api/[controller]")]
-public class CloudAccountsController : ControllerBase
+public class CloudAccountsController : BaseApiController
 {
     private readonly ICloudAccountRepository _repository;
     private readonly IWebHostEnvironment _environment;
@@ -58,8 +57,6 @@ public class CloudAccountsController : ControllerBase
 
         return Ok("Updated successfully.");
     }
-        
-
 
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(int id)

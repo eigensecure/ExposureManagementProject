@@ -1,40 +1,103 @@
-﻿<div class="top-row ps-3 navbar navbar-dark">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="">CloudAccountsUI</a>
-        <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-    </div>
-</div>
-
-<div class="@NavMenuCssClass nav-scrollable" @onclick="ToggleNavMenu">
-    <nav class="flex-column">
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Home
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="cloudaccounts">
-                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Cloudaccounts
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="businessfunction">
-                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> BusinessFunction
-            </NavLink>
-        </div>
-        
-    </nav>
-</div>
-
-@code {
-    private bool collapseNavMenu = true;
-
-    private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
-
-    private void ToggleNavMenu()
-    {
-        collapseNavMenu = !collapseNavMenu;
+﻿<style>
+    .nav-header {
+        padding: 24px 16px 16px 16px;
+        text-align: center;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        margin-bottom: 16px;
     }
-}
+
+    .nav-logo {
+        font-size: 2rem;
+        font-weight: 700;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 8px;
+    }
+
+    .nav-subtitle {
+        font-size: 0.75rem;
+        color: rgba(255, 255, 255, 0.6);
+    }
+
+    .nav-section {
+        padding: 0 12px;
+        margin-bottom: 16px;
+    }
+
+    .nav-section-title {
+        font-size: 0.7rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: rgba(255, 255, 255, 0.5);
+        padding: 8px 12px;
+        margin-bottom: 4px;
+    }
+
+    .custom-nav-link {
+        border-radius: 10px !important;
+        margin: 4px 0 !important;
+        transition: all 0.3s ease !important;
+        color: rgba(255, 255, 255, 0.7) !important;
+    }
+
+    .custom-nav-link:hover {
+        background: rgba(102, 126, 234, 0.2) !important;
+        color: white !important;
+    }
+
+    .custom-nav-link.active {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+        color: white !important;
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+    }
+
+    .custom-nav-link .mud-nav-link-icon {
+        color: inherit !important;
+    }
+
+    .nav-footer {
+        position: absolute;
+        bottom: 20px;
+        left: 0;
+        right: 0;
+        padding: 16px;
+        text-align: center;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        margin: 0 12px;
+    }
+
+    .nav-version {
+        font-size: 0.7rem;
+        color: rgba(255, 255, 255, 0.4);
+    }
+</style>
+
+<MudNavMenu>
+    <div class="nav-section">
+        <div class="nav-section-title">NAVIGATION</div>
+
+        <MudNavLink Href="/cloudaccounts"
+                    Match="NavLinkMatch.All"
+                    IconColor="Color.Inherit"
+                    Icon="@Icons.Material.Filled.Cloud"
+                    Class="custom-nav-link">
+            <div style="display: flex; align-items: center; gap: 12px;">
+                
+                <span>Cloud Accounts</span>
+            </div>
+        </MudNavLink>
+
+        <MudNavLink Href="/businessfunction"
+                    Match="NavLinkMatch.All"
+                    IconColor="Color.Inherit"
+                    Icon="@Icons.Material.Filled.Business"
+                    Class="custom-nav-link">
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <span>Business Function</span>
+            </div>
+        </MudNavLink>
+    </div>
+</MudNavMenu>

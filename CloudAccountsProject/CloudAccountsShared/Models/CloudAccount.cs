@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace CloudAccountsProject.Models;
+namespace CloudAccountsShared.Models;
 
 public partial class CloudAccount
 {
@@ -43,6 +43,5 @@ public partial class CloudAccount
 
     public DateTime DateModified { get; set; }
 
-    public virtual CloudAccountManualDetail? CloudAccountManualDetail { get; set; }
+    public virtual ICollection<CloudAccountManualDetail> CloudAccountManualDetails { get; set; } = new List<CloudAccountManualDetail>();
 }
-

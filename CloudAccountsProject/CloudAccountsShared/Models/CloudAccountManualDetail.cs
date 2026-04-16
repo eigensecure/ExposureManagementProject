@@ -1,12 +1,10 @@
-﻿using System.Text.Json.Serialization;
-namespace CloudAccountsProject.Models;
-
+﻿namespace CloudAccountsShared.Models;
 
 public partial class CloudAccountManualDetail
 {
     public int Id { get; set; }
 
-    public int CloudAccountId { get; set; }
+    public int? CloudAccountId { get; set; }
 
     public int? BusinessFunctionId { get; set; }
 
@@ -30,7 +28,5 @@ public partial class CloudAccountManualDetail
 
     public virtual BusinessFunction? BusinessFunction { get; set; }
 
-    [JsonIgnore]
     public virtual CloudAccount? CloudAccount { get; set; }
 }
-

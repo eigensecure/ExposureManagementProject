@@ -1,6 +1,10 @@
-﻿namespace CloudAccountsUI.Models;
+﻿using System;
+using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
-public class BusinessFunction
+namespace CloudAccountsShared.Models;
+
+public partial class BusinessFunction
 {
     public int Id { get; set; }
 
@@ -21,4 +25,7 @@ public class BusinessFunction
     public DateTime DateCreated { get; set; }
 
     public DateTime DateModified { get; set; }
+
+    public virtual ICollection<CloudAccountManualDetail> CloudAccountManualDetails { get; set; } = new List<CloudAccountManualDetail>();
 }
+

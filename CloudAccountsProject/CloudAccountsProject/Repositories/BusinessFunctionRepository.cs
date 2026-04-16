@@ -1,6 +1,6 @@
-﻿using CloudAccountsProject.Data;
-using CloudAccountsProject.Models;
-using CloudAccountsProject.Repositories.Contracts;
+﻿using CloudAccountsProject.Repositories.Contracts;
+using CloudAccountsProjects.Data;
+using CloudAccountsShared.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace CloudAccountsProject.Repositories;

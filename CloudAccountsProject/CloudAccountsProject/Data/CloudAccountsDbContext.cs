@@ -1,9 +1,9 @@
-﻿using CloudAccountsProject.Models;
+﻿using CloudAccountsProject.AuditModel;
+using CloudAccountsShared.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
-using Newtonsoft.Json;
 
-namespace CloudAccountsProject.Data;
+namespace CloudAccountsProjects.Data;
 
 public partial class CloudAccountsDbContext : DbContext
 {
@@ -16,35 +16,59 @@ public partial class CloudAccountsDbContext : DbContext
     {
     }
 
-    public virtual DbSet<AuditTable> AuditTables { get; set; }
+    public virtual DbSet<AuditTableMaster> AuditTableMasters { get; set; }
+
+    public virtual DbSet<AuditTableTransaction> AuditTableTransactions { get; set; }
+
+    public virtual DbSet<BusinessFunction> BusinessFunctions { get; set; }
 
     public virtual DbSet<CloudAccount> CloudAccounts { get; set; }
 
     public virtual DbSet<CloudAccountManualDetail> CloudAccountManualDetails { get; set; }
 
-    public virtual DbSet<BusinessFunction> BusinessFunctions { get; set; }
-
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseSqlServer("Data Source=testingenvsql.database.windows.net;Initial Catalog=CloudAccountsDB;Persist Security Info=True;User ID=testuser;Password=3F0&TJS72Of!123;Trust Server Certificate=True");
-
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<AuditTable>(entity =>
+        modelBuilder.Entity<AuditTableMaster>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK_Audit_Table");
+            entity.HasKey(e => e.Id).HasName("PK_Audit_Table_Master");
 
-            entity.ToTable("AuditTable");
+            entity.ToTable("AuditTableMaster");
 
-            entity.Property(e => e.CloudAccountId)
-                .HasMaxLength(200)
-                .HasColumnName("Cloud_Account_ID");
+            entity.Property(e => e.CloudAccountId).HasMaxLength(200);
             entity.Property(e => e.ModifiedByUser).HasMaxLength(200);
             entity.Property(e => e.NewValues).HasColumnType("json");
             entity.Property(e => e.OldValues).HasColumnType("json");
             entity.Property(e => e.PrimaryKey).HasColumnType("json");
             entity.Property(e => e.TableName).HasMaxLength(200);
             entity.Property(e => e.Type).HasMaxLength(200);
+        });
+
+        modelBuilder.Entity<AuditTableTransaction>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK_Audit_Table_Transaction");
+
+            entity.ToTable("AuditTableTransaction");
+
+            entity.Property(e => e.ModifiedByUser).HasMaxLength(200);
+            entity.Property(e => e.NewValues).HasColumnType("json");
+            entity.Property(e => e.OldValues).HasColumnType("json");
+            entity.Property(e => e.PrimaryKey).HasColumnType("json");
+            entity.Property(e => e.Reference).HasMaxLength(200);
+            entity.Property(e => e.TableName).HasMaxLength(200);
+            entity.Property(e => e.Type).HasMaxLength(200);
+        });
+
+        modelBuilder.Entity<BusinessFunction>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK_Business_Function");
+
+            entity.ToTable("BusinessFunction");
+
+            entity.Property(e => e.BusinessFunctionGroupDl).HasColumnName("BusinessFunctionGroupDL");
+            entity.Property(e => e.BusinessFunctionLtMember).HasMaxLength(255);
+            entity.Property(e => e.BusinessFunctionName).HasMaxLength(255);
+            entity.Property(e => e.BusinessFunctionOwner).HasMaxLength(255);
+            entity.Property(e => e.BusinessTagValue).HasMaxLength(255);
         });
 
         modelBuilder.Entity<CloudAccount>(entity =>
@@ -87,8 +111,6 @@ public partial class CloudAccountsDbContext : DbContext
 
         modelBuilder.Entity<CloudAccountManualDetail>(entity =>
         {
-            entity.HasIndex(e => e.CloudAccountId, "UQ__CloudAcc__B8D5FE8F0BDA72B7").IsUnique();
-
             entity.Property(e => e.AccountType).HasMaxLength(100);
             entity.Property(e => e.AttachmentPath).HasMaxLength(500);
             entity.Property(e => e.CloudTagEmail).HasMaxLength(255);
@@ -98,251 +120,154 @@ public partial class CloudAccountsDbContext : DbContext
                 .HasForeignKey(d => d.BusinessFunctionId)
                 .HasConstraintName("FK_CloudAccountManualDetails_BusinessFunction");
 
-            entity.HasOne(d => d.CloudAccount).WithOne(p => p.CloudAccountManualDetail)
-                .HasForeignKey<CloudAccountManualDetail>(d => d.CloudAccountId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
+            entity.HasOne(d => d.CloudAccount).WithMany(p => p.CloudAccountManualDetails)
+                .HasForeignKey(d => d.CloudAccountId)
                 .HasConstraintName("FK_CloudAccountManualDetails_CloudAccounts");
-        });
-
-        modelBuilder.Entity<BusinessFunction>(entity =>
-        {
-            entity.HasKey(e => e.Id).HasName("PK_Business_Function");
-
-            entity.ToTable("BusinessFunction");
-
-            entity.Property(e => e.BusinessFunctionGroupDl).HasColumnName("BusinessFunctionGroupDL");
-            entity.Property(e => e.BusinessFunctionLtMember).HasMaxLength(255);
-            entity.Property(e => e.BusinessFunctionName).HasMaxLength(255);
-            entity.Property(e => e.BusinessFunctionOwner).HasMaxLength(255);
-            entity.Property(e => e.BusinessTagValue).HasMaxLength(255);
         });
 
         OnModelCreatingPartial(modelBuilder);
     }
 
-
     partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
 
-    private List<AuditTable> OnBeforeSaveScim()
-    {
-        var auditLogs = new List<AuditTable>();
 
+    private static readonly HashSet<string> IgnoredColumns = new()
+    {
+        "RawJson"
+    };
+
+    private static readonly HashSet<Type> IgnoredTables = new()
+    {
+        typeof(AuditTableMaster),
+        typeof(AuditTableTransaction),
+    };
+
+    private static readonly HashSet<Type> MasterTables = new()
+    {
+        typeof(CloudAccount),
+    };
+    private string? GetReference(EntityEntry entry)
+    {
+        var prop = entry.Metadata.FindProperty("CloudAccountId");
+        if (prop != null)
+        {
+            return entry.Property("CloudAccountId").CurrentValue?.ToString();
+        }
+        return null;
+    }
+
+    private List<AuditEntry> OnBeforeSaveChanges()
+    {
+        //ChangeTracker.DetectChanges();
+        var auditEntries = new List<AuditEntry>();
         foreach (var entry in ChangeTracker.Entries())
         {
-            if (entry.Entity is AuditTable ||
-                entry.State == EntityState.Detached ||
+            if (IgnoredTables.Any(t => t.IsAssignableFrom(entry.Entity.GetType())) || 
+                entry.State == EntityState.Detached || 
                 entry.State == EntityState.Unchanged)
             {
                 continue;
             }
 
-            var tableName = entry.Metadata.GetTableName() ?? entry.Entity.GetType().Name;
+            var auditEntry = new AuditEntry(entry);
+            auditEntry.TableName = entry.Metadata.GetTableName();
+            auditEntry.IsMaster = MasterTables.Any(t => t.IsAssignableFrom(entry.Entity.GetType()));
+            auditEntry.Reference = GetReference(entry);
 
-            var primaryKeyDictionary = new Dictionary<string, object?>();
-
-            var primaryKey = entry.Metadata.FindPrimaryKey();
-
-            if (primaryKey != null)
+            auditEntries.Add(auditEntry);
+            foreach (var property in entry.Properties)
             {
-                foreach (var property in primaryKey.Properties)
-                {
-                    if (property.Name.Equals("RawJson", StringComparison.OrdinalIgnoreCase))
-                        continue;
-                    var value =
-                        entry.Property(property.Name).CurrentValue ??
-                        entry.Property(property.Name).OriginalValue;
+                string propertyName = property.Metadata.Name;
+                if (IgnoredColumns.Contains(propertyName))
+                    continue;
 
-                    primaryKeyDictionary[property.Name] = value;
+                if (property.IsTemporary)
+                {
+                    auditEntry.TemporaryProperties.Add(property);
+                    continue;
+                }
+                
+                if (property.Metadata.IsPrimaryKey())
+                {
+                    auditEntry.KeyValues[propertyName] = property.CurrentValue;
+                    continue;
+                }
+                switch (entry.State)
+                {
+                    case EntityState.Added:
+                        auditEntry.AuditType = AuditType.Added;
+                        auditEntry.NewValues[propertyName] = property.CurrentValue;
+                        break;
+
+                    case EntityState.Deleted:
+                        auditEntry.AuditType = AuditType.Removed;
+                        auditEntry.OldValues[propertyName] = property.OriginalValue;
+                        break;
+
+                    case EntityState.Modified:
+                        if (property.IsModified)
+                        {
+                            auditEntry.ChangedColumns.Add(propertyName);
+                            auditEntry.AuditType = AuditType.Modified;
+                            auditEntry.OldValues[propertyName] = property.OriginalValue;
+                            auditEntry.NewValues[propertyName] = property.CurrentValue;
+                        }
+                        break;
                 }
             }
-
-            var oldValues = new Dictionary<string, object?>();
-            var newValues = new Dictionary<string, object?>();
-            var affectedColumns = new List<string>();
-
-            switch (entry.State)
-            {
-                case EntityState.Added:
-
-                    foreach (var property in entry.CurrentValues.Properties)
-                    {
-                        if (property.Name.Equals("RawJson", StringComparison.OrdinalIgnoreCase))
-                            continue;
-                        var value = entry.CurrentValues[property];
-
-                        if (value != null)
-                        {
-                            newValues[property.Name] = value;
-                            affectedColumns.Add(property.Name);
-                        }
-                    }
-
-                    auditLogs.Add(new AuditTable
-                    {
-                        TableName = tableName,
-                        PrimaryKey = System.Text.Json.JsonSerializer.Serialize(primaryKeyDictionary),
-                        CloudAccountId = GetCloudAccountId(entry),
-                        Type = "Create",
-                        DateTime = DateTime.UtcNow,
-                        AffectedColumns = string.Join(",", affectedColumns),
-                        OldValues = null,
-                        NewValues = System.Text.Json.JsonSerializer.Serialize(newValues)
-                    });
-
-                    break;
-
-                case EntityState.Modified:
-
-                    foreach (var property in entry.OriginalValues.Properties)
-                    {
-                        if (property.Name.Equals("RawJson", StringComparison.OrdinalIgnoreCase))
-                            continue;
-                        var oldValue = entry.OriginalValues[property];
-                        var newValue = entry.CurrentValues[property];
-
-                        if (!Equals(oldValue, newValue))
-                        {
-                            oldValues[property.Name] = oldValue;
-                            newValues[property.Name] = newValue;
-                            affectedColumns.Add(property.Name);
-                        }
-                    }
-
-                    if (affectedColumns.Any())
-                    {
-                        auditLogs.Add(new AuditTable
-                        {
-                            TableName = tableName,
-                            PrimaryKey = System.Text.Json.JsonSerializer.Serialize(primaryKeyDictionary),
-                            CloudAccountId = GetCloudAccountId(entry),
-                            Type = "Update",
-                            DateTime = DateTime.UtcNow,
-                            AffectedColumns = string.Join(",", affectedColumns),
-                            OldValues = System.Text.Json.JsonSerializer.Serialize(oldValues),
-                            NewValues = System.Text.Json.JsonSerializer.Serialize(newValues)
-                        });
-                    }
-
-                    break;
-
-                case EntityState.Deleted:
-
-                    foreach (var property in entry.OriginalValues.Properties)
-                    {
-                        if (property.Name.Equals("RawJson", StringComparison.OrdinalIgnoreCase))
-                            continue;
-                        var oldValue = entry.OriginalValues[property];
-
-                        oldValues[property.Name] = oldValue;
-                        affectedColumns.Add(property.Name);
-                    }
-
-                    auditLogs.Add(new AuditTable
-                    {
-                        TableName = tableName,
-                        PrimaryKey = System.Text.Json.JsonSerializer.Serialize(primaryKeyDictionary),
-                        CloudAccountId = GetCloudAccountId(entry),
-                        Type = "Delete",
-                        DateTime = DateTime.UtcNow,
-                        AffectedColumns = string.Join(",", affectedColumns),
-                        OldValues = System.Text.Json.JsonSerializer.Serialize(oldValues),
-                        NewValues = null
-                    });
-
-                    break;
-            }
+            if (auditEntry.AuditType == AuditType.Modified && !auditEntry.ChangedColumns.Any())
+                continue;
         }
 
-        return auditLogs;
+        // Save audit entities that have all the modifications
+        foreach (var auditEntry in auditEntries.Where(_ => !_.HasTemporaryProperties))
+        {
+            if (auditEntry.IsMaster) AuditTableMasters.Add(auditEntry.ToAuditMaster());
+            else AuditTableTransactions.Add(auditEntry.ToAuditTransaction());
+        }
+
+        return (auditEntries.Where(_ => _.HasTemporaryProperties).ToList());
     }
 
-
-    private string? GetCloudAccountId(EntityEntry entry)
+    private async Task OnAfterSaveChanges(List<AuditEntry> auditEntries)
     {
-        try
+        if (auditEntries == null || auditEntries.Count == 0)
+            return;
+
+        foreach (var auditEntry in auditEntries)
         {
-            // First try direct property on the entity
-            var cloudAccountProperty = entry.Properties.FirstOrDefault(p =>
-                string.Equals(p.Metadata.Name, "CloudAccountId", StringComparison.OrdinalIgnoreCase));
-
-            if (cloudAccountProperty != null)
+            // Get the final value of the temporary properties
+            foreach (var prop in auditEntry.TemporaryProperties)
             {
-                return cloudAccountProperty.CurrentValue?.ToString()
-                       ?? cloudAccountProperty.OriginalValue?.ToString();
-            }
-
-            // Fallback: check primary key properties in case CloudAccountId is part of key
-            var pk = entry.Metadata.FindPrimaryKey();
-
-            if (pk != null)
-            {
-                var accountProp = pk.Properties.FirstOrDefault(p =>
-                    string.Equals(p.Name, "CloudAccountId", StringComparison.OrdinalIgnoreCase));
-
-                if (accountProp != null)
+                if (prop.Metadata.IsPrimaryKey())
                 {
-                    return entry.Property(accountProp.Name).CurrentValue?.ToString()
-                           ?? entry.Property(accountProp.Name).OriginalValue?.ToString();
+                    auditEntry.KeyValues[prop.Metadata.Name] = prop.CurrentValue;
+                }
+                else
+                {
+                    auditEntry.NewValues[prop.Metadata.Name] = prop.CurrentValue;
                 }
             }
 
-            return null;
+            if (auditEntry.IsMaster) AuditTableMasters.Add(auditEntry.ToAuditMaster());
+            else AuditTableTransactions.Add(auditEntry.ToAuditTransaction());
         }
-        catch
-        {
-            throw;
-        }
+
+        await base.SaveChangesAsync();
     }
 
-    public override async Task<int> SaveChangesAsync(
-    CancellationToken cancellationToken = default)
+    public override async Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = default)
     {
         ChangeTracker.DetectChanges();
+        var auditEntries = OnBeforeSaveChanges();
 
-        var auditLogs = OnBeforeSaveScim();
+        var result = await base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
 
-        var result = await base.SaveChangesAsync(cancellationToken);
-
-        if (auditLogs.Any())
+        if (auditEntries.Any())
         {
-            foreach (var audit in auditLogs)
-            {
-                // If PrimaryKey was empty during Add, populate it now
-                if (string.IsNullOrWhiteSpace(audit.PrimaryKey) ||
-                    audit.PrimaryKey == "{}")
-                {
-                    var matchingEntry = ChangeTracker.Entries()
-                        .FirstOrDefault(e =>
-                            e.Entity is not AuditTable &&
-                            (e.Metadata.GetTableName() ?? e.Entity.GetType().Name) == audit.TableName);
-
-                    if (matchingEntry != null)
-                    {
-                        var pk = matchingEntry.Metadata.FindPrimaryKey();
-
-                        if (pk != null)
-                        {
-                            var pkDict = new Dictionary<string, object?>();
-
-                            foreach (var prop in pk.Properties)
-                            {
-                                pkDict[prop.Name] =
-                                    matchingEntry.Property(prop.Name).CurrentValue;
-                            }
-
-                            audit.PrimaryKey =
-                                System.Text.Json.JsonSerializer.Serialize(pkDict);
-                        }
-                    }
-                }
-            }
-
-            AuditTables.AddRange(auditLogs);
-
-            await base.SaveChangesAsync(cancellationToken);
+            await OnAfterSaveChanges(auditEntries);
         }
 
         return result;
     }
-
 }

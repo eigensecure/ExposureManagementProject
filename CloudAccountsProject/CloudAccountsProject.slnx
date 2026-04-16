@@ -1,4 +1,5 @@
 <Solution>
   <Project Path="CloudAccountsProject/CloudAccountsProject.csproj" />
+  <Project Path="CloudAccountsShared/CloudAccountsShared.csproj" Id="ef9b2dd1-4b36-4a93-b26d-7c3832b82409" />
   <Project Path="CloudAccountsUI/CloudAccountsUI.csproj" />
 </Solution>
