@@ -26,4 +26,14 @@
     <ProjectReference Include="..\CloudAccountsShared\CloudAccountsShared.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="metadata\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="metadata\CloudAccountColumnMetadata.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
 </Project>

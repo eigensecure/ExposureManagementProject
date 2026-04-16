@@ -18,4 +18,12 @@
     <ProjectReference Include="..\CloudAccountsShared\CloudAccountsShared.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Update="wwwroot\metadata\CloudAccountColumnMetadata.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+	
+	
+
 </Project>

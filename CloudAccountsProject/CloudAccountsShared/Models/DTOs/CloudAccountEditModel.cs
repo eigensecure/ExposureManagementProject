@@ -4,6 +4,7 @@ public class CloudAccountEditModel
 {
     public int Id { get; set; }
 
+    public int? CloudAccountManualDetailId { get; set; }
     public string? CloudName { get; set; }
     public string? CloudOrgId { get; set; }
     public string? Iomstatus { get; set; }

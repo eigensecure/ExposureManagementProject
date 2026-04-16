@@ -1,0 +1,92 @@
+[
+  {
+    "GenericColumn": "Provider",
+    "AwsColumn": "Provider",
+    "AzureColumn": "Provider",
+    "GcpColumn": "Provider"
+  },
+  {
+    "GenericColumn": "Cloud_Account_ID",
+    "AwsColumn": "Account ID",
+    "AzureColumn": "Subscription ID",
+    "GcpColumn": "Project number"
+  },
+  {
+    "GenericColumn": "Cloud_Name",
+    "AwsColumn": "Account alias",
+    "AzureColumn": "Subscription Name",
+    "GcpColumn": "Project name"
+  },
+  {
+    "GenericColumn": "Cloud_ORG_ID",
+    "AwsColumn": "Organization ID",
+    "AzureColumn": "Tenant ID",
+    "GcpColumn": "Registration name"
+  },
+  {
+    "GenericColumn": "Cloud_RootAccount_ID",
+    "AwsColumn": "Root Account ID",
+    "AzureColumn": "Tenant Name",
+    "GcpColumn": "Project Id"
+  },
+  {
+    "GenericColumn": "Registration type",
+    "AwsColumn": "Registration type",
+    "AzureColumn": "Registration type",
+    "GcpColumn": "Registration type"
+  },
+  {
+    "GenericColumn": "Deployment method",
+    "AwsColumn": "Deployment method",
+    "AzureColumn": "Deployment method",
+    "GcpColumn": "Deployment method"
+  },
+  {
+    "GenericColumn": "Registered_At_CRWD",
+    "AwsColumn": "Registered",
+    "AzureColumn": "Created",
+    "GcpColumn": "Registered"
+  },
+  {
+    "GenericColumn": "Last_Updated_At_CRWD",
+    "AwsColumn": "Last checked",
+    "AzureColumn": "Updated",
+    "GcpColumn": "Last checked"
+  },
+  {
+    "GenericColumn": "IOMStatus",
+    "AwsColumn": "IOMs",
+    "AzureColumn": "IOM Status",
+    "GcpColumn": "IOMs"
+  },
+  {
+    "GenericColumn": "Real-time visibility and detection Status",
+    "AwsColumn": "Real-time visibility and detection",
+    "AzureColumn": "IOA Status",
+    "GcpColumn": "Real-time visibility and detection"
+  },
+  {
+    "GenericColumn": "1-click sensor Status",
+    "AwsColumn": "1-click sensor",
+    "AzureColumn": "1-click sensor Status",
+    "GcpColumn": "1-click sensor Status"
+  },
+  {
+    "GenericColumn": "Identity protection Status",
+    "AwsColumn": "Identity protection",
+    "AzureColumn": "Identity protection Status",
+    "GcpColumn": "Identity protection Status"
+  },
+  {
+    "GenericColumn": "DSPM Status",
+    "AwsColumn": "DSPM",
+    "AzureColumn": "DSPM Status",
+    "GcpColumn": "DSPM Status"
+  },
+  {
+    "GenericColumn": "Vulnerability scanning Status",
+    "AwsColumn": "Vulnerability scanning",
+    "AzureColumn": "Vulnerability scanning Status",
+    "GcpColumn": "Vulnerability scanning Status"
+  }
+]

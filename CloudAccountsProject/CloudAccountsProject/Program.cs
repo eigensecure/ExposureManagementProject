@@ -2,6 +2,7 @@ using CloudAccountsProject.Repositories;
 using CloudAccountsProject.Repositories.Contracts;
 using CloudAccountsProjects.Data;
 using Microsoft.EntityFrameworkCore;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,6 +13,12 @@ var config = new ConfigurationBuilder()
 
 var activeClientURL = config["ClientURL:ActiveURL"];
 var clientURL = config[$"ClientURL:{activeClientURL}"];
+
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
+    });
 
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();

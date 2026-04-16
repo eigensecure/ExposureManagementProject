@@ -1,6 +1,7 @@
-﻿using CloudAccountsProjects.Data;
+﻿using CloudAccountsProject.Repositories.Contracts;
+using CloudAccountsProjects.Data;
 using CloudAccountsShared.Models;
-using CloudAccountsProject.Repositories.Contracts;
+using CloudAccountsShared.Models.DTOs;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json;
 
@@ -15,9 +16,20 @@ public class CloudAccountRepository : ICloudAccountRepository
         _context = context;
     }
 
+    private readonly IWebHostEnvironment _environment;
+
+    public CloudAccountRepository(
+        CloudAccountsDbContext context,
+        IWebHostEnvironment environment)
+    {
+        _context = context;
+        _environment = environment;
+    }
+
     public async Task<List<CloudAccount>> GetAllAsync()
     {
         return await _context.CloudAccounts
+            .Include(x => x.CloudAccountManualDetails)
             .OrderByDescending(x => x.DateCreated)
             .ToListAsync();
     }
@@ -139,7 +151,7 @@ public class CloudAccountRepository : ICloudAccountRepository
                         ? gcpOrg.GetString()
                         : null;
 
-                    account.CloudRootAccountId = null;
+                    //account.CloudRootAccountId = null;
 
                     account.RegistrationType = item.TryGetProperty("Registration type", out var gcpType)
                         ? gcpType.GetString()
@@ -302,7 +314,7 @@ public class CloudAccountRepository : ICloudAccountRepository
             foreach (var incoming in account.CloudAccountManualDetails)
             {
                 var existingDetail = existing.CloudAccountManualDetails
-                    .FirstOrDefault(x => x.Id == incoming.Id);
+    .FirstOrDefault(x => x.Id == incoming.Id);
 
                 if (existingDetail == null)
                 {
@@ -340,6 +352,23 @@ public class CloudAccountRepository : ICloudAccountRepository
         await _context.SaveChangesAsync();
     }
 
+    public async Task<List<CloudAccountColumnMetadata>> GetColumnMetadataAsync()
+    {
+        var filePath = Path.Combine(
+            _environment.ContentRootPath,
+            "Metadata",
+            "CloudAccountColumnMetadata.json");
+
+        if (!File.Exists(filePath))
+        {
+            return new List<CloudAccountColumnMetadata>();
+        }
+
+        var json = await File.ReadAllTextAsync(filePath);
+
+        return JsonSerializer.Deserialize<List<CloudAccountColumnMetadata>>(json)
+               ?? new List<CloudAccountColumnMetadata>();
+    }
     public async Task DeleteAsync(int id)
     {
         var existing = await _context.CloudAccounts.FindAsync(id);

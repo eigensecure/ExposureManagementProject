@@ -58,6 +58,13 @@ public class CloudAccountsController : BaseApiController
         return Ok("Updated successfully.");
     }
 
+    [HttpGet("column-metadata")]
+    public async Task<IActionResult> GetColumnMetadata()
+    {
+        var result = await _repository.GetColumnMetadataAsync();
+        return Ok(result);
+    }
+
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(int id)
     {

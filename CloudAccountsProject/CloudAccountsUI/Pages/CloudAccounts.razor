@@ -419,7 +419,7 @@
                         @if (IsColumnVisible("Provider"))
                         {
                             <PropertyColumn Property="x => x.Provider"
-                                            Title="Provider"
+                                            Title="@GetColumnTitle("Provider")"
                                             Resizable="true">
                                 <CellTemplate Context="cell">
                                     <div class="cell-content">
@@ -434,7 +434,7 @@
                         @if (IsColumnVisible("Cloud Account ID"))
                         {
                             <PropertyColumn Property="x => x.CloudAccountId"
-                                            Title="Cloud Account ID"
+                                            Title="@GetColumnTitle("Cloud_Account_ID")"
                                             StickyLeft="true"
                                             Resizable="true">
                                 <CellTemplate Context="cell">
@@ -450,7 +450,7 @@
                         @if (IsColumnVisible("Cloud Name"))
                         {
                             <PropertyColumn Property="x => x.CloudName"
-                                            Title="Cloud Name"
+                                            Title="@GetColumnTitle("Cloud_Name")"
                                             Resizable="true">
                                 <CellTemplate Context="cell">
                                     <div class="cell-content">
@@ -465,7 +465,7 @@
                         @if (IsColumnVisible("Cloud Org ID"))
                         {
                             <PropertyColumn Property="x => x.CloudOrgId"
-                                            Title="Cloud Org ID"
+                                            Title="@GetColumnTitle("Cloud_ORG_ID")"
                                             Resizable="true">
                                 <CellTemplate Context="cell">
                                     <div class="cell-content">
@@ -480,7 +480,7 @@
                         @if (IsColumnVisible("Root Account ID"))
                         {
                             <PropertyColumn Property="x => x.CloudRootAccountId"
-                                            Title="Root Account ID"
+                                            Title="@GetColumnTitle("Cloud_RootAccount_ID")"
                                             Resizable="true">
                                 <CellTemplate Context="cell">
                                     <div class="cell-content">
@@ -495,7 +495,7 @@
                         @if (IsColumnVisible("Registration Type"))
                         {
                             <PropertyColumn Property="x => x.RegistrationType"
-                                            Title="Registration Type"
+                                            Title="@GetColumnTitle("Registration type")"
                                             Resizable="true">
                                 <CellTemplate Context="cell">
                                     <div class="cell-content">
@@ -510,7 +510,7 @@
                         @if (IsColumnVisible("Deployment Method"))
                         {
                             <PropertyColumn Property="x => x.DeploymentMethod"
-                                            Title="Deployment Method"
+                                            Title="@GetColumnTitle("Deployment method")"
                                             Resizable="true">
                                 <CellTemplate Context="cell">
                                     <div class="cell-content">
@@ -525,7 +525,7 @@
                         @if (IsColumnVisible("IOM Status"))
                         {
                             <PropertyColumn Property="x => x.Iomstatus"
-                                            Title="IOM Status"
+                                            Title="@GetColumnTitle("IOMStatus")"
                                             Resizable="true">
                                 <CellTemplate Context="cell">
                                     <div class="cell-content">
@@ -540,7 +540,7 @@
                         @if (IsColumnVisible("RTVD Status"))
                         {
                             <PropertyColumn Property="x => x.RealTimeVisibilityAndDetectionStatus"
-                                            Title="RTVD Status"
+                                            Title="@GetColumnTitle("Real-time visibility and detection Status")"
                                             Resizable="true">
                                 <CellTemplate Context="cell">
                                     <div class="cell-content">
@@ -555,7 +555,7 @@
                         @if (IsColumnVisible("1-Click Sensor Status"))
                         {
                             <PropertyColumn Property="x => x.OneClickSensorStatus"
-                                            Title="1-Click Sensor Status"
+                                            Title="@GetColumnTitle("1-click sensor Status")"
                                             Resizable="true">
                                 <CellTemplate Context="cell">
                                     <div class="cell-content">
@@ -570,7 +570,7 @@
                         @if (IsColumnVisible("Identity Protection Status"))
                         {
                             <PropertyColumn Property="x => x.IdentityProtectionStatus"
-                                            Title="Identity Protection Status"
+                                            Title="@GetColumnTitle("Identity protection Status")"
                                             Resizable="true">
                                 <CellTemplate Context="cell">
                                     <div class="cell-content">
@@ -585,7 +585,7 @@
                         @if (IsColumnVisible("DSPM Status"))
                         {
                             <PropertyColumn Property="x => x.Dspmstatus"
-                                            Title="DSPM Status"
+                                            Title="@GetColumnTitle("DSPM Status")"
                                             Resizable="true">
                                 <CellTemplate Context="cell">
                                     <div class="cell-content">
@@ -600,7 +600,7 @@
                         @if (IsColumnVisible("Vulnerability Scanning Status"))
                         {
                             <PropertyColumn Property="x => x.VulnerabilityScanningStatus"
-                                            Title="Vulnerability Scanning Status"
+                                            Title="@GetColumnTitle("Vulnerability scanning Status")"
                                             Resizable="true">
                                 <CellTemplate Context="cell">
                                     <div class="cell-content">
@@ -615,7 +615,7 @@
                         @if (IsColumnVisible("Date Created"))
                         {
                             <PropertyColumn Property="x => x.DateCreated"
-                                            Title="Date Created"
+                                            Title="@GetColumnTitle("Registered_At_CRWD")"
                                             Resizable="true">
                                 <CellTemplate Context="cell">
                                     <div class="cell-content">
@@ -630,7 +630,7 @@
                         @if (IsColumnVisible("Date Modified"))
                         {
                             <PropertyColumn Property="x => x.DateModified"
-                                            Title="Date Modified"
+                                            Title="@GetColumnTitle("Last_Updated_At_CRWD")"
                                             Resizable="true">
                                 <CellTemplate Context="cell">
                                     <div class="cell-content">
@@ -851,6 +851,7 @@
     private List<CloudAccount> cloudAccounts = new();
     private CloudAccountEditModel? editingAccount;
     private bool drawerOpen;
+    private List<CloudAccountColumnMetadata> ColumnMetadata = new();
     private string selectedProvider = "All";
 
     private const string ApiBase = "api/CloudAccounts";
@@ -943,6 +944,15 @@
 
             cloudAccounts = accountsTask?.Result ?? new();
             BusinessFunctions = businessFunctionsTask?.Result ?? new();
+
+            var columnMetadataTask = Http.GetFromJsonAsync<List<CloudAccountColumnMetadata>>(
+    "api/CloudAccounts/column-metadata");
+
+            await Task.WhenAll(accountsTask!, businessFunctionsTask!, columnMetadataTask!);
+
+            cloudAccounts = accountsTask?.Result ?? new();
+            BusinessFunctions = businessFunctionsTask?.Result ?? new();
+            ColumnMetadata = columnMetadataTask?.Result ?? new();
         }
         finally
         {
@@ -961,6 +971,32 @@
             _ => "All"
         };
         StateHasChanged();
+    }
+
+    private string GetColumnTitle(string genericColumn)
+    {
+        var column = ColumnMetadata
+            .FirstOrDefault(x => x.GenericColumn == genericColumn);
+
+        if (column == null)
+            return genericColumn;
+
+        return selectedProvider switch
+        {
+            "AWS" => string.IsNullOrWhiteSpace(column.AwsColumn)
+                ? genericColumn
+                : column.AwsColumn,
+
+            "Azure" => string.IsNullOrWhiteSpace(column.AzureColumn)
+                ? genericColumn
+                : column.AzureColumn,
+
+            "GCP" => string.IsNullOrWhiteSpace(column.GcpColumn)
+                ? genericColumn
+                : column.GcpColumn,
+
+            _ => column.GenericColumn
+        };
     }
 
     private void ToggleFullscreen()
@@ -1095,12 +1131,14 @@
 
         var detail = account.CloudAccountManualDetails?.FirstOrDefault();
 
+        
         var selectedBusinessFunction = BusinessFunctions.FirstOrDefault(x =>
             x.Id == detail?.BusinessFunctionId);
 
         editingAccount = new CloudAccountEditModel
         {
             Id = account.Id,
+            CloudAccountManualDetailId = detail?.Id,
             CloudName = account.CloudName,
             CloudOrgId = account.CloudOrgId,
             Iomstatus = account.Iomstatus,
@@ -1118,8 +1156,11 @@
             CloudTagEmail = detail?.CloudTagEmail
         };
 
+        Console.WriteLine($"Loaded Detail Id: {editingAccount.CloudAccountManualDetailId}");
+
         drawerOpen = true;
     }
+
 
     private void CloseDrawer()
     {
@@ -1196,12 +1237,17 @@
         {
             detail = new CloudAccountManualDetail
             {
+                Id = editingAccount.CloudAccountManualDetailId ?? 0,
                 CloudAccountId = existing.Id,
                 DateCreated = DateTime.UtcNow,
                 FirstUpdatedDate = DateTime.UtcNow
             };
 
             existing.CloudAccountManualDetails.Add(detail);
+        }
+        else
+        {
+            detail.Id = editingAccount.CloudAccountManualDetailId ?? detail.Id;
         }
 
         detail.BusinessFunctionId = editingAccount.BusinessFunctionId;
@@ -1212,6 +1258,7 @@
         detail.DateModified = DateTime.UtcNow;
         detail.LastUpdatedDate = DateTime.UtcNow;
 
+        Console.WriteLine($"Sending Detail Id: {detail.Id}");
         var response = await Http.PutAsJsonAsync($"{ApiBase}/{existing.Id}", existing);
 
         if (response.IsSuccessStatusCode)
