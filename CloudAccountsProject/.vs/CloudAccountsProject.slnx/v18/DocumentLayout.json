@@ -1,33 +1,37 @@
 {
   "Version": 1,
-  "WorkspaceRootPath": "C:\\Users\\Jeevan\\Desktop\\GitHub\\ExposureManagementProject\\CloudAccountsProject\\",
+  "WorkspaceRootPath": "C:\\Users\\Capzod\\Documents\\GitHub\\ExposureManagementProject\\CloudAccountsProject\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{AAE86E63-E33D-1D89-C4E0-CB51C2A9E914}|CloudAccountsUI\\CloudAccountsUI.csproj|c:\\users\\jeevan\\desktop\\github\\exposuremanagementproject\\cloudaccountsproject\\cloudaccountsui\\pages\\businessfunctionui.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{AAE86E63-E33D-1D89-C4E0-CB51C2A9E914}|CloudAccountsUI\\CloudAccountsUI.csproj|solutionrelative:cloudaccountsui\\pages\\businessfunctionui.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{AAE86E63-E33D-1D89-C4E0-CB51C2A9E914}|CloudAccountsUI\\CloudAccountsUI.csproj|c:\\users\\jeevan\\desktop\\github\\exposuremanagementproject\\cloudaccountsproject\\cloudaccountsui\\layout\\mainlayout.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{AAE86E63-E33D-1D89-C4E0-CB51C2A9E914}|CloudAccountsUI\\CloudAccountsUI.csproj|solutionrelative:cloudaccountsui\\layout\\mainlayout.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{AAE86E63-E33D-1D89-C4E0-CB51C2A9E914}|CloudAccountsUI\\CloudAccountsUI.csproj|c:\\users\\jeevan\\desktop\\github\\exposuremanagementproject\\cloudaccountsproject\\cloudaccountsui\\pages\\cloudaccounts.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "AbsoluteMoniker": "D:0:0:{AAE86E63-E33D-1D89-C4E0-CB51C2A9E914}|CloudAccountsUI\\CloudAccountsUI.csproj|c:\\users\\capzod\\documents\\github\\exposuremanagementproject\\cloudaccountsproject\\cloudaccountsui\\pages\\cloudaccounts.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
       "RelativeMoniker": "D:0:0:{AAE86E63-E33D-1D89-C4E0-CB51C2A9E914}|CloudAccountsUI\\CloudAccountsUI.csproj|solutionrelative:cloudaccountsui\\pages\\cloudaccounts.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{AAE86E63-E33D-1D89-C4E0-CB51C2A9E914}|CloudAccountsUI\\CloudAccountsUI.csproj|c:\\users\\jeevan\\desktop\\github\\exposuremanagementproject\\cloudaccountsproject\\cloudaccountsui\\dialog\\historydialog.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "AbsoluteMoniker": "D:0:0:{AAE86E63-E33D-1D89-C4E0-CB51C2A9E914}|CloudAccountsUI\\CloudAccountsUI.csproj|c:\\users\\capzod\\documents\\github\\exposuremanagementproject\\cloudaccountsproject\\cloudaccountsui\\dialog\\historydialog.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
       "RelativeMoniker": "D:0:0:{AAE86E63-E33D-1D89-C4E0-CB51C2A9E914}|CloudAccountsUI\\CloudAccountsUI.csproj|solutionrelative:cloudaccountsui\\dialog\\historydialog.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{AAE86E63-E33D-1D89-C4E0-CB51C2A9E914}|CloudAccountsUI\\CloudAccountsUI.csproj|c:\\users\\jeevan\\desktop\\github\\exposuremanagementproject\\cloudaccountsproject\\cloudaccountsui\\services\\cloudhistoryservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{AAE86E63-E33D-1D89-C4E0-CB51C2A9E914}|CloudAccountsUI\\CloudAccountsUI.csproj|c:\\users\\capzod\\documents\\github\\exposuremanagementproject\\cloudaccountsproject\\cloudaccountsui\\pages\\businessfunctionui.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{AAE86E63-E33D-1D89-C4E0-CB51C2A9E914}|CloudAccountsUI\\CloudAccountsUI.csproj|solutionrelative:cloudaccountsui\\pages\\businessfunctionui.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8EC806F2-B20F-65EF-C59F-647970AADFDE}|CloudAccountsProject\\CloudAccountsProject.csproj|c:\\users\\capzod\\documents\\github\\exposuremanagementproject\\cloudaccountsproject\\cloudaccountsproject\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{8EC806F2-B20F-65EF-C59F-647970AADFDE}|CloudAccountsProject\\CloudAccountsProject.csproj|solutionrelative:cloudaccountsproject\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{AAE86E63-E33D-1D89-C4E0-CB51C2A9E914}|CloudAccountsUI\\CloudAccountsUI.csproj|c:\\users\\capzod\\documents\\github\\exposuremanagementproject\\cloudaccountsproject\\cloudaccountsui\\layout\\mainlayout.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{AAE86E63-E33D-1D89-C4E0-CB51C2A9E914}|CloudAccountsUI\\CloudAccountsUI.csproj|solutionrelative:cloudaccountsui\\layout\\mainlayout.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{AAE86E63-E33D-1D89-C4E0-CB51C2A9E914}|CloudAccountsUI\\CloudAccountsUI.csproj|c:\\users\\capzod\\documents\\github\\exposuremanagementproject\\cloudaccountsproject\\cloudaccountsui\\services\\cloudhistoryservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{AAE86E63-E33D-1D89-C4E0-CB51C2A9E914}|CloudAccountsUI\\CloudAccountsUI.csproj|solutionrelative:cloudaccountsui\\services\\cloudhistoryservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{8EC806F2-B20F-65EF-C59F-647970AADFDE}|CloudAccountsProject\\CloudAccountsProject.csproj|c:\\users\\jeevan\\desktop\\github\\exposuremanagementproject\\cloudaccountsproject\\cloudaccountsproject\\repositories\\cloudhistoryrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{8EC806F2-B20F-65EF-C59F-647970AADFDE}|CloudAccountsProject\\CloudAccountsProject.csproj|c:\\users\\capzod\\documents\\github\\exposuremanagementproject\\cloudaccountsproject\\cloudaccountsproject\\repositories\\cloudhistoryrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{8EC806F2-B20F-65EF-C59F-647970AADFDE}|CloudAccountsProject\\CloudAccountsProject.csproj|solutionrelative:cloudaccountsproject\\repositories\\cloudhistoryrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{EF9B2DD1-4B36-4A93-B26D-7C3832B82409}|CloudAccountsShared\\CloudAccountsShared.csproj|c:\\users\\jeevan\\desktop\\github\\exposuremanagementproject\\cloudaccountsproject\\cloudaccountsshared\\models\\cloudaccount.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{EF9B2DD1-4B36-4A93-B26D-7C3832B82409}|CloudAccountsShared\\CloudAccountsShared.csproj|c:\\users\\capzod\\documents\\github\\exposuremanagementproject\\cloudaccountsproject\\cloudaccountsshared\\models\\cloudaccount.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{EF9B2DD1-4B36-4A93-B26D-7C3832B82409}|CloudAccountsShared\\CloudAccountsShared.csproj|solutionrelative:cloudaccountsshared\\models\\cloudaccount.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
@@ -38,35 +42,33 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 11,
+          "SelectedChildIndex": 13,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 6,
               "Title": "CloudHistoryRepository.cs",
-              "DocumentMoniker": "C:\\Users\\Jeevan\\Desktop\\GitHub\\ExposureManagementProject\\CloudAccountsProject\\CloudAccountsProject\\Repositories\\CloudHistoryRepository.cs",
+              "DocumentMoniker": "C:\\Users\\Capzod\\Documents\\GitHub\\ExposureManagementProject\\CloudAccountsProject\\CloudAccountsProject\\Repositories\\CloudHistoryRepository.cs",
               "RelativeDocumentMoniker": "CloudAccountsProject\\Repositories\\CloudHistoryRepository.cs",
-              "ToolTip": "C:\\Users\\Jeevan\\Desktop\\GitHub\\ExposureManagementProject\\CloudAccountsProject\\CloudAccountsProject\\Repositories\\CloudHistoryRepository.cs",
+              "ToolTip": "C:\\Users\\Capzod\\Documents\\GitHub\\ExposureManagementProject\\CloudAccountsProject\\CloudAccountsProject\\Repositories\\CloudHistoryRepository.cs",
               "RelativeToolTip": "CloudAccountsProject\\Repositories\\CloudHistoryRepository.cs",
               "ViewState": "AgIAAAIAAAAAAAAAAAAAABEAAABKAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-04-16T06:57:18.378Z",
-              "IsPinned": true,
-              "EditorCaption": ""
+              "IsPinned": true
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 5,
               "Title": "CloudHistoryService.cs",
-              "DocumentMoniker": "C:\\Users\\Jeevan\\Desktop\\GitHub\\ExposureManagementProject\\CloudAccountsProject\\CloudAccountsUI\\Services\\CloudHistoryService.cs",
+              "DocumentMoniker": "C:\\Users\\Capzod\\Documents\\GitHub\\ExposureManagementProject\\CloudAccountsProject\\CloudAccountsUI\\Services\\CloudHistoryService.cs",
               "RelativeDocumentMoniker": "CloudAccountsUI\\Services\\CloudHistoryService.cs",
-              "ToolTip": "C:\\Users\\Jeevan\\Desktop\\GitHub\\ExposureManagementProject\\CloudAccountsProject\\CloudAccountsUI\\Services\\CloudHistoryService.cs",
+              "ToolTip": "C:\\Users\\Capzod\\Documents\\GitHub\\ExposureManagementProject\\CloudAccountsProject\\CloudAccountsUI\\Services\\CloudHistoryService.cs",
               "RelativeToolTip": "CloudAccountsUI\\Services\\CloudHistoryService.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAcAAAA3AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-04-16T10:32:18.368Z",
-              "IsPinned": true,
-              "EditorCaption": ""
+              "IsPinned": true
             },
             {
               "$type": "Bookmark",
@@ -98,58 +100,66 @@
             },
             {
               "$type": "Bookmark",
-              "Name": "ST:0:0:{1c4feeaa-4718-4aa9-859d-94ce25d182ba}"
-            },
-            {
-              "$type": "Bookmark",
               "Name": "ST:0:0:{aa2115a1-9712-457b-9047-dbb71ca2cdd2}"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 3,
+              "Title": "appsettings.json",
+              "DocumentMoniker": "C:\\Users\\Capzod\\Documents\\GitHub\\ExposureManagementProject\\CloudAccountsProject\\CloudAccountsProject\\appsettings.json",
+              "RelativeDocumentMoniker": "CloudAccountsProject\\appsettings.json",
+              "ToolTip": "C:\\Users\\Capzod\\Documents\\GitHub\\ExposureManagementProject\\CloudAccountsProject\\CloudAccountsProject\\appsettings.json",
+              "RelativeToolTip": "CloudAccountsProject\\appsettings.json",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAQAAAAEAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2026-04-16T17:44:44.856Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
               "Title": "BusinessFunctionUI.razor",
-              "DocumentMoniker": "C:\\Users\\Jeevan\\Desktop\\GitHub\\ExposureManagementProject\\CloudAccountsProject\\CloudAccountsUI\\Pages\\BusinessFunctionUI.razor",
+              "DocumentMoniker": "C:\\Users\\Capzod\\Documents\\GitHub\\ExposureManagementProject\\CloudAccountsProject\\CloudAccountsUI\\Pages\\BusinessFunctionUI.razor",
               "RelativeDocumentMoniker": "CloudAccountsUI\\Pages\\BusinessFunctionUI.razor",
-              "ToolTip": "C:\\Users\\Jeevan\\Desktop\\GitHub\\ExposureManagementProject\\CloudAccountsProject\\CloudAccountsUI\\Pages\\BusinessFunctionUI.razor",
+              "ToolTip": "C:\\Users\\Capzod\\Documents\\GitHub\\ExposureManagementProject\\CloudAccountsProject\\CloudAccountsUI\\Pages\\BusinessFunctionUI.razor",
               "RelativeToolTip": "CloudAccountsUI\\Pages\\BusinessFunctionUI.razor",
-              "ViewState": "AgIAAFAEAAAAAAAAAAAAAAQAAAAaAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAANsAAAAUAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
               "WhenOpened": "2026-04-16T13:15:12.086Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 4,
               "Title": "MainLayout.razor",
-              "DocumentMoniker": "C:\\Users\\Jeevan\\Desktop\\GitHub\\ExposureManagementProject\\CloudAccountsProject\\CloudAccountsUI\\Layout\\MainLayout.razor",
+              "DocumentMoniker": "C:\\Users\\Capzod\\Documents\\GitHub\\ExposureManagementProject\\CloudAccountsProject\\CloudAccountsUI\\Layout\\MainLayout.razor",
               "RelativeDocumentMoniker": "CloudAccountsUI\\Layout\\MainLayout.razor",
-              "ToolTip": "C:\\Users\\Jeevan\\Desktop\\GitHub\\ExposureManagementProject\\CloudAccountsProject\\CloudAccountsUI\\Layout\\MainLayout.razor",
+              "ToolTip": "C:\\Users\\Capzod\\Documents\\GitHub\\ExposureManagementProject\\CloudAccountsProject\\CloudAccountsUI\\Layout\\MainLayout.razor",
               "RelativeToolTip": "CloudAccountsUI\\Layout\\MainLayout.razor",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAMAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2026-04-16T12:09:47.257Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-04-16T12:09:47.257Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 0,
               "Title": "CloudAccounts.razor",
-              "DocumentMoniker": "C:\\Users\\Jeevan\\Desktop\\GitHub\\ExposureManagementProject\\CloudAccountsProject\\CloudAccountsUI\\Pages\\CloudAccounts.razor",
+              "DocumentMoniker": "C:\\Users\\Capzod\\Documents\\GitHub\\ExposureManagementProject\\CloudAccountsProject\\CloudAccountsUI\\Pages\\CloudAccounts.razor",
               "RelativeDocumentMoniker": "CloudAccountsUI\\Pages\\CloudAccounts.razor",
-              "ToolTip": "C:\\Users\\Jeevan\\Desktop\\GitHub\\ExposureManagementProject\\CloudAccountsProject\\CloudAccountsUI\\Pages\\CloudAccounts.razor",
+              "ToolTip": "C:\\Users\\Capzod\\Documents\\GitHub\\ExposureManagementProject\\CloudAccountsProject\\CloudAccountsUI\\Pages\\CloudAccounts.razor",
               "RelativeToolTip": "CloudAccountsUI\\Pages\\CloudAccounts.razor",
-              "ViewState": "AgIAAI0CAAAAAAAAAAAAAKQCAAAnAAAAAAAAAA==",
+              "ViewState": "AgIAADkDAAAAAAAAAADgv0MDAABIAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
               "WhenOpened": "2026-04-16T07:34:21.338Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 1,
               "Title": "HistoryDialog.razor",
-              "DocumentMoniker": "C:\\Users\\Jeevan\\Desktop\\GitHub\\ExposureManagementProject\\CloudAccountsProject\\CloudAccountsUI\\Dialog\\HistoryDialog.razor",
+              "DocumentMoniker": "C:\\Users\\Capzod\\Documents\\GitHub\\ExposureManagementProject\\CloudAccountsProject\\CloudAccountsUI\\Dialog\\HistoryDialog.razor",
               "RelativeDocumentMoniker": "CloudAccountsUI\\Dialog\\HistoryDialog.razor",
-              "ToolTip": "C:\\Users\\Jeevan\\Desktop\\GitHub\\ExposureManagementProject\\CloudAccountsProject\\CloudAccountsUI\\Dialog\\HistoryDialog.razor",
+              "ToolTip": "C:\\Users\\Capzod\\Documents\\GitHub\\ExposureManagementProject\\CloudAccountsProject\\CloudAccountsUI\\Dialog\\HistoryDialog.razor",
               "RelativeToolTip": "CloudAccountsUI\\Dialog\\HistoryDialog.razor",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAMAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
@@ -158,16 +168,15 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 6,
+              "DocumentIndex": 7,
               "Title": "CloudAccount.cs",
-              "DocumentMoniker": "C:\\Users\\Jeevan\\Desktop\\GitHub\\ExposureManagementProject\\CloudAccountsProject\\CloudAccountsShared\\Models\\CloudAccount.cs",
+              "DocumentMoniker": "C:\\Users\\Capzod\\Documents\\GitHub\\ExposureManagementProject\\CloudAccountsProject\\CloudAccountsShared\\Models\\CloudAccount.cs",
               "RelativeDocumentMoniker": "CloudAccountsShared\\Models\\CloudAccount.cs",
-              "ToolTip": "C:\\Users\\Jeevan\\Desktop\\GitHub\\ExposureManagementProject\\CloudAccountsProject\\CloudAccountsShared\\Models\\CloudAccount.cs",
+              "ToolTip": "C:\\Users\\Capzod\\Documents\\GitHub\\ExposureManagementProject\\CloudAccountsProject\\CloudAccountsShared\\Models\\CloudAccount.cs",
               "RelativeToolTip": "CloudAccountsShared\\Models\\CloudAccount.cs",
               "ViewState": "AgIAACYAAAAAAAAAAAAwwC4AAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-04-16T07:35:14.274Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-04-16T07:35:14.274Z"
             }
           ]
         }

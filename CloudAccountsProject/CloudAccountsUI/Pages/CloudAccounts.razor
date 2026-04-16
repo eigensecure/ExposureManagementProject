@@ -1,12 +1,10 @@
 ﻿@page "/cloudaccounts"
 @using System.Net.Http.Json
 @using CloudAccountsShared.Models
+@using CloudAccountsUI.Dialog
 @using CloudAccountsShared.Models.DTOs
 @using CloudAccountsUI.Services.Contracts
-@using CloudAccountsUI.Dialog
 @using MudBlazor
-@using MudBlazor.Extensions
-@using MudBlazor.Extensions.Options
 @inject HttpClient Http
 @inject IDialogService DialogService
 @inject NavigationManager NavManager
@@ -14,108 +12,83 @@
 @inject ICloudHistoryService cloudhistoryservice
 
 <style>
-    .mud-table-pagination {
-        display: flex !important;
-        justify-content: flex-end;
-        align-items: center;
+    ::deep .mud-layout {
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+
+    ::deep .mud-main-content {
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+
+    .full-page-container {
         width: 100%;
-        padding: 8px 16px;
-    }
-
-    .mud-table-container {
-        max-height: calc(100vh - 280px) !important;
-        overflow: auto !important;
-        position: relative !important;
-    }
-
-    .mud-table {
-        width: 100%;
-    }
-
-        .mud-table table {
-            border-collapse: collapse;
-            width: 100%;
-        }
-
-    .mud-table-head {
-        position: sticky !important;
-        top: 0 !important;
-        z-index: 90 !important;
-        background: #f5f5f5 !important;
-    }
-
-        .mud-table-head .mud-table-cell {
-            font-weight: bold !important;
-            white-space: nowrap !important;
-            background: #f5f5f5 !important;
-            color: #333 !important;
-        }
-
-    .mud-data-grid-filter-row .mud-table-cell.mud-table-cell-sticky-left {
-        top: 48px !important;
-        z-index: 86 !important;
-    }
-
-    .mud-table-head .mud-table-cell.mud-table-cell-sticky-left {
-        top: 0 !important;
-        z-index: 91 !important;
-        background: #f5f5f5 !important;
-    }
-
-    .mud-table-body .mud-table-cell.mud-table-cell-sticky-left {
-        z-index: 75 !important;
-        background-color: white !important;
-    }
-
-    .cell-content {
-        width: 100%;
-        white-space: normal;
-        word-break: break-word;
-        padding: 4px;
-    }
-
-    .truncate-text {
-        white-space: nowrap;
+        height: 100vh;
+        padding: 0;
+        margin: 0;
         overflow: hidden;
-        text-overflow: ellipsis;
-        max-width: 100%;
-        display: block;
-    }
-
-    .main-layout {
+        background: white;
         display: flex;
-        gap: 16px;
-        flex: 1;
-        min-height: 0;
+        flex-direction: column;
     }
 
-    .grid-container {
+    .main-wrapper {
+        flex: 1;
+        display: flex;
+        overflow: hidden;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .pushed-content {
         flex: 1;
         min-width: 0;
         display: flex;
         flex-direction: column;
-        min-height: 0;
+        overflow: hidden;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
-    .drawer-container {
-        width: 500px;
+    .header-toolbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 16px 20px;
+        border-bottom: 1px solid #E2E8F0;
         flex-shrink: 0;
-        height: calc(100vh - 160px);
-        max-height: calc(100vh - 160px);
+        background: white;
     }
 
-        .drawer-container.fullscreen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            width: 100%;
-            height: 100%;
-            max-height: 100%;
-            z-index: 1000;
-            background: white;
-        }
+    .title-section {
+        flex: 1;
+    }
+
+    .cs-title {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif;
+        font-size: 20px;
+        font-weight: 600;
+        color: #1A1D2E;
+        letter-spacing: -0.3px;
+    }
+
+    .cs-subtitle {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif;
+        font-size: 13px;
+        color: #5A6A85;
+        margin-top: 4px;
+    }
+
+    .actions-section {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+    }
+
+    .tabs-container {
+        flex-shrink: 0;
+        padding: 0 20px;
+        margin-bottom: 0;
+    }
 
     .crowdstrike-tabs {
         background: transparent !important;
@@ -150,30 +123,275 @@
     .mud-tab-indicator {
         display: none !important;
     }
+
+    .grid-container {
+        flex: 1;
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        min-height: 0;
+        position: relative;
+        padding: 20px;
+    }
+
+    .mud-table-container {
+        max-height: calc(100vh - 280px) !important;
+        overflow: auto !important;
+        position: relative !important;
+    }
+
+    .mud-table {
+        width: 100%;
+    }
+
+        .mud-table table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+    .mud-table-head {
+        position: sticky !important;
+        top: 0 !important;
+        z-index: 90 !important;
+        background: #F8F9FC !important;
+    }
+
+        .mud-table-head .mud-table-cell {
+            font-weight: 600 !important;
+            white-space: nowrap !important;
+            background: #F8F9FC !important;
+            color: #1A1D2E !important;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif;
+            font-size: 12px !important;
+            letter-spacing: 0.3px;
+            text-transform: uppercase;
+            border-bottom: 1px solid #E2E8F0 !important;
+        }
+
+    .mud-table-body .mud-table-cell {
+        color: #1A1D2E !important;
+        border-bottom: 1px solid #EDF2F7 !important;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif;
+        font-size: 13px;
+    }
+
+    .mud-table-body .mud-table-row:hover {
+        background: #F8F9FC !important;
+    }
+
+    .mud-table-pagination {
+        display: flex !important;
+        justify-content: flex-end !important;
+        align-items: center !important;
+        width: 100% !important;
+        padding: 8px 16px !important;
+        background: white !important;
+        border-top: 1px solid #E2E8F0 !important;
+    }
+
+    .drawer-container {
+        width: 0;
+        flex-shrink: 0;
+        overflow: hidden;
+        transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        background: white;
+        border-left: 1px solid #E2E8F0;
+        height: calc(100vh - 63px);
+        position: fixed;
+        right: 0;
+        top: 63px;
+        z-index: 1000;
+    }
+
+        .drawer-container.open {
+            width: 50%;
+            min-width: 500px;
+            max-width: 700px;
+        }
+
+    .main-wrapper.drawer-open {
+        margin-right: 50%;
+        min-width: calc(100% - 700px);
+        max-width: calc(100% - 500px);
+    }
+
+    .drawer-container.fullscreen {
+        width: 100% !important;
+        min-width: 100%;
+        max-width: 100%;
+        height: calc(100vh - 63px);
+        top: 63px;
+    }
+
+    .main-wrapper.drawer-open.fullscreen-active {
+        margin-right: 0 !important;
+        display: none;
+    }
+
+    .drawer-content {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        padding: 20px;
+    }
+
+    .drawer-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        flex-shrink: 0;
+        padding-bottom: 10px;
+        border-bottom: 1px solid #E2E8F0;
+    }
+
+    .drawer-title {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif;
+        font-size: 18px;
+        font-weight: 600;
+        color: #1A1D2E;
+    }
+
+    .drawer-buttons {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+    }
+
+    .drawer-footer {
+        display: flex;
+        justify-content: flex-end;
+        gap: 12px;
+        padding-top: 16px;
+        margin-top: 16px;
+        border-top: 1px solid #E2E8F0;
+        background: white;
+        flex-shrink: 0;
+    }
+
+    .column-selector-dialog {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+        z-index: 2000;
+        width: 350px;
+        max-width: 90%;
+        padding: 20px;
+        border: 1px solid #E2E8F0;
+    }
+
+    .overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0,0,0,0.5);
+        z-index: 1999;
+    }
+
+    .mud-switch {
+        --mud-switch-checked-color: #00A3FF !important;
+    }
+
+        .mud-switch .mud-switch-track {
+            background-color: #E2E8F0 !important;
+        }
+
+        .mud-switch .mud-switch-thumb {
+            background-color: white !important;
+        }
+
+        .mud-switch.mud-switch-checked .mud-switch-track {
+            background-color: #00A3FF !important;
+        }
+
+        .mud-switch.mud-switch-checked .mud-switch-thumb {
+            background-color: white !important;
+        }
+
+    ::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+        background: #F1F5F9;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background: #CBD5E1;
+        border-radius: 4px;
+    }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94A3B8;
+        }
+
+    .cell-content {
+        width: 100%;
+        white-space: normal;
+        word-break: break-word;
+        padding: 4px;
+    }
+
+    .truncate-text {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 100%;
+        display: block;
+    }
 </style>
 
-<MudPaper Class="pa-4" Style="min-height: calc(100vh - 80px); display: flex; flex-direction: column; overflow: hidden;">
+<div class="full-page-container">
+    <div class="main-wrapper @(drawerOpen && !drawerFullscreen ? "drawer-open" : "") @(drawerFullscreen ? "fullscreen-active" : "")">
+        <div class="pushed-content">
+            <div class="header-toolbar">
+                <div class="title-section">
+                    <div class="cs-title">
+                        <MudIcon Icon="@Icons.Material.Filled.Cloud" Class="mr-2" Style="color: #00A3FF;" />
+                        Cloud Accounts Management
+                    </div>
+                    <div class="cs-subtitle">
+                        Manage and monitor all your cloud accounts across providers
+                    </div>
+                </div>
+                <div class="actions-section">
+                    <MudTooltip Text="Export To CSV" Arrow="true" Placement="Placement.Top">
+                        <MudIconButton Icon="@Icons.Material.Filled.Download"
+                                       Style="color: #5A6A85;"
+                                       Size="Size.Small"
+                                       OnClick="ExportCsv" />
+                    </MudTooltip>
+                    <MudTooltip Text="Column Settings" Arrow="true" Placement="Placement.Top">
+                        <MudIconButton Icon="@Icons.Material.Filled.Settings"
+                                       Style="color: #5A6A85;"
+                                       Size="Size.Small"
+                                       OnClick="OpenColumnSelector" />
+                    </MudTooltip>
+                </div>
+            </div>
 
-    <div style="margin-bottom: 16px; flex-shrink: 0;">
-        <MudText Typo="Typo.h6">☁️ Cloud Accounts Management</MudText>
-        <MudText Typo="Typo.body2">Manage and monitor all your cloud accounts across providers</MudText>
-    </div>
+            <div class="tabs-container">
+                <MudTabs Rounded="true"
+                         Elevation="0"
+                         Class="crowdstrike-tabs"
+                         ActivePanelIndexChanged="OnTabChanged">
 
-    <MudTabs Rounded="true"
-             Elevation="0"
-             Class="mb-4 crowdstrike-tabs"
-             Style="flex-shrink: 0;"
-             ActivePanelIndexChanged="OnTabChanged">
+                    <MudTabPanel Text="@AllTabText" Class="crowdstrike-tab" />
+                    <MudTabPanel Text="@AwsTabText" Class="crowdstrike-tab" />
+                    <MudTabPanel Text="@AzureTabText" Class="crowdstrike-tab" />
+                    <MudTabPanel Text="@GcpTabText" Class="crowdstrike-tab" />
+                </MudTabs>
+            </div>
 
-        <MudTabPanel Text="@AllTabText" Class="crowdstrike-tab" />
-        <MudTabPanel Text="@AwsTabText" Class="crowdstrike-tab" />
-        <MudTabPanel Text="@AzureTabText" Class="crowdstrike-tab" />
-        <MudTabPanel Text="@GcpTabText" Class="crowdstrike-tab" />
-    </MudTabs>
-
-    <div class="main-layout">
-        <div class="grid-container" style="@(drawerOpen && !drawerFullscreen ? "width: calc(100% - 516px); flex: none;" : "width: 100%; flex: none;")">
-            <div style="flex: 1; min-height: 0;">
+            <div class="grid-container">
                 <MudDataGrid T="CloudAccount"
                              @ref="_dataGrid"
                              Items="@FilteredAccounts"
@@ -184,7 +402,7 @@
                              Filterable="true"
                              FilterMode="DataGridFilterMode.ColumnFilterRow"
                              FilterCaseSensitivity="DataGridFilterCaseSensitivity.CaseInsensitive"
-                             ShowColumnOptions="true"
+                             ShowColumnOptions="false"
                              FixedHeader="true"
                              @bind-PageSize="PageSize"
                              RowsPerPageOptions="@PageSizeOptions"
@@ -194,221 +412,250 @@
                              ColumnResizeMode="ResizeMode.Column"
                              DragDropColumnReordering="true"
                              ColumnsPanelReordering="true"
-                             ShowMenuIcon="true"
+                             ShowMenuIcon="false"
                              RowContextMenuClick="OpenContextMenu">
 
                     <Columns>
-                        <PropertyColumn Property="x => x.Provider"
-                                        Title="Provider"
-                                        Resizable="true"
-                                        Hideable="true">
-                            <CellTemplate Context="cell">
-                                <div class="cell-content">
-                                    <MudTooltip Text="@cell.Item.Provider" Placement="Placement.Top">
-                                        <span class="truncate-text">@cell.Item.Provider</span>
-                                    </MudTooltip>
-                                </div>
-                            </CellTemplate>
-                        </PropertyColumn>
+                        @if (IsColumnVisible("Provider"))
+                        {
+                            <PropertyColumn Property="x => x.Provider"
+                                            Title="Provider"
+                                            Resizable="true">
+                                <CellTemplate Context="cell">
+                                    <div class="cell-content">
+                                        <MudTooltip Text="@cell.Item.Provider" Placement="Placement.Top">
+                                            <span class="truncate-text">@cell.Item.Provider</span>
+                                        </MudTooltip>
+                                    </div>
+                                </CellTemplate>
+                            </PropertyColumn>
+                        }
 
-                        <PropertyColumn Property="x => x.CloudAccountId"
-                                        Title="Cloud Account ID"
-                                        StickyLeft="true"
-                                        Resizable="true"
-                                        Hideable="true">
-                            <CellTemplate Context="cell">
-                                <div class="cell-content">
-                                    <MudTooltip Text="@cell.Item.CloudAccountId" Placement="Placement.Top">
-                                        <span class="truncate-text">@cell.Item.CloudAccountId</span>
-                                    </MudTooltip>
-                                </div>
-                            </CellTemplate>
-                        </PropertyColumn>
+                        @if (IsColumnVisible("Cloud Account ID"))
+                        {
+                            <PropertyColumn Property="x => x.CloudAccountId"
+                                            Title="Cloud Account ID"
+                                            StickyLeft="true"
+                                            Resizable="true">
+                                <CellTemplate Context="cell">
+                                    <div class="cell-content">
+                                        <MudTooltip Text="@cell.Item.CloudAccountId" Placement="Placement.Top">
+                                            <span class="truncate-text">@cell.Item.CloudAccountId</span>
+                                        </MudTooltip>
+                                    </div>
+                                </CellTemplate>
+                            </PropertyColumn>
+                        }
 
-                        <PropertyColumn Property="x => x.CloudName"
-                                        Title="Cloud Name"
-                                        Resizable="true"
-                                        Hideable="true">
-                            <CellTemplate Context="cell">
-                                <div class="cell-content">
-                                    <MudTooltip Text="@cell.Item.CloudName" Placement="Placement.Top">
-                                        <span class="truncate-text">@cell.Item.CloudName</span>
-                                    </MudTooltip>
-                                </div>
-                            </CellTemplate>
-                        </PropertyColumn>
+                        @if (IsColumnVisible("Cloud Name"))
+                        {
+                            <PropertyColumn Property="x => x.CloudName"
+                                            Title="Cloud Name"
+                                            Resizable="true">
+                                <CellTemplate Context="cell">
+                                    <div class="cell-content">
+                                        <MudTooltip Text="@cell.Item.CloudName" Placement="Placement.Top">
+                                            <span class="truncate-text">@cell.Item.CloudName</span>
+                                        </MudTooltip>
+                                    </div>
+                                </CellTemplate>
+                            </PropertyColumn>
+                        }
 
-                        <PropertyColumn Property="x => x.CloudOrgId"
-                                        Title="Cloud Org ID"
-                                        Resizable="true"
-                                        Hideable="true">
-                            <CellTemplate Context="cell">
-                                <div class="cell-content">
-                                    <MudTooltip Text="@cell.Item.CloudOrgId" Placement="Placement.Top">
-                                        <span class="truncate-text">@cell.Item.CloudOrgId</span>
-                                    </MudTooltip>
-                                </div>
-                            </CellTemplate>
-                        </PropertyColumn>
+                        @if (IsColumnVisible("Cloud Org ID"))
+                        {
+                            <PropertyColumn Property="x => x.CloudOrgId"
+                                            Title="Cloud Org ID"
+                                            Resizable="true">
+                                <CellTemplate Context="cell">
+                                    <div class="cell-content">
+                                        <MudTooltip Text="@cell.Item.CloudOrgId" Placement="Placement.Top">
+                                            <span class="truncate-text">@cell.Item.CloudOrgId</span>
+                                        </MudTooltip>
+                                    </div>
+                                </CellTemplate>
+                            </PropertyColumn>
+                        }
 
-                        <PropertyColumn Property="x => x.CloudRootAccountId"
-                                        Title="Root Account ID"
-                                        Resizable="true"
-                                        Hideable="true">
-                            <CellTemplate Context="cell">
-                                <div class="cell-content">
-                                    <MudTooltip Text="@cell.Item.CloudRootAccountId" Placement="Placement.Top">
-                                        <span class="truncate-text">@cell.Item.CloudRootAccountId</span>
-                                    </MudTooltip>
-                                </div>
-                            </CellTemplate>
-                        </PropertyColumn>
+                        @if (IsColumnVisible("Root Account ID"))
+                        {
+                            <PropertyColumn Property="x => x.CloudRootAccountId"
+                                            Title="Root Account ID"
+                                            Resizable="true">
+                                <CellTemplate Context="cell">
+                                    <div class="cell-content">
+                                        <MudTooltip Text="@cell.Item.CloudRootAccountId" Placement="Placement.Top">
+                                            <span class="truncate-text">@cell.Item.CloudRootAccountId</span>
+                                        </MudTooltip>
+                                    </div>
+                                </CellTemplate>
+                            </PropertyColumn>
+                        }
 
-                        <PropertyColumn Property="x => x.RegistrationType"
-                                        Title="Registration Type"
-                                        Resizable="true"
-                                        Hideable="true">
-                            <CellTemplate Context="cell">
-                                <div class="cell-content">
-                                    <MudTooltip Text="@cell.Item.RegistrationType" Placement="Placement.Top">
-                                        <span class="truncate-text">@cell.Item.RegistrationType</span>
-                                    </MudTooltip>
-                                </div>
-                            </CellTemplate>
-                        </PropertyColumn>
+                        @if (IsColumnVisible("Registration Type"))
+                        {
+                            <PropertyColumn Property="x => x.RegistrationType"
+                                            Title="Registration Type"
+                                            Resizable="true">
+                                <CellTemplate Context="cell">
+                                    <div class="cell-content">
+                                        <MudTooltip Text="@cell.Item.RegistrationType" Placement="Placement.Top">
+                                            <span class="truncate-text">@cell.Item.RegistrationType</span>
+                                        </MudTooltip>
+                                    </div>
+                                </CellTemplate>
+                            </PropertyColumn>
+                        }
 
-                        <PropertyColumn Property="x => x.DeploymentMethod"
-                                        Title="Deployment Method"
-                                        Resizable="true"
-                                        Hideable="true">
-                            <CellTemplate Context="cell">
-                                <div class="cell-content">
-                                    <MudTooltip Text="@cell.Item.DeploymentMethod" Placement="Placement.Top">
-                                        <span class="truncate-text">@cell.Item.DeploymentMethod</span>
-                                    </MudTooltip>
-                                </div>
-                            </CellTemplate>
-                        </PropertyColumn>
+                        @if (IsColumnVisible("Deployment Method"))
+                        {
+                            <PropertyColumn Property="x => x.DeploymentMethod"
+                                            Title="Deployment Method"
+                                            Resizable="true">
+                                <CellTemplate Context="cell">
+                                    <div class="cell-content">
+                                        <MudTooltip Text="@cell.Item.DeploymentMethod" Placement="Placement.Top">
+                                            <span class="truncate-text">@cell.Item.DeploymentMethod</span>
+                                        </MudTooltip>
+                                    </div>
+                                </CellTemplate>
+                            </PropertyColumn>
+                        }
 
-                        <PropertyColumn Property="x => x.Iomstatus"
-                                        Title="IOM Status"
-                                        Resizable="true"
-                                        Hideable="true">
-                            <CellTemplate Context="cell">
-                                <div class="cell-content">
-                                    <MudTooltip Text="@cell.Item.Iomstatus" Placement="Placement.Top">
-                                        <span class="truncate-text">@cell.Item.Iomstatus</span>
-                                    </MudTooltip>
-                                </div>
-                            </CellTemplate>
-                        </PropertyColumn>
+                        @if (IsColumnVisible("IOM Status"))
+                        {
+                            <PropertyColumn Property="x => x.Iomstatus"
+                                            Title="IOM Status"
+                                            Resizable="true">
+                                <CellTemplate Context="cell">
+                                    <div class="cell-content">
+                                        <MudTooltip Text="@cell.Item.Iomstatus" Placement="Placement.Top">
+                                            <span class="truncate-text">@cell.Item.Iomstatus</span>
+                                        </MudTooltip>
+                                    </div>
+                                </CellTemplate>
+                            </PropertyColumn>
+                        }
 
-                        <PropertyColumn Property="x => x.RealTimeVisibilityAndDetectionStatus"
-                                        Title="RTVD Status"
-                                        Resizable="true"
-                                        Hideable="true">
-                            <CellTemplate Context="cell">
-                                <div class="cell-content">
-                                    <MudTooltip Text="@cell.Item.RealTimeVisibilityAndDetectionStatus" Placement="Placement.Top">
-                                        <span class="truncate-text">@cell.Item.RealTimeVisibilityAndDetectionStatus</span>
-                                    </MudTooltip>
-                                </div>
-                            </CellTemplate>
-                        </PropertyColumn>
+                        @if (IsColumnVisible("RTVD Status"))
+                        {
+                            <PropertyColumn Property="x => x.RealTimeVisibilityAndDetectionStatus"
+                                            Title="RTVD Status"
+                                            Resizable="true">
+                                <CellTemplate Context="cell">
+                                    <div class="cell-content">
+                                        <MudTooltip Text="@cell.Item.RealTimeVisibilityAndDetectionStatus" Placement="Placement.Top">
+                                            <span class="truncate-text">@cell.Item.RealTimeVisibilityAndDetectionStatus</span>
+                                        </MudTooltip>
+                                    </div>
+                                </CellTemplate>
+                            </PropertyColumn>
+                        }
 
-                        <PropertyColumn Property="x => x.OneClickSensorStatus"
-                                        Title="1-Click Sensor Status"
-                                        Resizable="true"
-                                        Hideable="true">
-                            <CellTemplate Context="cell">
-                                <div class="cell-content">
-                                    <MudTooltip Text="@cell.Item.OneClickSensorStatus" Placement="Placement.Top">
-                                        <span class="truncate-text">@cell.Item.OneClickSensorStatus</span>
-                                    </MudTooltip>
-                                </div>
-                            </CellTemplate>
-                        </PropertyColumn>
+                        @if (IsColumnVisible("1-Click Sensor Status"))
+                        {
+                            <PropertyColumn Property="x => x.OneClickSensorStatus"
+                                            Title="1-Click Sensor Status"
+                                            Resizable="true">
+                                <CellTemplate Context="cell">
+                                    <div class="cell-content">
+                                        <MudTooltip Text="@cell.Item.OneClickSensorStatus" Placement="Placement.Top">
+                                            <span class="truncate-text">@cell.Item.OneClickSensorStatus</span>
+                                        </MudTooltip>
+                                    </div>
+                                </CellTemplate>
+                            </PropertyColumn>
+                        }
 
-                        <PropertyColumn Property="x => x.IdentityProtectionStatus"
-                                        Title="Identity Protection Status"
-                                        Resizable="true"
-                                        Hideable="true">
-                            <CellTemplate Context="cell">
-                                <div class="cell-content">
-                                    <MudTooltip Text="@cell.Item.IdentityProtectionStatus" Placement="Placement.Top">
-                                        <span class="truncate-text">@cell.Item.IdentityProtectionStatus</span>
-                                    </MudTooltip>
-                                </div>
-                            </CellTemplate>
-                        </PropertyColumn>
+                        @if (IsColumnVisible("Identity Protection Status"))
+                        {
+                            <PropertyColumn Property="x => x.IdentityProtectionStatus"
+                                            Title="Identity Protection Status"
+                                            Resizable="true">
+                                <CellTemplate Context="cell">
+                                    <div class="cell-content">
+                                        <MudTooltip Text="@cell.Item.IdentityProtectionStatus" Placement="Placement.Top">
+                                            <span class="truncate-text">@cell.Item.IdentityProtectionStatus</span>
+                                        </MudTooltip>
+                                    </div>
+                                </CellTemplate>
+                            </PropertyColumn>
+                        }
 
-                        <PropertyColumn Property="x => x.Dspmstatus"
-                                        Title="DSPM Status"
-                                        Resizable="true"
-                                        Hideable="true">
-                            <CellTemplate Context="cell">
-                                <div class="cell-content">
-                                    <MudTooltip Text="@cell.Item.Dspmstatus" Placement="Placement.Top">
-                                        <span class="truncate-text">@cell.Item.Dspmstatus</span>
-                                    </MudTooltip>
-                                </div>
-                            </CellTemplate>
-                        </PropertyColumn>
+                        @if (IsColumnVisible("DSPM Status"))
+                        {
+                            <PropertyColumn Property="x => x.Dspmstatus"
+                                            Title="DSPM Status"
+                                            Resizable="true">
+                                <CellTemplate Context="cell">
+                                    <div class="cell-content">
+                                        <MudTooltip Text="@cell.Item.Dspmstatus" Placement="Placement.Top">
+                                            <span class="truncate-text">@cell.Item.Dspmstatus</span>
+                                        </MudTooltip>
+                                    </div>
+                                </CellTemplate>
+                            </PropertyColumn>
+                        }
 
-                        <PropertyColumn Property="x => x.VulnerabilityScanningStatus"
-                                        Title="Vulnerability Scanning Status"
-                                        Resizable="true"
-                                        Hideable="true">
-                            <CellTemplate Context="cell">
-                                <div class="cell-content">
-                                    <MudTooltip Text="@cell.Item.VulnerabilityScanningStatus" Placement="Placement.Top">
-                                        <span class="truncate-text">@cell.Item.VulnerabilityScanningStatus</span>
-                                    </MudTooltip>
-                                </div>
-                            </CellTemplate>
-                        </PropertyColumn>
+                        @if (IsColumnVisible("Vulnerability Scanning Status"))
+                        {
+                            <PropertyColumn Property="x => x.VulnerabilityScanningStatus"
+                                            Title="Vulnerability Scanning Status"
+                                            Resizable="true">
+                                <CellTemplate Context="cell">
+                                    <div class="cell-content">
+                                        <MudTooltip Text="@cell.Item.VulnerabilityScanningStatus" Placement="Placement.Top">
+                                            <span class="truncate-text">@cell.Item.VulnerabilityScanningStatus</span>
+                                        </MudTooltip>
+                                    </div>
+                                </CellTemplate>
+                            </PropertyColumn>
+                        }
 
-                        <PropertyColumn Property="x => x.DateCreated"
-                                        Title="Date Created"
-                                        Resizable="true"
-                                        Hideable="true">
-                            <CellTemplate Context="cell">
-                                <div class="cell-content">
-                                    <MudTooltip Text="@cell.Item.DateCreated.ToString("yyyy-MM-dd HH:mm")" Placement="Placement.Top">
-                                        <span class="truncate-text">@cell.Item.DateCreated.ToString("yyyy-MM-dd HH:mm")</span>
-                                    </MudTooltip>
-                                </div>
-                            </CellTemplate>
-                        </PropertyColumn>
+                        @if (IsColumnVisible("Date Created"))
+                        {
+                            <PropertyColumn Property="x => x.DateCreated"
+                                            Title="Date Created"
+                                            Resizable="true">
+                                <CellTemplate Context="cell">
+                                    <div class="cell-content">
+                                        <MudTooltip Text="@cell.Item.DateCreated.ToString("yyyy-MM-dd HH:mm")" Placement="Placement.Top">
+                                            <span class="truncate-text">@cell.Item.DateCreated.ToString("yyyy-MM-dd HH:mm")</span>
+                                        </MudTooltip>
+                                    </div>
+                                </CellTemplate>
+                            </PropertyColumn>
+                        }
 
-                        <PropertyColumn Property="x => x.DateModified"
-                                        Title="Date Modified"
-                                        Resizable="true"
-                                        Hideable="true">
-                            <CellTemplate Context="cell">
-                                <div class="cell-content">
-                                    <MudTooltip Text="@cell.Item.DateModified.ToString("yyyy-MM-dd HH:mm")" Placement="Placement.Top">
-                                        <span class="truncate-text">@cell.Item.DateModified.ToString("yyyy-MM-dd HH:mm")</span>
-                                    </MudTooltip>
-                                </div>
-                            </CellTemplate>
-                        </PropertyColumn>
+                        @if (IsColumnVisible("Date Modified"))
+                        {
+                            <PropertyColumn Property="x => x.DateModified"
+                                            Title="Date Modified"
+                                            Resizable="true">
+                                <CellTemplate Context="cell">
+                                    <div class="cell-content">
+                                        <MudTooltip Text="@cell.Item.DateModified.ToString("yyyy-MM-dd HH:mm")" Placement="Placement.Top">
+                                            <span class="truncate-text">@cell.Item.DateModified.ToString("yyyy-MM-dd HH:mm")</span>
+                                        </MudTooltip>
+                                    </div>
+                                </CellTemplate>
+                            </PropertyColumn>
+                        }
 
-                        <TemplateColumn Title="Actions"
+                        @* <TemplateColumn Title="Actions"
                                         StickyRight="true"
-                                        Resizable="false"
-                                        Hideable="false">
+                                        Resizable="false">
                             <CellTemplate Context="cell">
                                 <MudIconButton Icon="@Icons.Material.Filled.Edit"
                                                Size="Size.Small"
                                                Color="Color.Primary"
                                                OnClick="@(() => OpenDrawer(cell.Item))" />
                             </CellTemplate>
-                        </TemplateColumn>
+                        </TemplateColumn> *@
                     </Columns>
 
                     <NoRecordsContent>
-                        <MudText Class="pa-4">No matching records found</MudText>
+                        <MudText Class="pa-4" Style="color: #5A6A85;">No matching records found</MudText>
                     </NoRecordsContent>
 
                     <PagerContent>
@@ -417,160 +664,176 @@
                 </MudDataGrid>
             </div>
         </div>
+    </div>
 
-        @if (drawerOpen)
+    <div class="drawer-container @(drawerOpen ? "open" : "") @(drawerFullscreen ? "fullscreen" : "")">
+        @if (drawerOpen && editingAccount is not null)
         {
-            <div class="drawer-container @(drawerFullscreen ? "fullscreen" : "")">
-                <MudPaper Class="pa-4" Style="height: 100%; display: flex; flex-direction: column; overflow: hidden;">
-
-                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px; flex-shrink: 0;">
-                        <MudText Typo="Typo.h6">Edit Cloud Account</MudText>
-                        <div>
-                            <MudIconButton Icon="@(drawerFullscreen ? Icons.Material.Filled.FullscreenExit : Icons.Material.Filled.Fullscreen)"
-                                           Size="Size.Medium"
-                                           OnClick="ToggleFullscreen" />
-                            <MudIconButton Icon="@Icons.Material.Filled.Close"
-                                           Size="Size.Medium"
-                                           OnClick="CloseDrawer" />
-                        </div>
+            <div class="drawer-content">
+                <div class="drawer-header">
+                    <div class="drawer-title">Edit Cloud Account</div>
+                    <div class="drawer-buttons">
+                        <MudIconButton Icon="@(drawerFullscreen? Icons.Material.Filled.FullscreenExit : Icons.Material.Filled.Fullscreen)"
+                                       Size="Size.Medium"
+                                       Color="Color.Default"
+                                       OnClick="ToggleFullscreen" />
+                        <MudIconButton Icon="@Icons.Material.Filled.Close"
+                                       Size="Size.Medium"
+                                       Color="Color.Default"
+                                       OnClick="CloseDrawer" />
                     </div>
+                </div>
 
-                    <div style="flex: 1; overflow-y: auto;">
-                        @if (editingAccount is not null)
-                        {
-                            <MudText Typo="Typo.subtitle1" Class="mb-3">Cloud Details</MudText>
+                <div style="flex: 1; overflow-y: auto; padding-right: 8px;">
+                    <MudStack Spacing="2">
+                        <MudText Typo="Typo.subtitle2" Style="color: #1A1D2E; font-size: 13px; font-weight: 600;">Cloud Details</MudText>
 
-                            <MudTextField T="string"
-                                          Label="Cloud Name"
-                                          Variant="Variant.Outlined"
-                                          Class="mb-3"
-                                          @bind-Value="editingAccount.CloudName" />
+                        <MudTextField T="string"
+                                      Label="Cloud Name"
+                                      Variant="Variant.Outlined"
+                                      @bind-Value="editingAccount.CloudName"
+                                      Dense="true" />
 
-                            <MudTextField T="string"
-                                          Label="Cloud Org ID"
-                                          Variant="Variant.Outlined"
-                                          Class="mb-3"
-                                          @bind-Value="editingAccount.CloudOrgId" />
+                        <MudTextField T="string"
+                                      Label="Cloud Org ID"
+                                      Variant="Variant.Outlined"
+                                      @bind-Value="editingAccount.CloudOrgId"
+                                      Dense="true" />
 
-                            <MudTextField T="string"
-                                          Label="IOM Status"
-                                          Variant="Variant.Outlined"
-                                          Class="mb-3"
-                                          @bind-Value="editingAccount.Iomstatus" />
+                        <MudTextField T="string"
+                                      Label="IOM Status"
+                                      Variant="Variant.Outlined"
+                                      @bind-Value="editingAccount.Iomstatus"
+                                      Dense="true" />
 
-                            <MudTextField T="string"
-                                          Label="RTVD Status"
-                                          Variant="Variant.Outlined"
-                                          Class="mb-3"
-                                          @bind-Value="editingAccount.RealTimeVisibilityAndDetectionStatus" />
+                        <MudTextField T="string"
+                                      Label="RTVD Status"
+                                      Variant="Variant.Outlined"
+                                      @bind-Value="editingAccount.RealTimeVisibilityAndDetectionStatus"
+                                      Dense="true" />
 
-                            <MudDivider Class="my-4" />
+                        <MudDivider Class="my-3" />
 
-                            <MudText Typo="Typo.subtitle1" Class="mb-3">Business Function</MudText>
+                        <MudText Typo="Typo.subtitle2" Style="color: #1A1D2E; font-size: 13px; font-weight: 600;">Business Function</MudText>
 
-                            <MudAutocomplete T="string"
-                                             Label="Business Function Name"
-                                             Variant="Variant.Outlined"
-                                             Class="mb-3"
-                                             Value="@editingAccount.BusinessFunctionName"
-                                             ValueChanged="OnBusinessFunctionChanged"
-                                             SearchFunc="SearchBusinessFunctions"
-                                             Clearable="true"
-                                             ResetValueOnEmptyText="true"
-                                             CoerceText="true"
-                                             Dense="true" />
+                        <MudAutocomplete T="string"
+                                         Label="Business Function Name"
+                                         Variant="Variant.Outlined"
+                                         Value="@editingAccount.BusinessFunctionName"
+                                         ValueChanged="OnBusinessFunctionChanged"
+                                         SearchFunc="SearchBusinessFunctions"
+                                         Clearable="true"
+                                         ResetValueOnEmptyText="true"
+                                         CoerceText="true"
+                                         Dense="true" />
 
-                            <MudTextField T="string"
-                                          Label="Owner"
-                                          Value="@editingAccount.BusinessFunctionOwner"
-                                          Disabled="true"
-                                          Variant="Variant.Outlined"
-                                          Class="mb-3" />
+                        <MudTextField T="string"
+                                      Label="Owner"
+                                      Value="@editingAccount.BusinessFunctionOwner"
+                                      Disabled="true"
+                                      Variant="Variant.Outlined"
+                                      Dense="true" />
 
-                            <MudTextField T="string"
-                                          Label="LT Member"
-                                          Value="@editingAccount.BusinessFunctionLtMember"
-                                          Disabled="true"
-                                          Variant="Variant.Outlined"
-                                          Class="mb-3" />
+                        <MudTextField T="string"
+                                      Label="LT Member"
+                                      Value="@editingAccount.BusinessFunctionLtMember"
+                                      Disabled="true"
+                                      Variant="Variant.Outlined"
+                                      Dense="true" />
 
-                            <MudTextField T="string"
-                                          Label="SPOC"
-                                          Value="@editingAccount.BusinessFunctionSpoc"
-                                          Disabled="true"
-                                          Variant="Variant.Outlined"
-                                          Class="mb-3" />
+                        <MudTextField T="string"
+                                      Label="SPOC"
+                                      Value="@editingAccount.BusinessFunctionSpoc"
+                                      Disabled="true"
+                                      Variant="Variant.Outlined"
+                                      Dense="true" />
 
-                            <MudDivider Class="my-4" />
+                        <MudDivider Class="my-3" />
 
-                            <MudText Typo="Typo.subtitle1" Class="mb-3">Manual Details</MudText>
+                        <MudText Typo="Typo.subtitle2" Style="color: #1A1D2E; font-size: 13px; font-weight: 600;">Manual Details</MudText>
 
-                            <MudSelect T="string"
-                                       Label="Account Type"
-                                       Variant="Variant.Outlined"
-                                       Class="mb-3"
-                                       @bind-Value="editingAccount.AccountType">
+                        <MudSelect T="string"
+                                   Label="Account Type"
+                                   Variant="Variant.Outlined"
+                                   @bind-Value="editingAccount.AccountType"
+                                   Dense="true">
 
-                                <MudSelectItem Value='"Hybrid"'>Hybrid</MudSelectItem>
-                                <MudSelectItem Value='"Managed"'>Managed</MudSelectItem>
-                                <MudSelectItem Value='"Self-Managed"'>Self-Managed</MudSelectItem>
-                                <MudSelectItem Value='"Sandbox"'>Sandbox</MudSelectItem>
-                                <MudSelectItem Value='"SingleAccount"'>SingleAccount</MudSelectItem>
-                            </MudSelect>
+                            <MudSelectItem Value='"Hybrid"'>Hybrid</MudSelectItem>
+                            <MudSelectItem Value='"Managed"'>Managed</MudSelectItem>
+                            <MudSelectItem Value='"Self-Managed"'>Self-Managed</MudSelectItem>
+                            <MudSelectItem Value='"Sandbox"'>Sandbox</MudSelectItem>
+                            <MudSelectItem Value='"SingleAccount"'>SingleAccount</MudSelectItem>
+                        </MudSelect>
 
-                            <MudSelect T="string"
-                                       Label="Overall Status"
-                                       Variant="Variant.Outlined"
-                                       Class="mb-3"
-                                       @bind-Value="editingAccount.OverallStatus">
+                        <MudSelect T="string"
+                                   Label="Overall Status"
+                                   Variant="Variant.Outlined"
+                                   @bind-Value="editingAccount.OverallStatus"
+                                   Dense="true">
 
-                                <MudSelectItem Value='"Active"'>Active</MudSelectItem>
-                                <MudSelectItem Value='"Deleted"'>Deleted</MudSelectItem>
-                                <MudSelectItem Value='"Disabled"'>Disabled</MudSelectItem>
-                            </MudSelect>
+                            <MudSelectItem Value='"Active"'>Active</MudSelectItem>
+                            <MudSelectItem Value='"Deleted"'>Deleted</MudSelectItem>
+                            <MudSelectItem Value='"Disabled"'>Disabled</MudSelectItem>
+                        </MudSelect>
 
-                            <MudTextField T="string"
-                                          Label="Cloud Tag Email"
-                                          Variant="Variant.Outlined"
-                                          Class="mb-3"
-                                          @bind-Value="editingAccount.CloudTagEmail" />
+                        <MudTextField T="string"
+                                      Label="Cloud Tag Email"
+                                      Variant="Variant.Outlined"
+                                      @bind-Value="editingAccount.CloudTagEmail"
+                                      Dense="true" />
 
-                            <MudTextField T="string"
-                                          Label="Remarks"
-                                          Variant="Variant.Outlined"
-                                          Lines="4"
-                                          Class="mb-3"
-                                          @bind-Value="editingAccount.Remarks" />
+                        <MudTextField T="string"
+                                      Label="Remarks"
+                                      Variant="Variant.Outlined"
+                                      Lines="3"
+                                      @bind-Value="editingAccount.Remarks" />
+                    </MudStack>
+                </div>
 
-                            <MudStack Row="true"
-                                      Spacing="2"
-                                      Class="mt-6">
+                <div class="drawer-footer">
+                    <MudButton Variant="Variant.Text"
+                               OnClick="CloseDrawer"
+                               Style="color: #5A6A85;">
+                        Cancel
+                    </MudButton>
 
-                                <MudButton Variant="Variant.Filled"
-                                           Color="Color.Primary"
-                                           OnClick="SaveEdit">
-                                    Save
-                                </MudButton>
-
-                                <MudButton Variant="Variant.Outlined"
-                                           Color="Color.Secondary"
-                                           OnClick="CloseDrawer">
-                                    Cancel
-                                </MudButton>
-                            </MudStack>
-                        }
-                    </div>
-                </MudPaper>
+                    <MudButton Variant="Variant.Filled"
+                               Style="background: #00A3FF; color: white; font-weight: 600;"
+                               OnClick="SaveEdit">
+                        Save
+                    </MudButton>
+                </div>
             </div>
         }
     </div>
-</MudPaper>
+</div>
+
+@if (showColumnDialog)
+{
+    <div class="overlay" @onclick="CloseColumnSelector"></div>
+    <div class="column-selector-dialog">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+            <MudText Typo="Typo.h6" Style="color: #1A1D2E; font-weight: 600;">Select Columns</MudText>
+            <MudIconButton Icon="@Icons.Material.Filled.Close" Size="Size.Small" OnClick="CloseColumnSelector" Style="color: #5A6A85;" />
+        </div>
+        <MudDivider Class="mb-3" />
+        @foreach (var column in AvailableColumns)
+        {
+            <MudSwitch @bind-Value="column.IsVisible" Label="@column.Title" Size="Size.Small" Class="mb-2" Color="Color.Primary" />
+        }
+        <MudDivider Class="mt-2 mb-3" />
+        <div style="display: flex; justify-content: flex-end; gap: 8px;">
+            <MudButton Variant="Variant.Text" Size="Size.Small" OnClick="ResetColumns">Reset</MudButton>
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" Size="Size.Small" OnClick="ApplyColumnVisibility">Apply</MudButton>
+        </div>
+    </div>
+}
 
 <MudMenu PositionAtCursor="true" @ref="_contextMenu" id="_contextMenu">
     <MudMenuItem Icon="@Icons.Material.Filled.Edit" OnClick="@(() => EditFromContext())">
         Edit @_contextRow?.CloudName
     </MudMenuItem>
-    <MudMenuItem Icon="@Icons.Material.Filled.History" OnClick="@ShowAudits">
+    <MudMenuItem Icon="@Icons.Material.Filled.Info" OnClick="@ShowAudits">
         View Audits for @_contextRow?.CloudAccountId
     </MudMenuItem>
 </MudMenu>
@@ -583,6 +846,7 @@
     private int PageSize = 10;
     private int[] PageSizeOptions = new[] { 10, 25, 50, 100 };
     private bool drawerFullscreen = false;
+    private bool showColumnDialog = false;
 
     private List<CloudAccount> cloudAccounts = new();
     private CloudAccountEditModel? editingAccount;
@@ -597,11 +861,73 @@
     private int AzureCount => cloudAccounts?.Count(x => x.Provider?.ToLower() == "azure") ?? 0;
     private int GcpCount => cloudAccounts?.Count(x => x.Provider?.ToLower() == "gcp") ?? 0;
 
+    private string AllTabText => $"All ({AllCount})";
+    private string AwsTabText => $"AWS ({AwsCount})";
+    private string AzureTabText => $"Azure ({AzureCount})";
+    private string GcpTabText => $"GCP ({GcpCount})";
+
     private IEnumerable<CloudAccount> FilteredAccounts =>
         selectedProvider == "All"
             ? cloudAccounts
             : cloudAccounts.Where(x =>
                 string.Equals(x.Provider, selectedProvider, StringComparison.OrdinalIgnoreCase));
+
+    private List<ColumnDefinition> AvailableColumns = new()
+    {
+        new() { Title = "Provider", IsVisible = true },
+        new() { Title = "Cloud Account ID", IsVisible = true },
+        new() { Title = "Cloud Name", IsVisible = true },
+        new() { Title = "Cloud Org ID", IsVisible = true },
+        new() { Title = "Root Account ID", IsVisible = true },
+        new() { Title = "Registration Type", IsVisible = true },
+        new() { Title = "Deployment Method", IsVisible = true },
+        new() { Title = "IOM Status", IsVisible = true },
+        new() { Title = "RTVD Status", IsVisible = true },
+        new() { Title = "1-Click Sensor Status", IsVisible = true },
+        new() { Title = "Identity Protection Status", IsVisible = true },
+        new() { Title = "DSPM Status", IsVisible = true },
+        new() { Title = "Vulnerability Scanning Status", IsVisible = true },
+        new() { Title = "Date Created", IsVisible = true },
+        new() { Title = "Date Modified", IsVisible = true }
+    };
+
+    public class ColumnDefinition
+    {
+        public string Title { get; set; } = string.Empty;
+        public bool IsVisible { get; set; } = true;
+    }
+
+    private bool IsColumnVisible(string title)
+    {
+        return AvailableColumns.FirstOrDefault(c => c.Title == title)?.IsVisible ?? true;
+    }
+
+    private void OpenColumnSelector()
+    {
+        showColumnDialog = true;
+        StateHasChanged();
+    }
+
+    private void CloseColumnSelector()
+    {
+        showColumnDialog = false;
+        StateHasChanged();
+    }
+
+    private void ResetColumns()
+    {
+        foreach (var column in AvailableColumns)
+        {
+            column.IsVisible = true;
+        }
+        StateHasChanged();
+    }
+
+    private void ApplyColumnVisibility()
+    {
+        showColumnDialog = false;
+        StateHasChanged();
+    }
 
     protected override async Task OnInitializedAsync()
     {
@@ -637,15 +963,16 @@
         StateHasChanged();
     }
 
-    private string AllTabText => $"All ({AllCount})";
-    private string AwsTabText => $"AWS ({AwsCount})";
-    private string AzureTabText => $"Azure ({AzureCount})";
-    private string GcpTabText => $"GCP ({GcpCount})";
-
     private void ToggleFullscreen()
     {
         drawerFullscreen = !drawerFullscreen;
         StateHasChanged();
+    }
+
+    private void ExportCsv()
+    {
+        var url = $"/api/CloudAccounts/export?provider={selectedProvider}";
+        NavManager.NavigateTo(url, forceLoad: true);
     }
 
     private async Task OpenContextMenu(DataGridRowClickEventArgs<CloudAccount> args)
@@ -668,7 +995,7 @@
         var parameters = new DialogParameters
         {
             ["Title"] = $"Audit of Cloud Account ID: '{_contextRow.CloudAccountId}'",
-            ["AuditRecords"] = auditResult  
+            ["AuditRecords"] = auditResult
         };
 
         var options = new DialogOptions
@@ -733,6 +1060,8 @@
     // private async Task OpenDrawer(CloudAccount account)
     // {
     //     drawerFullscreen = false;
+    //     drawerOpen = false;
+    //     await Task.Delay(50);
 
     //     var selectedBusinessFunction = BusinessFunctions.FirstOrDefault(x =>
     //         x.Id == account.CloudAccountManualDetail?.BusinessFunctionId);
@@ -758,6 +1087,7 @@
     //     };
 
     //     drawerOpen = true;
+    //     StateHasChanged();
     // }
     private async Task OpenDrawer(CloudAccount account)
     {
@@ -796,6 +1126,7 @@
         drawerOpen = false;
         drawerFullscreen = false;
         editingAccount = null;
+        StateHasChanged();
     }
 
     // private async Task SaveEdit()

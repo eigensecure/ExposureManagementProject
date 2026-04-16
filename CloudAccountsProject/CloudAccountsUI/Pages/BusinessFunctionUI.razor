@@ -6,6 +6,7 @@
 @inject IDialogService DialogService
 
 <style>
+    /* Page Full Width Fix */
     ::deep .mud-layout {
         padding: 0 !important;
         margin: 0 !important;
@@ -16,6 +17,7 @@
         margin: 0 !important;
     }
 
+    /* CrowdStrike Light Theme Style */
     .full-page-container {
         width: 100%;
         height: 100vh;
@@ -27,6 +29,7 @@
         flex-direction: column;
     }
 
+    /* Main wrapper that will be pushed by drawer */
     .main-wrapper {
         flex: 1;
         display: flex;
@@ -34,6 +37,7 @@
         transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
+    /* Content that gets pushed to the left when drawer opens */
     .pushed-content {
         flex: 1;
         min-width: 0;
@@ -43,6 +47,7 @@
         transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
+    /* Header with title and buttons on same line */
     .header-toolbar {
         display: flex;
         justify-content: space-between;
@@ -78,15 +83,70 @@
         align-items: center;
     }
 
+    /* Data Grid Container */
     .grid-container {
         flex: 1;
         min-width: 0;
         display: flex;
         flex-direction: column;
-        overflow: hidden;
-        padding: 20px;
+        min-height: 0;
     }
 
+    /* This is the key - same as your cloudaccounts page */
+    .mud-table-container {
+        max-height: calc(100vh - 280px) !important;
+        overflow: auto !important;
+        position: relative !important;
+    }
+
+    .mud-table {
+        width: 100%;
+    }
+
+        .mud-table table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+    .mud-table-head {
+        position: sticky !important;
+        top: 0 !important;
+        z-index: 90 !important;
+        background: #F8F9FC !important;
+    }
+
+        .mud-table-head .mud-table-cell {
+            font-weight: 600 !important;
+            white-space: nowrap !important;
+            background: #F8F9FC !important;
+            color: #1A1D2E !important;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif;
+            font-size: 12px !important;
+            letter-spacing: 0.3px;
+            text-transform: uppercase;
+            border-bottom: 1px solid #E2E8F0 !important;
+        }
+
+    .mud-table-body .mud-table-cell {
+        color: #1A1D2E !important;
+        border-bottom: 1px solid #EDF2F7 !important;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif;
+        font-size: 13px;
+    }
+
+    .mud-table-body .mud-table-row:hover {
+        background: #F8F9FC !important;
+    }
+
+    .mud-table-pagination {
+        display: flex !important;
+        justify-content: flex-end;
+        align-items: center;
+        width: 100%;
+        padding: 8px 16px;
+    }
+
+    /* Drawer Container - Splits the entire page, below app bar */
     .drawer-container {
         width: 0;
         flex-shrink: 0;
@@ -168,50 +228,7 @@
         flex-shrink: 0;
     }
 
-    .mud-table-container {
-        max-height: 100% !important;
-        overflow: auto !important;
-        position: relative !important;
-        height: 100% !important;
-    }
-
-    .mud-table {
-        width: 100%;
-        table-layout: fixed !important;
-    }
-
-        .mud-table table {
-            border-collapse: collapse;
-            width: 100%;
-        }
-
-    .mud-table-head .mud-table-cell {
-        font-weight: 600 !important;
-        white-space: nowrap !important;
-        background: #F8F9FC !important;
-        color: #1A1D2E !important;
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif;
-        font-size: 12px !important;
-        letter-spacing: 0.3px;
-        text-transform: uppercase;
-        border-bottom: 1px solid #E2E8F0 !important;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-
-    .mud-table-body .mud-table-cell {
-        color: #1A1D2E !important;
-        border-bottom: 1px solid #EDF2F7 !important;
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif;
-        font-size: 13px;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-
-    .mud-table-body .mud-table-row:hover {
-        background: #F8F9FC !important;
-    }
-
+    /* Tags Container - Smaller text boxes */
     .tags-container {
         background: #F8F9FC;
         border-radius: 6px;
@@ -246,6 +263,7 @@
         min-height: 28px !important;
     }
 
+    /* Chip Style */
     .mud-chip {
         background: #F0F4F9 !important;
         color: #1A1D2E !important;
@@ -255,6 +273,7 @@
         border-radius: 4px !important;
     }
 
+    /* Input Fields */
     .mud-input {
         color: #1A1D2E !important;
     }
@@ -278,15 +297,7 @@
         font-weight: 500 !important;
     }
 
-    .mud-table-pagination {
-        display: flex !important;
-        justify-content: flex-end;
-        align-items: center;
-        width: 100%;
-        padding: 8px 16px;
-        background: white;
-    }
-
+    /* Column Selector Dialog with colored switches */
     .column-selector-dialog {
         position: fixed;
         top: 50%;
@@ -312,6 +323,7 @@
         z-index: 1999;
     }
 
+    /* Colored Switch */
     .mud-switch {
         --mud-switch-checked-color: #00A3FF !important;
     }
@@ -332,6 +344,7 @@
             background-color: white !important;
         }
 
+    /* Scrollbar */
     ::-webkit-scrollbar {
         width: 8px;
         height: 8px;
@@ -364,11 +377,44 @@
         max-width: 100%;
         display: block;
     }
+
+    .grid-container {
+        flex: 1;
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        min-height: 0;
+        position: relative;
+    }
+
+    .mud-table-container {
+        max-height: calc(100vh - 280px) !important;
+        overflow: auto !important;
+        position: relative !important;
+    }
+
+    .mud-table {
+        width: 100%;
+    }
+
+    .mud-table-pagination {
+        display: flex !important;
+        justify-content: flex-end !important;
+        align-items: center !important;
+        width: 100% !important;
+        padding: 8px 16px !important;
+        background: white !important;
+        border-top: 1px solid #E2E8F0 !important;
+    }
+
 </style>
 
 <div class="full-page-container">
+    <!-- Main wrapper that gets pushed when drawer opens -->
     <div class="main-wrapper @(drawerOpen && !drawerFullscreen ? "drawer-open" : "") @(drawerFullscreen ? "fullscreen-active" : "")">
+        <!-- Content that gets pushed to the left -->
         <div class="pushed-content">
+            <!-- Header with title and buttons on same line -->
             <div class="header-toolbar">
                 <div class="title-section">
                     <div class="cs-title">
@@ -395,7 +441,8 @@
                 </div>
             </div>
 
-            <div class="grid-container">
+            <!-- Data Grid -->
+            <div class="grid-container" style="padding: 20px;">
                 <MudDataGrid T="BusinessFunction"
                              @ref="_dataGrid"
                              Items="@businessFunctions"
@@ -422,9 +469,9 @@
                     <Columns>
                         @foreach (var column in GetOrderedColumns())
                         {
-                            if (column.Title == "Actions")
+                            @* if (column.Title == "Actions")
                             {
-                                <TemplateColumn Title="Actions"
+                                 <TemplateColumn Title="Actions"
                                                 Resizable="false">
                                     <CellTemplate Context="cell">
                                         <MudIconButton Icon="@Icons.Material.Filled.Edit"
@@ -433,8 +480,8 @@
                                                        OnClick="@(() => OpenEditDrawer(cell.Item))" />
                                     </CellTemplate>
                                 </TemplateColumn>
-                            }
-                            else if (column.Title == "Business Function Name")
+                            } *@
+                            if (column.Title == "Business Function Name")
                             {
                                 <PropertyColumn Property="x => x.BusinessFunctionName"
                                                 Title="Business Function Name"
@@ -547,6 +594,7 @@
         </div>
     </div>
 
+    <!-- Drawer - Splits the entire page, below app bar -->
     <div class="drawer-container @(drawerOpen ? "open" : "") @(drawerFullscreen ? "fullscreen" : "")">
         @if (drawerOpen)
         {
@@ -554,7 +602,7 @@
                 <div class="drawer-header">
                     <div class="drawer-title">@(isCreate ? "Add Business Function" : "Edit Business Function")</div>
                     <div class="drawer-buttons">
-                        <MudIconButton Icon="@(drawerFullscreen ? Icons.Material.Filled.FullscreenExit : Icons.Material.Filled.Fullscreen)"
+                        <MudIconButton Icon="@(drawerFullscreen? Icons.Material.Filled.FullscreenExit : Icons.Material.Filled.Fullscreen)"
                                        Size="Size.Medium"
                                        Color="Color.Default"
                                        OnClick="ToggleFullscreen" />
@@ -1077,7 +1125,7 @@
                 .Split(';', StringSplitOptions.RemoveEmptyEntries)
                 .Select(x =>
                 {
-                    var parts = x.Split('=', 2);
+                    var parts = x.Split('-', 2);
                     return new BusinessTagItem
                     {
                         Name = parts[0],
