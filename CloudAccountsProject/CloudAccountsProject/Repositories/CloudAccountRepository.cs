@@ -285,72 +285,71 @@ public class CloudAccountRepository : ICloudAccountRepository
 
     //    await _context.SaveChangesAsync();
     //}
-    public async Task UpdateAsync(CloudAccount account)
-    {
-        var existing = await _context.CloudAccounts
-            .Include(x => x.CloudAccountManualDetails) 
-            .FirstOrDefaultAsync(x => x.Id == account.Id);
+    //public async Task UpdateAsync(CloudAccount account)
+    //{
+    //    var existing = await _context.CloudAccounts
+    //        .Include(x => x.CloudAccountManualDetails)
+    //        .FirstOrDefaultAsync(x => x.Id == account.Id);
 
-        if (existing == null)
-            return;
+    //    if (existing == null)
+    //        return;
 
-        existing.CloudName = account.CloudName;
-        existing.CloudOrgId = account.CloudOrgId;
-        existing.CloudRootAccountId = account.CloudRootAccountId;
-        existing.RegistrationType = account.RegistrationType;
-        existing.DeploymentMethod = account.DeploymentMethod;
+    //    existing.CloudName = account.CloudName;
+    //    existing.CloudOrgId = account.CloudOrgId;
+    //    existing.CloudRootAccountId = account.CloudRootAccountId;
+    //    existing.RegistrationType = account.RegistrationType;
+    //    existing.DeploymentMethod = account.DeploymentMethod;
 
-        existing.Iomstatus = account.Iomstatus;
-        existing.RealTimeVisibilityAndDetectionStatus = account.RealTimeVisibilityAndDetectionStatus;
-        existing.OneClickSensorStatus = account.OneClickSensorStatus;
-        existing.IdentityProtectionStatus = account.IdentityProtectionStatus;
-        existing.Dspmstatus = account.Dspmstatus;
-        existing.VulnerabilityScanningStatus = account.VulnerabilityScanningStatus;
+    //    existing.Iomstatus = account.Iomstatus;
+    //    existing.RealTimeVisibilityAndDetectionStatus = account.RealTimeVisibilityAndDetectionStatus;
+    //    existing.OneClickSensorStatus = account.OneClickSensorStatus;
+    //    existing.IdentityProtectionStatus = account.IdentityProtectionStatus;
+    //    existing.Dspmstatus = account.Dspmstatus;
+    //    existing.VulnerabilityScanningStatus = account.VulnerabilityScanningStatus;
 
-        existing.DateModified = DateTime.UtcNow;
+    //    existing.DateModified = DateTime.UtcNow;
 
-        if (account.CloudAccountManualDetails != null && account.CloudAccountManualDetails.Any())
-        {
-            foreach (var incoming in account.CloudAccountManualDetails)
-            {
-                var existingDetail = existing.CloudAccountManualDetails
-    .FirstOrDefault(x => x.Id == incoming.Id);
+    //    if (account.CloudAccountManualDetails != null && account.CloudAccountManualDetails.Any())
+    //    {
+    //        foreach (var incoming in account.CloudAccountManualDetails)
+    //        {
+    //            var existingDetail = existing.CloudAccountManualDetails
+    //.FirstOrDefault(x => x.Id == incoming.Id);
 
-                if (existingDetail == null)
-                {
-                    var newDetail = new CloudAccountManualDetail
-                    {
-                        CloudAccRef = existing.Id,
-                        BusFuncRef = incoming.BusFuncRef,
-                        AccountType = incoming.AccountType,
-                        OverallStatus = incoming.OverallStatus,
-                        Remarks = incoming.Remarks,
-                        AttachmentPath = incoming.AttachmentPath,
-                        CloudTagEmail = incoming.CloudTagEmail,
-                        FirstUpdatedDate = DateTime.UtcNow,
-                        LastUpdatedDate = DateTime.UtcNow,
-                        DateCreated = DateTime.UtcNow,
-                        DateModified = DateTime.UtcNow
-                    };
+    //            if (existingDetail == null)
+    //            {
+    //                var newDetail = new CloudAccountManualDetail
+    //                {
+    //                    CloudAccRef = existing.Id,
+    //                    BusFuncRef = incoming.BusFuncRef,
+    //                    AccountType = incoming.AccountType,
+    //                    OverallStatus = incoming.OverallStatus,
+    //                    Remarks = incoming.Remarks,
+    //                    AttachmentPath = incoming.AttachmentPath,
+    //                    FirstUpdatedDate = DateTime.UtcNow,
+    //                    LastUpdatedDate = DateTime.UtcNow,
+    //                    DateCreated = DateTime.UtcNow,
+    //                    DateModified = DateTime.UtcNow
+    //                };
 
-                    existing.CloudAccountManualDetails.Add(newDetail);
-                }
-                else
-                {
-                    existingDetail.BusFuncRef = incoming.BusFuncRef;
-                    existingDetail.AccountType = incoming.AccountType;
-                    existingDetail.OverallStatus = incoming.OverallStatus;
-                    existingDetail.Remarks = incoming.Remarks;
-                    existingDetail.AttachmentPath = incoming.AttachmentPath;
-                    existingDetail.CloudTagEmail = incoming.CloudTagEmail;
-                    existingDetail.DateModified = DateTime.UtcNow;
-                    existingDetail.LastUpdatedDate = DateTime.UtcNow;
-                }
-            }
-        }
+    //                existing.CloudAccountManualDetails.Add(newDetail);
+    //            }
+    //            else
+    //            {
+    //                existingDetail.BusFuncRef = incoming.BusFuncRef;
+    //                existingDetail.AccountType = incoming.AccountType;
+    //                existingDetail.OverallStatus = incoming.OverallStatus;
+    //                existingDetail.Remarks = incoming.Remarks;
+    //                existingDetail.AttachmentPath = incoming.AttachmentPath;
+    //                existingDetail.CloudTagEmail = incoming.CloudTagEmail;
+    //                existingDetail.DateModified = DateTime.UtcNow;
+    //                existingDetail.LastUpdatedDate = DateTime.UtcNow;
+    //            }
+    //        }
+    //    }
 
-        await _context.SaveChangesAsync();
-    }
+    //    await _context.SaveChangesAsync();
+    //}
 
     public async Task<List<CloudAccountColumnMetadata>> GetColumnMetadataAsync()
     {

@@ -1,92 +1,170 @@
 [
   {
     "GenericColumn": "Provider",
+    "AllColumn": "Provider",
     "AwsColumn": "Provider",
     "AzureColumn": "Provider",
     "GcpColumn": "Provider"
   },
   {
-    "GenericColumn": "Cloud_Account_ID",
+    "GenericColumn": "CloudAccountId",
+    "AllColumn": "Cloud Account ID",
     "AwsColumn": "Account ID",
     "AzureColumn": "Subscription ID",
-    "GcpColumn": "Project number"
+    "GcpColumn": "Project Number"
   },
   {
-    "GenericColumn": "Cloud_Name",
+    "GenericColumn": "CloudName",
+    "AllColumn": "Cloud Name",
     "AwsColumn": "Account alias",
     "AzureColumn": "Subscription Name",
     "GcpColumn": "Project name"
   },
   {
-    "GenericColumn": "Cloud_ORG_ID",
+    "GenericColumn": "CloudOrgId",
+    "AllColumn": "Cloud Org ID",
     "AwsColumn": "Organization ID",
     "AzureColumn": "Tenant ID",
     "GcpColumn": "Registration name"
   },
   {
-    "GenericColumn": "Cloud_RootAccount_ID",
+    "GenericColumn": "CloudRootAccountID",
+    "AllColumn": "Cloud Root Account ID",
     "AwsColumn": "Root Account ID",
     "AzureColumn": "Tenant Name",
-    "GcpColumn": "Project Id"
+    "GcpColumn": "Project ID"
   },
   {
-    "GenericColumn": "Registration type",
+    "GenericColumn": "RegistrationType",
+    "AllColumn": "Registration Type",
     "AwsColumn": "Registration type",
     "AzureColumn": "Registration type",
     "GcpColumn": "Registration type"
   },
   {
-    "GenericColumn": "Deployment method",
+    "GenericColumn": "DeploymentMethod",
+    "AllColumn": "Deployment Method",
     "AwsColumn": "Deployment method",
     "AzureColumn": "Deployment method",
     "GcpColumn": "Deployment method"
   },
   {
-    "GenericColumn": "Registered_At_CRWD",
+    "GenericColumn": "RegisteredAtCRWD",
+    "AllColumn": "Registered At CRWD",
     "AwsColumn": "Registered",
     "AzureColumn": "Created",
     "GcpColumn": "Registered"
   },
   {
-    "GenericColumn": "Last_Updated_At_CRWD",
+    "GenericColumn": "LastUpdatedAtCRWD",
+    "AllColumn": "Last Updated At CRWD",
     "AwsColumn": "Last checked",
     "AzureColumn": "Updated",
     "GcpColumn": "Last checked"
   },
   {
     "GenericColumn": "IOMStatus",
+    "AllColumn": "IOM Status",
     "AwsColumn": "IOMs",
     "AzureColumn": "IOM Status",
     "GcpColumn": "IOMs"
   },
   {
-    "GenericColumn": "Real-time visibility and detection Status",
+    "GenericColumn": "RealTimeVisibilityAndDetectionStatus",
+    "AllColumn": "Real-Time Visibility And Detection Status",
     "AwsColumn": "Real-time visibility and detection",
     "AzureColumn": "IOA Status",
     "GcpColumn": "Real-time visibility and detection"
   },
   {
-    "GenericColumn": "1-click sensor Status",
+    "GenericColumn": "OneClickSensorStatus",
+    "AllColumn": "1-Click Sensor Status",
     "AwsColumn": "1-click sensor",
     "AzureColumn": "1-click sensor Status",
     "GcpColumn": "1-click sensor Status"
   },
   {
-    "GenericColumn": "Identity protection Status",
+    "GenericColumn": "IdentityProtectionStatus",
+    "AllColumn": "Identity Protection Status",
     "AwsColumn": "Identity protection",
     "AzureColumn": "Identity protection Status",
     "GcpColumn": "Identity protection Status"
   },
   {
-    "GenericColumn": "DSPM Status",
+    "GenericColumn": "DSPMStatus",
+    "AllColumn": "DSPM Status",
     "AwsColumn": "DSPM",
     "AzureColumn": "DSPM Status",
     "GcpColumn": "DSPM Status"
   },
   {
-    "GenericColumn": "Vulnerability scanning Status",
+    "GenericColumn": "VulnerabilityScanningStatus",
+    "AllColumn": "Vulnerability Scanning Status",
     "AwsColumn": "Vulnerability scanning",
     "AzureColumn": "Vulnerability scanning Status",
     "GcpColumn": "Vulnerability scanning Status"
+  },
+  {
+    "GenericColumn": "AccountType",
+    "AllColumn": "Account Type",
+    "AwsColumn": "Account Type",
+    "AzureColumn": "Account Type",
+    "GcpColumn": "Account Type"
+  },
+  {
+    "GenericColumn": "OverallStatus",
+    "AllColumn": "Overall Status",
+    "AwsColumn": "Overall Status",
+    "AzureColumn": "Overall Status",
+    "GcpColumn": "Overall Status"
+  },
+  {
+    "GenericColumn": "ManualRemarks",
+    "AllColumn": "Manual Remarks",
+    "AwsColumn": "Manual Remarks",
+    "AzureColumn": "Manual Remarks",
+    "GcpColumn": "Manual Remarks"
+  },
+  {
+    "GenericColumn": "BusinessFunctionName",
+    "AllColumn": "Business Function Name",
+    "AwsColumn": "Business Function Name",
+    "AzureColumn": "Business Function Name",
+    "GcpColumn": "Business Function Name"
+  },
+  {
+    "GenericColumn": "BusinessFunctionLtMember",
+    "AllColumn": "Business Function LT Member",
+    "AwsColumn": "Business Function LT Member",
+    "AzureColumn": "Business Function LT Member",
+    "GcpColumn": "Business Function LT Member"
+  },
+  {
+    "GenericColumn": "BusinessFunctionOwner",
+    "AllColumn": "Business Function Owner",
+    "AwsColumn": "Business Function Owner",
+    "AzureColumn": "Business Function Owner",
+    "GcpColumn": "Business Function Owner"
+  },
+  {
+    "GenericColumn": "BusinessFunctionSpoc",
+    "AllColumn": "Business Function SPOC",
+    "AwsColumn": "Business Function SPOC",
+    "AzureColumn": "Business Function SPOC",
+    "GcpColumn": "Business Function SPOC"
+  },
+  {
+    "GenericColumn": "BusinessFunctionGroupDL",
+    "AllColumn": "Business Function Group DL",
+    "AwsColumn": "Business Function Group DL",
+    "AzureColumn": "Business Function Group DL",
+    "GcpColumn": "Business Function Group DL"
+  },
+  {
+    "GenericColumn": "BusinessTagValue",
+    "AllColumn": "Business Tag Value",
+    "AwsColumn": "Business Tag Value",
+    "AzureColumn": "Business Tag Value",
+    "GcpColumn": "Business Tag Value"
   }
 ]

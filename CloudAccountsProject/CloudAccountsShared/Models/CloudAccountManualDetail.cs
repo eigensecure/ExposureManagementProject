@@ -16,11 +16,9 @@ public partial class CloudAccountManualDetail
 
     public string? AttachmentPath { get; set; }
 
-    public string? CloudTagEmail { get; set; }
+    public string? FirstUpdatedBy { get; set; }
 
-    public DateTime? FirstUpdatedDate { get; set; }
-
-    public DateTime? LastUpdatedDate { get; set; }
+    public string? LastUpdatedBy { get; set; }
 
     public DateTime DateCreated { get; set; }
 

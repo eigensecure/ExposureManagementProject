@@ -26,6 +26,8 @@ public partial class CloudAccountsDbContext : DbContext
 
     public virtual DbSet<CloudAccountManualDetail> CloudAccountManualDetails { get; set; }
 
+    public virtual DbSet<CrowdGroupMaster> CrowdGroupMasters { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<AuditTableMaster>(entity =>
@@ -88,7 +90,7 @@ public partial class CloudAccountsDbContext : DbContext
             entity.Property(e => e.Iomstatus)
                 .HasMaxLength(100)
                 .HasColumnName("IOMStatus");
-            entity.Property(e => e.LastUpdatedAtCrwd).HasColumnName("Last_UpdatedAtCRWD");
+            entity.Property(e => e.LastUpdatedAtCrwd).HasColumnName("LastUpdatedAtCRWD");
             entity.Property(e => e.OneClickSensorStatus).HasMaxLength(100);
             entity.Property(e => e.Provider).HasMaxLength(50);
             entity.Property(e => e.RawJson).HasColumnType("json");
@@ -101,8 +103,8 @@ public partial class CloudAccountsDbContext : DbContext
         modelBuilder.Entity<CloudAccountManualDetail>(entity =>
         {
             entity.Property(e => e.AccountType).HasMaxLength(100);
-            entity.Property(e => e.AttachmentPath).HasMaxLength(500);
-            entity.Property(e => e.CloudTagEmail).HasMaxLength(255);
+            entity.Property(e => e.FirstUpdatedBy).HasMaxLength(200);
+            entity.Property(e => e.LastUpdatedBy).HasMaxLength(200);
             entity.Property(e => e.OverallStatus).HasMaxLength(100);
 
             entity.HasOne(d => d.BusFuncRefNavigation).WithMany(p => p.CloudAccountManualDetails)
@@ -112,6 +114,31 @@ public partial class CloudAccountsDbContext : DbContext
             entity.HasOne(d => d.CloudAccRefNavigation).WithMany(p => p.CloudAccountManualDetails)
                 .HasForeignKey(d => d.CloudAccRef)
                 .HasConstraintName("FK_CloudAccountManualDetails_CloudAccounts");
+        });
+
+        modelBuilder.Entity<CrowdGroupMaster>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK_CrowdGroupMaster_Id");
+
+            entity.ToTable("CrowdGroupMaster");
+
+            entity.HasIndex(e => e.CrwdgroupName, "UQ_CrowdGroupMaster_CRWD_GROUP_NAME").IsUnique();
+
+            entity.Property(e => e.AllAccountIds).HasColumnName("AllAccountIDs");
+            entity.Property(e => e.CreatedBy).HasMaxLength(255);
+            entity.Property(e => e.CrwdgroupName)
+                .HasMaxLength(255)
+                .HasColumnName("CRWDGroupName");
+            entity.Property(e => e.FilterBy)
+                .HasMaxLength(500)
+                .HasColumnName("FilterBY");
+            entity.Property(e => e.GroupId)
+                .HasMaxLength(255)
+                .HasColumnName("GroupID");
+            entity.Property(e => e.GroupType).HasMaxLength(50);
+            entity.Property(e => e.LastsuccessfulDateofapi).HasColumnName("LASTSuccessfulDATEOFAPI");
+            entity.Property(e => e.Provider).HasMaxLength(50);
+            entity.Property(e => e.UpdatedBy).HasMaxLength(255);
         });
 
         OnModelCreatingPartial(modelBuilder);

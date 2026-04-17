@@ -1,0 +1,1132 @@
+﻿@page "/cloudrecords"
+@using System.Net.Http.Json
+@using CloudAccountsShared.Models.DTOs
+@using CloudAccountsUI.Dialog
+@using CloudAccountsUI.Services
+@using CloudAccountsUI.Services.Contracts
+@using MudBlazor
+@inject ICloudRecordsService CloudRecordsService
+@inject ICloudHistoryService CloudHistoryService
+@inject IDialogService DialogService
+@inject NavigationManager NavManager
+@inject ISnackbar Snackbar
+
+<div class="full-page-container">
+    <div class="main-wrapper @(drawerOpen && !drawerFullscreen ? "drawer-open" : "") @(drawerFullscreen ? "fullscreen-active" : "")">
+        <div class="pushed-content">
+            <div class="header-toolbar">
+                <div class="title-section">
+                    <div class="cs-title">
+                        <MudIcon Icon="@Icons.Material.Filled.Cloud" Class="mr-2" Style="color: #00A3FF;" />
+                        Cloud Accounts Management
+                    </div>
+                    <div class="cs-subtitle">
+                        Manage and monitor all your cloud accounts across providers
+                    </div>
+                </div>
+                <div class="actions-section">
+                    <MudTooltip Text="Export To CSV" Arrow="true" Placement="Placement.Top">
+                        <MudIconButton Icon="@Icons.Material.Filled.Download"
+                                       Style="color: #5A6A85;"
+                                       Size="Size.Small"
+                                       OnClick="ExportCsv" />
+                    </MudTooltip>
+                    <MudTooltip Text="Column Settings" Arrow="true" Placement="Placement.Top">
+                        <MudIconButton Icon="@Icons.Material.Filled.Settings"
+                                       Style="color: #5A6A85;"
+                                       Size="Size.Small"
+                                       OnClick="OpenColumnSelector" />
+                    </MudTooltip>
+                </div>
+            </div>
+
+            <div class="tabs-container">
+                <MudTabs Rounded="true"
+                         Elevation="0"
+                         Class="crowdstrike-tabs"
+                         ActivePanelIndexChanged="OnTabChanged">
+
+                    <MudTabPanel Text="@AllTabText" Class="crowdstrike-tab" />
+                    <MudTabPanel Text="@AwsTabText" Class="crowdstrike-tab" />
+                    <MudTabPanel Text="@AzureTabText" Class="crowdstrike-tab" />
+                    <MudTabPanel Text="@GcpTabText" Class="crowdstrike-tab" />
+                </MudTabs>
+            </div>
+
+            <div class="grid-container">
+                @if (isLoading)
+                {
+                    <div style="display: flex; justify-content: center; align-items: center; height: 400px;">
+                        <MudProgressCircular Indeterminate="true" Size="Size.Large" />
+                    </div>
+                }
+                else if (cloudAccounts.Count == 0)
+                {
+                    <div style="display: flex; justify-content: center; align-items: center; height: 400px; flex-direction: column;">
+                        <MudIcon Icon="@Icons.Material.Filled.CloudOff" Size="Size.Large" Style="color: #CBD5E1; margin-bottom: 16px;" />
+                        <MudText Typo="Typo.h6" Style="color: #5A6A85;">No cloud accounts found</MudText>
+                        <MudText Typo="Typo.body2" Style="color: #94A3B8; margin-top: 8px;">No data available for the selected provider</MudText>
+                    </div>
+                }
+                else
+                {
+                    <MudDataGrid T="CloudAccountDetailsDTO"
+                                 @ref="_dataGrid"
+                                 Items="@FilteredAccounts"
+                                 Dense="true"
+                                 Hover="true"
+                                 Bordered="true"
+                                 Striped="true"
+                                 Filterable="true"
+                                 FilterMode="DataGridFilterMode.ColumnFilterRow"
+                                 FilterCaseSensitivity="DataGridFilterCaseSensitivity.CaseInsensitive"
+                                 ShowColumnOptions="false"
+                                 FixedHeader="true"
+                                 @bind-PageSize="PageSize"
+                                 RowsPerPageOptions="@PageSizeOptions"
+                                 Height="100%"
+                                 Width="100%"
+                                 Loading="@isLoading"
+                                 ColumnResizeMode="ResizeMode.Column"
+                                 DragDropColumnReordering="true"
+                                 ColumnsPanelReordering="true"
+                                 ShowMenuIcon="false"
+                                 RowContextMenuClick="OpenContextMenu">
+
+                        <Columns>
+                            @* Dynamically generate columns based on metadata *@
+                            @foreach (var columnConfig in GetVisibleColumns())
+                            {
+                                <TemplateColumn Title="@columnConfig.Title" Resizable="true" StickyLeft="@columnConfig.IsStickyLeft">
+                                    <CellTemplate Context="cell">
+                                        @{
+                                            var value = GetPropertyValue(cell.Item, columnConfig.PropertyName);
+                                        }
+                                        <div class="cell-content">
+                                            @if (value != null)
+                                            {
+                                                <MudTooltip Text="@value.ToString()" Placement="Placement.Top">
+                                                    <span class="truncate-text">@value</span>
+                                                </MudTooltip>
+                                            }
+                                            else
+                                            {
+                                                <span>-</span>
+                                            }
+                                        </div>
+                                    </CellTemplate>
+                                </TemplateColumn>
+                            }
+                        </Columns>
+
+                        <NoRecordsContent>
+                            <MudText Class="pa-4" Style="color: #5A6A85;">No matching records found</MudText>
+                        </NoRecordsContent>
+
+                        <PagerContent>
+                            <MudDataGridPager T="CloudAccountDetailsDTO" PageSizeOptions="@PageSizeOptions" />
+                        </PagerContent>
+                    </MudDataGrid>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- Drawer HTML -->
+    <div class="drawer-container @(drawerOpen ? "open" : "") @(drawerFullscreen ? "fullscreen" : "")">
+        @if (drawerOpen && editingAccount is not null)
+        {
+            <div class="drawer-content">
+                <div class="drawer-header">
+                    <div class="drawer-title">Edit Cloud Account</div>
+                    <div class="drawer-buttons">
+                        <MudIconButton Icon="@(drawerFullscreen? Icons.Material.Filled.FullscreenExit : Icons.Material.Filled.Fullscreen)"
+                                       Size="Size.Medium"
+                                       Color="Color.Default"
+                                       OnClick="ToggleFullscreen" />
+                        <MudIconButton Icon="@Icons.Material.Filled.Close"
+                                       Size="Size.Medium"
+                                       Color="Color.Default"
+                                       OnClick="CloseDrawer" />
+                    </div>
+                </div>
+
+                <div style="flex: 1; overflow-y: auto; padding-right: 8px;">
+                    <MudStack Spacing="2">
+                        <MudText Typo="Typo.subtitle2" Style="color: #1A1D2E; font-size: 13px; font-weight: 600;">Cloud Details</MudText>
+
+                        <MudTextField T="string"
+                                      Label="Cloud Name"
+                                      Variant="Variant.Outlined"
+                                      @bind-Value="editingAccount.CloudName"
+                                      Dense="true" />
+
+                        <MudTextField T="string"
+                                      Label="Cloud Org ID"
+                                      Variant="Variant.Outlined"
+                                      @bind-Value="editingAccount.CloudOrgId"
+                                      Dense="true" />
+
+                        <MudTextField T="string"
+                                      Label="IOM Status"
+                                      Variant="Variant.Outlined"
+                                      @bind-Value="editingAccount.IOMStatus"
+                                      Dense="true" />
+
+                        <MudTextField T="string"
+                                      Label="RTVD Status"
+                                      Variant="Variant.Outlined"
+                                      @bind-Value="editingAccount.RealTimeVisibilityAndDetectionStatus"
+                                      Dense="true" />
+
+                        <MudDivider Class="my-3" />
+
+                        <MudText Typo="Typo.subtitle2" Style="color: #1A1D2E; font-size: 13px; font-weight: 600;">Business Function</MudText>
+
+                        <MudTextField T="string"
+                                      Label="Business Function Name"
+                                      Variant="Variant.Outlined"
+                                      @bind-Value="editingAccount.BusinessFunctionName"
+                                      Dense="true" />
+
+                        <MudTextField T="string"
+                                      Label="Owner"
+                                      Variant="Variant.Outlined"
+                                      @bind-Value="editingAccount.BusinessFunctionOwner"
+                                      Dense="true" />
+
+                        <MudTextField T="string"
+                                      Label="LT Member"
+                                      Variant="Variant.Outlined"
+                                      @bind-Value="editingAccount.BusinessFunctionLtMember"
+                                      Dense="true" />
+
+                        <MudTextField T="string"
+                                      Label="SPOC"
+                                      Variant="Variant.Outlined"
+                                      @bind-Value="editingAccount.BusinessFunctionSpoc"
+                                      Dense="true" />
+
+                        <MudTextField T="string"
+                                      Label="Business Tag Value"
+                                      Variant="Variant.Outlined"
+                                      @bind-Value="editingAccount.BusinessTagValue"
+                                      Dense="true" />
+
+                        <MudTextField T="string"
+                                      Label="Business Function Remarks"
+                                      Variant="Variant.Outlined"
+                                      @bind-Value="editingAccount.BusinessFunctionRemarks"
+                                      Dense="true" />
+
+                        <MudDivider Class="my-3" />
+
+                        <MudText Typo="Typo.subtitle2" Style="color: #1A1D2E; font-size: 13px; font-weight: 600;">Manual Details</MudText>
+
+                        <MudSelect T="string"
+                                   Label="Account Type"
+                                   Variant="Variant.Outlined"
+                                   @bind-Value="editingAccount.AccountType"
+                                   Dense="true">
+
+                            <MudSelectItem Value='"Hybrid"'>Hybrid</MudSelectItem>
+                            <MudSelectItem Value='"Managed"'>Managed</MudSelectItem>
+                            <MudSelectItem Value='"Self-Managed"'>Self-Managed</MudSelectItem>
+                            <MudSelectItem Value='"Sandbox"'>Sandbox</MudSelectItem>
+                            <MudSelectItem Value='"SingleAccount"'>SingleAccount</MudSelectItem>
+                        </MudSelect>
+
+                        <MudSelect T="string"
+                                   Label="Overall Status"
+                                   Variant="Variant.Outlined"
+                                   @bind-Value="editingAccount.OverallStatus"
+                                   Dense="true">
+
+                            <MudSelectItem Value='"Active"'>Active</MudSelectItem>
+                            <MudSelectItem Value='"Deleted"'>Deleted</MudSelectItem>
+                            <MudSelectItem Value='"Disabled"'>Disabled</MudSelectItem>
+                        </MudSelect>
+
+                        <MudTextField T="string"
+                                      Label="Manual Remarks"
+                                      Variant="Variant.Outlined"
+                                      Lines="3"
+                                      @bind-Value="editingAccount.ManualRemarks" />
+                    </MudStack>
+                </div>
+
+                <div class="drawer-footer">
+                    <MudButton Variant="Variant.Text"
+                               OnClick="CloseDrawer"
+                               Style="color: #5A6A85;">
+                        Cancel
+                    </MudButton>
+
+                    <MudButton Variant="Variant.Filled"
+                               Style="background: #00A3FF; color: white; font-weight: 600;"
+                               OnClick="SaveEdit"
+                               Disabled="@isSaving">
+                        @if (isSaving)
+                        {
+                            <MudProgressCircular Size="Size.Small" Indeterminate="true" Color="Color.Inherit" />
+                            <span class="ml-2">Saving...</span>
+                        }
+                        else
+                        {
+                            <span>Save</span>
+                        }
+                    </MudButton>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+@if (showColumnDialog)
+{
+    <div class="overlay" @onclick="CloseColumnSelector"></div>
+    <div class="column-selector-dialog" style="width: 400px; max-width: 90%;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+            <MudText Typo="Typo.h6" Style="color: #1A1D2E; font-weight: 600;">
+                Select & Reorder Columns - @(selectedProvider == "All" ? "All Providers" : selectedProvider)
+            </MudText>
+            <MudIconButton Icon="@Icons.Material.Filled.Close" Size="Size.Small" OnClick="CloseColumnSelector" Style="color: #5A6A85;" />
+        </div>
+        <MudText Typo="Typo.body2" Style="color: #5A6A85; margin-bottom: 12px; font-size: 12px;">
+            Use ↑ ↓ buttons to reorder columns
+        </MudText>
+        <MudDivider Class="mb-3" />
+        <div style="max-height: 400px; overflow-y: auto;">
+            @if (tempColumnSelectorItems != null && tempColumnSelectorItems.Any())
+            {
+                @for (int i = 0; i < tempColumnSelectorItems.Count; i++)
+                {
+                    var column = tempColumnSelectorItems[i];
+                    var currentIndex = i;
+                    <div class="column-item" style="display: flex; align-items: center; padding: 8px; margin-bottom: 4px; background: #F8F9FC; border-radius: 6px;">
+                        <div style="display: flex; flex-direction: column; margin-right: 8px;">
+                            <MudIconButton Icon="@Icons.Material.Filled.ArrowUpward"
+                                           Size="Size.Small"
+                                           OnClick="() => MoveColumnUp(currentIndex)"
+                                           Disabled="@(currentIndex == 0)"
+                                           Style="padding: 2px;" />
+                            <MudIconButton Icon="@Icons.Material.Filled.ArrowDownward"
+                                           Size="Size.Small"
+                                           OnClick="() => MoveColumnDown(currentIndex)"
+                                           Disabled="@(currentIndex == tempColumnSelectorItems.Count - 1)"
+                                           Style="padding: 2px; margin-top: 2px;" />
+                        </div>
+                        <input type="checkbox"
+                               id="@column.GenericKey"
+                               @bind="column.IsVisible"
+                               style="margin-right: 8px; cursor: pointer; width: 16px; height: 16px; accent-color: #00A3FF;"
+                               @onclick:stopPropagation="true" />
+                        <label for="@column.GenericKey" style="flex: 1; font-size: 14px; color: #1A1D2E; cursor: pointer; margin: 0;">@column.DisplayTitle</label>
+                    </div>
+                }
+            }
+        </div>
+        <MudDivider Class="mt-3 mb-3" />
+        <div style="display: flex; justify-content: flex-end; gap: 8px;">
+            <MudButton Variant="Variant.Text" Size="Size.Small" OnClick="ResetColumns">Reset</MudButton>
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" Size="Size.Small" OnClick="ApplyColumnVisibility">Apply</MudButton>
+        </div>
+    </div>
+}
+
+<MudMenu PositionAtCursor="true" @ref="_contextMenu" id="_contextMenu">
+    <MudMenuItem Icon="@Icons.Material.Filled.Edit" OnClick="@(() => EditFromContext())">
+        Edit @_contextRow?.CloudName
+    </MudMenuItem>
+    <MudMenuItem Icon="@Icons.Material.Filled.Info" OnClick="@ShowAudits">
+        View Audits for @_contextRow?.CloudAccountId
+    </MudMenuItem>
+</MudMenu>
+
+<style>
+    ::deep .mud-layout {
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+
+    ::deep .mud-main-content {
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+
+    .full-page-container {
+        width: 100%;
+        height: 100vh;
+        padding: 0;
+        margin: 0;
+        overflow: hidden;
+        background: white;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .main-wrapper {
+        flex: 1;
+        display: flex;
+        overflow: hidden;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .pushed-content {
+        flex: 1;
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .header-toolbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 16px 20px;
+        border-bottom: 1px solid #E2E8F0;
+        flex-shrink: 0;
+        background: white;
+    }
+
+    .title-section {
+        flex: 1;
+    }
+
+    .cs-title {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif;
+        font-size: 20px;
+        font-weight: 600;
+        color: #1A1D2E;
+        letter-spacing: -0.3px;
+    }
+
+    .cs-subtitle {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif;
+        font-size: 13px;
+        color: #5A6A85;
+        margin-top: 4px;
+    }
+
+    .actions-section {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+    }
+
+    .tabs-container {
+        flex-shrink: 0;
+        padding: 0 20px;
+        margin-bottom: 0;
+    }
+
+    .crowdstrike-tabs {
+        background: transparent !important;
+    }
+
+        .crowdstrike-tabs .mud-tabs-toolbar {
+            background: transparent !important;
+            gap: 4px !important;
+        }
+
+    .crowdstrike-tab {
+        padding: 8px 20px !important;
+        font-weight: 500 !important;
+        font-size: 0.9rem !important;
+        color: #4a5568 !important;
+        text-transform: none !important;
+        border-radius: 8px !important;
+        transition: all 0.2s ease !important;
+    }
+
+        .crowdstrike-tab:hover {
+            background: rgba(0, 0, 0, 0.04) !important;
+            color: #667eea !important;
+        }
+
+        .crowdstrike-tab.mud-tab-active {
+            color: #667eea !important;
+            font-weight: 600 !important;
+            background: rgba(102, 126, 234, 0.08) !important;
+        }
+
+    .mud-tab-indicator {
+        display: none !important;
+    }
+
+    .grid-container {
+        flex: 1;
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        min-height: 0;
+        position: relative;
+        padding: 20px;
+    }
+
+    .mud-table-container {
+        max-height: calc(100vh - 280px) !important;
+        overflow: auto !important;
+        position: relative !important;
+    }
+
+    .mud-table {
+        width: 100%;
+    }
+
+        .mud-table table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+    .mud-table-head {
+        position: sticky !important;
+        top: 0 !important;
+        z-index: 90 !important;
+        background: #F8F9FC !important;
+    }
+
+        .mud-table-head .mud-table-cell {
+            font-weight: 600 !important;
+            white-space: nowrap !important;
+            background: #F8F9FC !important;
+            color: #1A1D2E !important;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif;
+            font-size: 12px !important;
+            letter-spacing: 0.3px;
+            text-transform: uppercase;
+            border-bottom: 1px solid #E2E8F0 !important;
+        }
+
+    .mud-table-body .mud-table-cell {
+        color: #1A1D2E !important;
+        border-bottom: 1px solid #EDF2F7 !important;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif;
+        font-size: 13px;
+    }
+
+    .mud-table-body .mud-table-row:hover {
+        background: #F8F9FC !important;
+    }
+
+    .mud-table-pagination {
+        display: flex !important;
+        justify-content: flex-end !important;
+        align-items: center !important;
+        width: 100% !important;
+        padding: 8px 16px !important;
+        background: white !important;
+        border-top: 1px solid #E2E8F0 !important;
+    }
+
+    .drawer-container {
+        width: 0;
+        flex-shrink: 0;
+        overflow: hidden;
+        transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        background: white;
+        border-left: 1px solid #E2E8F0;
+        height: calc(100vh - 63px);
+        position: fixed;
+        right: 0;
+        top: 63px;
+        z-index: 1000;
+    }
+
+        .drawer-container.open {
+            width: 50%;
+            min-width: 500px;
+            max-width: 700px;
+        }
+
+    .main-wrapper.drawer-open {
+        margin-right: 50%;
+        min-width: calc(100% - 700px);
+        max-width: calc(100% - 500px);
+    }
+
+    .drawer-container.fullscreen {
+        width: 100% !important;
+        min-width: 100%;
+        max-width: 100%;
+        height: calc(100vh - 63px);
+        top: 63px;
+    }
+
+    .main-wrapper.drawer-open.fullscreen-active {
+        margin-right: 0 !important;
+        display: none;
+    }
+
+    .drawer-content {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        padding: 20px;
+    }
+
+    .drawer-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        flex-shrink: 0;
+        padding-bottom: 10px;
+        border-bottom: 1px solid #E2E8F0;
+    }
+
+    .drawer-title {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif;
+        font-size: 18px;
+        font-weight: 600;
+        color: #1A1D2E;
+    }
+
+    .drawer-buttons {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+    }
+
+    .drawer-footer {
+        display: flex;
+        justify-content: flex-end;
+        gap: 12px;
+        padding-top: 16px;
+        margin-top: 16px;
+        border-top: 1px solid #E2E8F0;
+        background: white;
+        flex-shrink: 0;
+    }
+
+    .column-selector-dialog {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+        z-index: 2000;
+        width: 350px;
+        max-width: 90%;
+        padding: 20px;
+        border: 1px solid #E2E8F0;
+    }
+
+    .overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0,0,0,0.5);
+        z-index: 1999;
+    }
+
+    .mud-switch {
+        --mud-switch-checked-color: #00A3FF !important;
+    }
+
+        .mud-switch .mud-switch-track {
+            background-color: #E2E8F0 !important;
+        }
+
+        .mud-switch .mud-switch-thumb {
+            background-color: white !important;
+        }
+
+        .mud-switch.mud-switch-checked .mud-switch-track {
+            background-color: #00A3FF !important;
+        }
+
+        .mud-switch.mud-switch-checked .mud-switch-thumb {
+            background-color: white !important;
+        }
+
+    ::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+        background: #F1F5F9;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background: #CBD5E1;
+        border-radius: 4px;
+    }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94A3B8;
+        }
+
+    .cell-content {
+        width: 100%;
+        white-space: normal;
+        word-break: break-word;
+        padding: 4px;
+    }
+
+    .truncate-text {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 100%;
+        display: block;
+    }
+</style>
+
+@code {
+    private MudDataGrid<CloudAccountDetailsDTO> _dataGrid = null!;
+    private MudMenu _contextMenu = null!;
+    private CloudAccountDetailsDTO? _contextRow;
+
+    private bool isLoading = true;
+    private bool isSaving = false;
+    private int PageSize = 10;
+    private int[] PageSizeOptions = new[] { 10, 25, 50, 100 };
+
+    private bool drawerOpen;
+    private bool drawerFullscreen = false;
+
+    private bool showColumnDialog = false;
+
+    private List<CloudAccountDetailsDTO> cloudAccounts = new();
+    private List<CloudAccountColumnMetadata> columnMetadata = new();
+
+    private CloudAccountDetailsDTO? editingAccount;
+
+    private string selectedProvider = "All";
+
+    // Temporary list for column selector binding
+    private List<ColumnSelectorItem> tempColumnSelectorItems = new();
+
+    private int AllCount => cloudAccounts?.Count ?? 0;
+    private int AwsCount => cloudAccounts?.Count(x =>
+        string.Equals(x.Provider, "aws", StringComparison.OrdinalIgnoreCase)) ?? 0;
+
+    private int AzureCount => cloudAccounts?.Count(x =>
+        string.Equals(x.Provider, "azure", StringComparison.OrdinalIgnoreCase)) ?? 0;
+
+    private int GcpCount => cloudAccounts?.Count(x =>
+        string.Equals(x.Provider, "gcp", StringComparison.OrdinalIgnoreCase)) ?? 0;
+
+    private string AllTabText => $"All ({AllCount})";
+    private string AwsTabText => $"AWS ({AwsCount})";
+    private string AzureTabText => $"Azure ({AzureCount})";
+    private string GcpTabText => $"GCP ({GcpCount})";
+
+    private IEnumerable<CloudAccountDetailsDTO> FilteredAccounts =>
+        selectedProvider == "All"
+            ? cloudAccounts ?? new List<CloudAccountDetailsDTO>()
+            : (cloudAccounts ?? new List<CloudAccountDetailsDTO>()).Where(x =>
+                string.Equals(x.Provider, selectedProvider, StringComparison.OrdinalIgnoreCase));
+
+    private List<ColumnDefinition> AvailableColumns = new()
+    {
+        new() { Title = "Provider", IsVisible = true, GenericKey = "Provider", PropertyName = "Provider", IsStickyLeft = false },
+        new() { Title = "Cloud Account ID", IsVisible = true, GenericKey = "CloudAccountId", PropertyName = "CloudAccountId", IsStickyLeft = true },
+        new() { Title = "Cloud Name", IsVisible = true, GenericKey = "CloudName", PropertyName = "CloudName", IsStickyLeft = false },
+        new() { Title = "Cloud Org ID", IsVisible = true, GenericKey = "CloudOrgId", PropertyName = "CloudOrgId", IsStickyLeft = false },
+        new() { Title = "Root Account ID", IsVisible = true, GenericKey = "CloudRootAccountID", PropertyName = "CloudRootAccountID", IsStickyLeft = false },
+        new() { Title = "Registration Type", IsVisible = true, GenericKey = "RegistrationType", PropertyName = "RegistrationType", IsStickyLeft = false },
+        new() { Title = "Deployment Method", IsVisible = true, GenericKey = "DeploymentMethod", PropertyName = "DeploymentMethod", IsStickyLeft = false },
+        new() { Title = "IOM Status", IsVisible = true, GenericKey = "IOMStatus", PropertyName = "IOMStatus", IsStickyLeft = false },
+        new() { Title = "RTVD Status", IsVisible = true, GenericKey = "RealTimeVisibilityAndDetectionStatus", PropertyName = "RealTimeVisibilityAndDetectionStatus", IsStickyLeft = false },
+        new() { Title = "1-Click Sensor Status", IsVisible = true, GenericKey = "OneClickSensorStatus", PropertyName = "OneClickSensorStatus", IsStickyLeft = false },
+        new() { Title = "Identity Protection Status", IsVisible = true, GenericKey = "IdentityProtectionStatus", PropertyName = "IdentityProtectionStatus", IsStickyLeft = false },
+        new() { Title = "DSPM Status", IsVisible = true, GenericKey = "DSPMStatus", PropertyName = "DSPMStatus", IsStickyLeft = false },
+        new() { Title = "Vulnerability Scanning Status", IsVisible = true, GenericKey = "VulnerabilityScanningStatus", PropertyName = "VulnerabilityScanningStatus", IsStickyLeft = false },
+        new() { Title = "Registered At", IsVisible = true, GenericKey = "RegisteredAtCRWD", PropertyName = "RegisteredAtCRWD", IsStickyLeft = false },
+        new() { Title = "Last Updated At", IsVisible = true, GenericKey = "LastUpdatedAtCRWD", PropertyName = "LastUpdatedAtCRWD", IsStickyLeft = false }
+    };
+
+    private void MoveColumnUp(int index)
+    {
+        if (index <= 0) return;
+
+        // Swap in tempColumnSelectorItems
+        var item = tempColumnSelectorItems[index];
+        tempColumnSelectorItems.RemoveAt(index);
+        tempColumnSelectorItems.Insert(index - 1, item);
+
+        // Also update AvailableColumns to maintain consistency
+        var originalItem = AvailableColumns.FirstOrDefault(x => x.GenericKey == item.GenericKey);
+        if (originalItem != null)
+        {
+            var originalIndex = AvailableColumns.FindIndex(x => x.GenericKey == item.GenericKey);
+            AvailableColumns.RemoveAt(originalIndex);
+            AvailableColumns.Insert(originalIndex - 1, originalItem);
+        }
+
+        StateHasChanged();
+    }
+
+    private void MoveColumnDown(int index)
+    {
+        if (index >= tempColumnSelectorItems.Count - 1) return;
+
+        // Swap in tempColumnSelectorItems
+        var item = tempColumnSelectorItems[index];
+        tempColumnSelectorItems.RemoveAt(index);
+        tempColumnSelectorItems.Insert(index + 1, item);
+
+        // Also update AvailableColumns to maintain consistency
+        var originalItem = AvailableColumns.FirstOrDefault(x => x.GenericKey == item.GenericKey);
+        if (originalItem != null)
+        {
+            var originalIndex = AvailableColumns.FindIndex(x => x.GenericKey == item.GenericKey);
+            AvailableColumns.RemoveAt(originalIndex);
+            AvailableColumns.Insert(originalIndex + 1, originalItem);
+        }
+
+        StateHasChanged();
+    }
+
+    public class ColumnDefinition
+    {
+        public string Title { get; set; } = string.Empty;
+        public string GenericKey { get; set; } = string.Empty;
+        public string PropertyName { get; set; } = string.Empty;
+        public bool IsVisible { get; set; } = true;
+        public bool IsStickyLeft { get; set; } = false;
+    }
+
+    public class ColumnSelectorItem
+    {
+        public string GenericKey { get; set; } = string.Empty;
+        public string DisplayTitle { get; set; } = string.Empty;
+        public bool IsVisible { get; set; } = true;
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadData();
+    }
+
+    private async Task LoadData()
+    {
+        try
+        {
+            isLoading = true;
+            StateHasChanged();
+
+            var result = await CloudRecordsService.GetCloudAccountDetailsAsync();
+            cloudAccounts = result.CloudAccounts ?? new List<CloudAccountDetailsDTO>();
+            columnMetadata = result.ColumnMetadata ?? new List<CloudAccountColumnMetadata>();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading data: {ex.Message}");
+            Snackbar.Add($"Error loading data: {ex.Message}", Severity.Error);
+            cloudAccounts = new List<CloudAccountDetailsDTO>();
+            columnMetadata = new List<CloudAccountColumnMetadata>();
+        }
+        finally
+        {
+            isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private string GetColumnTitle(string genericKey)
+    {
+        if (columnMetadata == null || !columnMetadata.Any())
+            return genericKey;
+
+        var metadata = columnMetadata.FirstOrDefault(x => x.GenericColumn == genericKey);
+
+        if (metadata == null)
+            return genericKey;
+
+        return selectedProvider switch
+        {
+            "AWS" => !string.IsNullOrWhiteSpace(metadata.AwsColumn) ? metadata.AwsColumn :
+                     !string.IsNullOrWhiteSpace(metadata.AllColumn) ? metadata.AllColumn : genericKey,
+            "Azure" => !string.IsNullOrWhiteSpace(metadata.AzureColumn) ? metadata.AzureColumn :
+                       !string.IsNullOrWhiteSpace(metadata.AllColumn) ? metadata.AllColumn : genericKey,
+            "GCP" => !string.IsNullOrWhiteSpace(metadata.GcpColumn) ? metadata.GcpColumn :
+                     !string.IsNullOrWhiteSpace(metadata.AllColumn) ? metadata.AllColumn : genericKey,
+            _ => !string.IsNullOrWhiteSpace(metadata.AllColumn) ? metadata.AllColumn : genericKey
+        };
+    }
+
+    private string GetColumnDisplayTitleForProvider(string genericKey, string provider)
+    {
+        if (columnMetadata == null || !columnMetadata.Any())
+            return genericKey;
+
+        var metadata = columnMetadata.FirstOrDefault(x => x.GenericColumn == genericKey);
+
+        if (metadata == null)
+            return genericKey;
+
+        return provider switch
+        {
+            "AWS" => !string.IsNullOrWhiteSpace(metadata.AwsColumn) ? metadata.AwsColumn :
+                     !string.IsNullOrWhiteSpace(metadata.AllColumn) ? metadata.AllColumn : genericKey,
+            "Azure" => !string.IsNullOrWhiteSpace(metadata.AzureColumn) ? metadata.AzureColumn :
+                       !string.IsNullOrWhiteSpace(metadata.AllColumn) ? metadata.AllColumn : genericKey,
+            "GCP" => !string.IsNullOrWhiteSpace(metadata.GcpColumn) ? metadata.GcpColumn :
+                     !string.IsNullOrWhiteSpace(metadata.AllColumn) ? metadata.AllColumn : genericKey,
+            _ => !string.IsNullOrWhiteSpace(metadata.AllColumn) ? metadata.AllColumn : genericKey
+        };
+    }
+
+    private bool ShouldHideColumn(string genericKey)
+    {
+        if (selectedProvider == "All")
+            return false;
+
+        var metadata = columnMetadata.FirstOrDefault(x => x.GenericColumn == genericKey);
+        if (metadata == null)
+            return false;
+
+        return selectedProvider switch
+        {
+            "AWS" => string.IsNullOrWhiteSpace(metadata.AwsColumn),
+            "Azure" => string.IsNullOrWhiteSpace(metadata.AzureColumn),
+            "GCP" => string.IsNullOrWhiteSpace(metadata.GcpColumn),
+            _ => false
+        };
+    }
+
+    private void RefreshColumnSelectorItems()
+    {
+        tempColumnSelectorItems.Clear();
+        
+        foreach (var column in AvailableColumns)
+        {
+            // Skip if the column should be hidden for the current provider
+            if (ShouldHideColumn(column.GenericKey))
+                continue;
+            
+            // Get the display title based on the current selected provider
+            var displayTitle = GetColumnDisplayTitleForProvider(column.GenericKey, selectedProvider);
+            
+            tempColumnSelectorItems.Add(new ColumnSelectorItem
+            {
+                GenericKey = column.GenericKey,
+                DisplayTitle = displayTitle,
+                IsVisible = column.IsVisible
+            });
+        }
+    }
+
+    private List<ColumnDefinition> GetVisibleColumns()
+    {
+        return AvailableColumns
+            .Where(x => x.IsVisible && !ShouldHideColumn(x.GenericKey))
+            .Select(x => new ColumnDefinition
+            {
+                Title = GetColumnTitle(x.GenericKey),
+                PropertyName = x.PropertyName,
+                IsStickyLeft = x.IsStickyLeft,
+                GenericKey = x.GenericKey,
+                IsVisible = x.IsVisible
+            })
+            .ToList();
+    }
+
+    private object? GetPropertyValue(CloudAccountDetailsDTO item, string propertyName)
+    {
+        if (item == null) return null;
+        
+        var property = typeof(CloudAccountDetailsDTO).GetProperty(propertyName);
+        if (property == null) return null;
+        
+        var value = property.GetValue(item);
+        
+        // Format DateTime values
+        if (value is DateTime dateTime)
+        {
+            return dateTime.ToString("yyyy-MM-dd HH:mm");
+        }
+        
+        return value;
+    }
+
+    private void OpenColumnSelector()
+    {
+        RefreshColumnSelectorItems();
+        showColumnDialog = true;
+        StateHasChanged();
+    }
+
+    private void CloseColumnSelector()
+    {
+        showColumnDialog = false;
+        StateHasChanged();
+    }
+
+    private void ResetColumns()
+    {
+        // Reset all columns to visible in AvailableColumns
+        foreach (var column in AvailableColumns)
+        {
+            column.IsVisible = true;
+        }
+        
+        // Refresh the temporary items to reflect the reset
+        RefreshColumnSelectorItems();
+        StateHasChanged();
+    }
+
+    private void ApplyColumnVisibility()
+    {
+        // Apply the visibility from temp items back to AvailableColumns
+        foreach (var tempItem in tempColumnSelectorItems)
+        {
+            var column = AvailableColumns.FirstOrDefault(x => x.GenericKey == tempItem.GenericKey);
+            if (column != null)
+            {
+                column.IsVisible = tempItem.IsVisible;
+            }
+        }
+        
+        showColumnDialog = false;
+        StateHasChanged();
+    }
+
+    private void OnTabChanged(int index)
+    {
+        selectedProvider = index switch
+        {
+            1 => "AWS",
+            2 => "Azure",
+            3 => "GCP",
+            _ => "All"
+        };
+
+        StateHasChanged();
+    }
+
+    private void ToggleFullscreen()
+    {
+        drawerFullscreen = !drawerFullscreen;
+        StateHasChanged();
+    }
+
+    private void ExportCsv()
+    {
+        Snackbar.Add("Export to CSV will be implemented soon", Severity.Info);
+    }
+
+    private async Task OpenContextMenu(DataGridRowClickEventArgs<CloudAccountDetailsDTO> args)
+    {
+        _contextRow = args.Item;
+        await _contextMenu.OpenMenuAsync(args.MouseEventArgs);
+    }
+
+    private void EditFromContext()
+    {
+        if (_contextRow is not null)
+        {
+            OpenDrawer(_contextRow);
+        }
+    }
+
+    private async Task ShowAudits()
+    {
+        if (_contextRow is null)
+            return;
+
+        var auditResult = await CloudHistoryService.GetAuditByAccId(_contextRow.CloudAccountId);
+
+        var parameters = new DialogParameters
+        {
+            ["Title"] = $"Audit of Cloud Account ID: {_contextRow.CloudAccountId}",
+            ["AuditRecords"] = auditResult
+        };
+
+        var options = new DialogOptions
+        {
+            CloseOnEscapeKey = true,
+            MaxWidth = MaxWidth.Medium,
+            FullWidth = true
+        };
+
+        var dialog = await DialogService.ShowAsync<CloudAuditDialog>("", parameters, options);
+        await dialog.Result;
+    }
+
+    private void OpenDrawer(CloudAccountDetailsDTO account)
+    {
+        drawerFullscreen = false;
+
+        editingAccount = new CloudAccountDetailsDTO
+        {
+            Id = account.Id,
+            Provider = account.Provider,
+            CloudAccountId = account.CloudAccountId,
+            CloudName = account.CloudName,
+            CloudOrgId = account.CloudOrgId,
+            CloudRootAccountID = account.CloudRootAccountID,
+            RegistrationType = account.RegistrationType,
+            DeploymentMethod = account.DeploymentMethod,
+            RegisteredAtCRWD = account.RegisteredAtCRWD,
+            LastUpdatedAtCRWD = account.LastUpdatedAtCRWD,
+            IOMStatus = account.IOMStatus,
+            RealTimeVisibilityAndDetectionStatus = account.RealTimeVisibilityAndDetectionStatus,
+            OneClickSensorStatus = account.OneClickSensorStatus,
+            IdentityProtectionStatus = account.IdentityProtectionStatus,
+            DSPMStatus = account.DSPMStatus,
+            VulnerabilityScanningStatus = account.VulnerabilityScanningStatus,
+            BusinessFunctionId = account.BusinessFunctionId,
+            BusinessFunctionName = account.BusinessFunctionName,
+            BusinessFunctionLtMember = account.BusinessFunctionLtMember,
+            BusinessFunctionOwner = account.BusinessFunctionOwner,
+            BusinessFunctionSpoc = account.BusinessFunctionSpoc,
+            BusinessFunctionRemarks = account.BusinessFunctionRemarks,
+            BusinessTagValue = account.BusinessTagValue,
+            ManualDetailsId = account.ManualDetailsId,
+            AccountType = account.AccountType,
+            OverallStatus = account.OverallStatus,
+            ManualRemarks = account.ManualRemarks,
+            AttachmentPath = account.AttachmentPath
+        };
+
+        drawerOpen = true;
+        StateHasChanged();
+    }
+
+    private void CloseDrawer()
+    {
+        drawerOpen = false;
+        drawerFullscreen = false;
+        editingAccount = null;
+        StateHasChanged();
+    }
+
+    private async Task SaveEdit()
+    {
+        if (editingAccount is null)
+            return;
+
+        try
+        {
+            isSaving = true;
+            StateHasChanged();
+
+            await CloudRecordsService.SaveBusManDetailsAsync(editingAccount);
+            await LoadData();
+
+            Snackbar.Add("Cloud account details saved successfully", Severity.Success);
+            CloseDrawer();
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error saving data: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            isSaving = false;
+            StateHasChanged();
+        }
+    }
+}

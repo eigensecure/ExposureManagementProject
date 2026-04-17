@@ -45,18 +45,18 @@ public class CloudAccountsController : BaseApiController
         return Ok($"{provider} accounts imported successfully.");
     }
 
-    [HttpPut("{id}")]
-    public async Task<IActionResult> Update(int id, CloudAccount account)
-    {
-        if (id != account.Id)
-        {
-            return BadRequest();
-        }
+    //[HttpPut("{id}")]
+    //public async Task<IActionResult> Update(int id, CloudAccount account)
+    //{
+    //    if (id != account.Id)
+    //    {
+    //        return BadRequest();
+    //    }
 
-        await _repository.UpdateAsync(account);
+    //    await _repository.UpdateAsync(account);
 
-        return Ok("Updated successfully.");
-    }
+    //    return Ok("Updated successfully.");
+    //}
 
     [HttpGet("column-metadata")]
     public async Task<IActionResult> GetColumnMetadata()

@@ -1,3 +1,4 @@
+using CloudAccountsProject.Data;
 using CloudAccountsProject.Repositories;
 using CloudAccountsProject.Repositories.Contracts;
 using CloudAccountsProjects.Data;
@@ -24,11 +25,15 @@ builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 
 builder.Services.AddDbContext<CloudAccountsDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("AzureConnection")));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddDbContext<CloudAccountsDbSPContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddScoped<ICloudAccountRepository, CloudAccountRepository>();
 builder.Services.AddScoped<IBusinessFunctionRepository, BusinessFunctionRepository>();
 builder.Services.AddScoped<ICloudHistoryRepository, CloudHistoryRepository>();
+builder.Services.AddScoped<ICloudRecordsRepo, CloudRecordsRepo>();
+
 
 builder.Services.AddControllers();
 

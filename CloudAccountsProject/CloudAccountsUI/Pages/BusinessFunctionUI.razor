@@ -7,418 +7,14 @@
 @inject ISnackbar Snackbar
 @inject IDialogService DialogService
 @inject ICloudHistoryService cloudhistoryservice
-
-
-<style>
-    /* Page Full Width Fix */
-    ::deep .mud-layout {
-        padding: 0 !important;
-        margin: 0 !important;
-    }
-
-    ::deep .mud-main-content {
-        padding: 0 !important;
-        margin: 0 !important;
-    }
-
-    /* CrowdStrike Light Theme Style */
-    .full-page-container {
-        width: 100%;
-        height: 100vh;
-        padding: 0;
-        margin: 0;
-        overflow: hidden;
-        background: white;
-        display: flex;
-        flex-direction: column;
-    }
-
-    /* Main wrapper that will be pushed by drawer */
-    .main-wrapper {
-        flex: 1;
-        display: flex;
-        overflow: hidden;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-
-    /* Content that gets pushed to the left when drawer opens */
-    .pushed-content {
-        flex: 1;
-        min-width: 0;
-        display: flex;
-        flex-direction: column;
-        overflow: hidden;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-
-    /* Header with title and buttons on same line */
-    .header-toolbar {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 16px 20px;
-        border-bottom: 1px solid #E2E8F0;
-        flex-shrink: 0;
-        background: white;
-    }
-
-    .title-section {
-        flex: 1;
-    }
-
-    .cs-title {
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif;
-        font-size: 20px;
-        font-weight: 600;
-        color: #1A1D2E;
-        letter-spacing: -0.3px;
-    }
-
-    .cs-subtitle {
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif;
-        font-size: 13px;
-        color: #5A6A85;
-        margin-top: 4px;
-    }
-
-    .actions-section {
-        display: flex;
-        gap: 8px;
-        align-items: center;
-    }
-
-    /* Data Grid Container */
-    .grid-container {
-        flex: 1;
-        min-width: 0;
-        display: flex;
-        flex-direction: column;
-        min-height: 0;
-    }
-
-    /* This is the key - same as your cloudaccounts page */
-    .mud-table-container {
-        max-height: calc(100vh - 280px) !important;
-        overflow: auto !important;
-        position: relative !important;
-    }
-
-    .mud-table {
-        width: 100%;
-    }
-
-        .mud-table table {
-            border-collapse: collapse;
-            width: 100%;
-        }
-
-    .mud-table-head {
-        position: sticky !important;
-        top: 0 !important;
-        z-index: 90 !important;
-        background: #F8F9FC !important;
-    }
-
-        .mud-table-head .mud-table-cell {
-            font-weight: 600 !important;
-            white-space: nowrap !important;
-            background: #F8F9FC !important;
-            color: #1A1D2E !important;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif;
-            font-size: 12px !important;
-            letter-spacing: 0.3px;
-            text-transform: uppercase;
-            border-bottom: 1px solid #E2E8F0 !important;
-        }
-
-    .mud-table-body .mud-table-cell {
-        color: #1A1D2E !important;
-        border-bottom: 1px solid #EDF2F7 !important;
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif;
-        font-size: 13px;
-    }
-
-    .mud-table-body .mud-table-row:hover {
-        background: #F8F9FC !important;
-    }
-
-    .mud-table-pagination {
-        display: flex !important;
-        justify-content: flex-end;
-        align-items: center;
-        width: 100%;
-        padding: 8px 16px;
-    }
-
-    /* Drawer Container - Splits the entire page, below app bar */
-    .drawer-container {
-        width: 0;
-        flex-shrink: 0;
-        overflow: hidden;
-        transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        background: white;
-        border-left: 1px solid #E2E8F0;
-        height: calc(100vh - 63px);
-        position: fixed;
-        right: 0;
-        top: 63px;
-        z-index: 1000;
-    }
-
-        .drawer-container.open {
-            width: 50%;
-            min-width: 500px;
-            max-width: 700px;
-        }
-
-    .main-wrapper.drawer-open {
-        margin-right: 50%;
-        min-width: calc(100% - 700px);
-        max-width: calc(100% - 500px);
-    }
-
-    .drawer-container.fullscreen {
-        width: 100% !important;
-        min-width: 100%;
-        max-width: 100%;
-        height: calc(100vh - 63px);
-        top: 63px;
-    }
-
-    .main-wrapper.drawer-open.fullscreen-active {
-        margin-right: 0 !important;
-        display: none;
-    }
-
-    .drawer-content {
-        height: 100%;
-        display: flex;
-        flex-direction: column;
-        overflow: hidden;
-        padding: 20px;
-    }
-
-    .drawer-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 20px;
-        flex-shrink: 0;
-        padding-bottom: 10px;
-        border-bottom: 1px solid #E2E8F0;
-    }
-
-    .drawer-title {
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif;
-        font-size: 18px;
-        font-weight: 600;
-        color: #1A1D2E;
-    }
-
-    .drawer-buttons {
-        display: flex;
-        gap: 8px;
-        align-items: center;
-    }
-
-    .drawer-footer {
-        display: flex;
-        justify-content: flex-end;
-        gap: 12px;
-        padding-top: 16px;
-        margin-top: 16px;
-        border-top: 1px solid #E2E8F0;
-        background: white;
-        flex-shrink: 0;
-    }
-
-    /* Tags Container - Smaller text boxes */
-    .tags-container {
-        background: #F8F9FC;
-        border-radius: 6px;
-        padding: 8px;
-        margin-top: 6px;
-        border: 1px solid #E2E8F0;
-    }
-
-        .tags-container .mud-input-control {
-            margin-bottom: 0 !important;
-        }
-
-        .tags-container .mud-input {
-            background: white !important;
-            border: 1px solid #E2E8F0 !important;
-            border-radius: 4px !important;
-            font-size: 12px !important;
-            padding: 4px 6px !important;
-            min-height: 28px !important;
-        }
-
-        .tags-container .mud-input-label {
-            font-size: 10px !important;
-            color: #5A6A85 !important;
-            margin-bottom: 2px !important;
-            font-weight: 500;
-        }
-
-    .compact-input .mud-input {
-        font-size: 12px !important;
-        padding: 4px 6px !important;
-        min-height: 28px !important;
-    }
-
-    /* Chip Style */
-    .mud-chip {
-        background: #F0F4F9 !important;
-        color: #1A1D2E !important;
-        border: 1px solid #E2E8F0 !important;
-        font-size: 11px !important;
-        padding: 2px 8px !important;
-        border-radius: 4px !important;
-    }
-
-    /* Input Fields */
-    .mud-input {
-        color: #1A1D2E !important;
-    }
-
-    .mud-input-outlined .mud-input-outlined-border {
-        border-color: #E2E8F0 !important;
-    }
-
-    .mud-input-outlined:hover .mud-input-outlined-border {
-        border-color: #00A3FF !important;
-    }
-
-    .mud-input-outlined.mud-input-focused .mud-input-outlined-border {
-        border-color: #00A3FF !important;
-        border-width: 2px !important;
-    }
-
-    .mud-input-label {
-        color: #5A6A85 !important;
-        font-size: 12px !important;
-        font-weight: 500 !important;
-    }
-
-    /* Column Selector Dialog with colored switches */
-    .column-selector-dialog {
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        background: white;
-        border-radius: 12px;
-        box-shadow: 0 10px 40px rgba(0,0,0,0.15);
-        z-index: 2000;
-        width: 350px;
-        max-width: 90%;
-        padding: 20px;
-        border: 1px solid #E2E8F0;
-    }
-
-    .overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: rgba(0,0,0,0.5);
-        z-index: 1999;
-    }
-
-    /* Colored Switch */
-    .mud-switch {
-        --mud-switch-checked-color: #00A3FF !important;
-    }
-
-        .mud-switch .mud-switch-track {
-            background-color: #E2E8F0 !important;
-        }
-
-        .mud-switch .mud-switch-thumb {
-            background-color: white !important;
-        }
-
-        .mud-switch.mud-switch-checked .mud-switch-track {
-            background-color: #00A3FF !important;
-        }
-
-        .mud-switch.mud-switch-checked .mud-switch-thumb {
-            background-color: white !important;
-        }
-
-    /* Scrollbar */
-    ::-webkit-scrollbar {
-        width: 8px;
-        height: 8px;
-    }
-
-    ::-webkit-scrollbar-track {
-        background: #F1F5F9;
-    }
-
-    ::-webkit-scrollbar-thumb {
-        background: #CBD5E1;
-        border-radius: 4px;
-    }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: #94A3B8;
-        }
-
-    .cell-content {
-        width: 100%;
-        white-space: normal;
-        word-break: break-word;
-        padding: 4px;
-    }
-
-    .truncate-text {
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        max-width: 100%;
-        display: block;
-    }
-
-    .grid-container {
-        flex: 1;
-        min-width: 0;
-        display: flex;
-        flex-direction: column;
-        min-height: 0;
-        position: relative;
-    }
-
-    .mud-table-container {
-        max-height: calc(100vh - 280px) !important;
-        overflow: auto !important;
-        position: relative !important;
-    }
-
-    .mud-table {
-        width: 100%;
-    }
-
-    .mud-table-pagination {
-        display: flex !important;
-        justify-content: flex-end !important;
-        align-items: center !important;
-        width: 100% !important;
-        padding: 8px 16px !important;
-        background: white !important;
-        border-top: 1px solid #E2E8F0 !important;
-    }
-
-</style>
+@inject IBusinessFunctionService BusinessFunctionService
 
 <div class="full-page-container">
-    <!-- Main wrapper that gets pushed when drawer opens -->
+    
     <div class="main-wrapper @(drawerOpen && !drawerFullscreen ? "drawer-open" : "") @(drawerFullscreen ? "fullscreen-active" : "")">
-        <!-- Content that gets pushed to the left -->
+       
         <div class="pushed-content">
-            <!-- Header with title and buttons on same line -->
+           
             <div class="header-toolbar">
                 <div class="title-section">
                     <div class="cs-title">
@@ -445,7 +41,7 @@
                 </div>
             </div>
 
-            <!-- Data Grid -->
+           @* DataGrid *@
             <div class="grid-container" style="padding: 20px;">
                 <MudDataGrid T="BusinessFunction"
                              @ref="_dataGrid"
@@ -598,7 +194,7 @@
         </div>
     </div>
 
-    <!-- Drawer - Splits the entire page, below app bar -->
+    
     <div class="drawer-container @(drawerOpen ? "open" : "") @(drawerFullscreen ? "fullscreen" : "")">
         @if (drawerOpen)
         {
@@ -805,6 +401,410 @@
     </MudMenuItem>
 </MudMenu>
 
+<style>
+
+    ::deep .mud-layout {
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+
+    ::deep .mud-main-content {
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+
+
+    .full-page-container {
+        width: 100%;
+        height: 100vh;
+        padding: 0;
+        margin: 0;
+        overflow: hidden;
+        background: white;
+        display: flex;
+        flex-direction: column;
+    }
+
+
+    .main-wrapper {
+        flex: 1;
+        display: flex;
+        overflow: hidden;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+
+    .pushed-content {
+        flex: 1;
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+
+    .header-toolbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 16px 20px;
+        border-bottom: 1px solid #E2E8F0;
+        flex-shrink: 0;
+        background: white;
+    }
+
+    .title-section {
+        flex: 1;
+    }
+
+    .cs-title {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif;
+        font-size: 20px;
+        font-weight: 600;
+        color: #1A1D2E;
+        letter-spacing: -0.3px;
+    }
+
+    .cs-subtitle {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif;
+        font-size: 13px;
+        color: #5A6A85;
+        margin-top: 4px;
+    }
+
+    .actions-section {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+    }
+
+
+    .grid-container {
+        flex: 1;
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        min-height: 0;
+    }
+
+
+    .mud-table-container {
+        max-height: calc(100vh - 280px) !important;
+        overflow: auto !important;
+        position: relative !important;
+    }
+
+    .mud-table {
+        width: 100%;
+    }
+
+        .mud-table table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+    .mud-table-head {
+        position: sticky !important;
+        top: 0 !important;
+        z-index: 90 !important;
+        background: #F8F9FC !important;
+    }
+
+        .mud-table-head .mud-table-cell {
+            font-weight: 600 !important;
+            white-space: nowrap !important;
+            background: #F8F9FC !important;
+            color: #1A1D2E !important;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif;
+            font-size: 12px !important;
+            letter-spacing: 0.3px;
+            text-transform: uppercase;
+            border-bottom: 1px solid #E2E8F0 !important;
+        }
+
+    .mud-table-body .mud-table-cell {
+        color: #1A1D2E !important;
+        border-bottom: 1px solid #EDF2F7 !important;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif;
+        font-size: 13px;
+    }
+
+    .mud-table-body .mud-table-row:hover {
+        background: #F8F9FC !important;
+    }
+
+    .mud-table-pagination {
+        display: flex !important;
+        justify-content: flex-end;
+        align-items: center;
+        width: 100%;
+        padding: 8px 16px;
+    }
+
+
+    .drawer-container {
+        width: 0;
+        flex-shrink: 0;
+        overflow: hidden;
+        transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        background: white;
+        border-left: 1px solid #E2E8F0;
+        height: calc(100vh - 63px);
+        position: fixed;
+        right: 0;
+        top: 63px;
+        z-index: 1000;
+    }
+
+        .drawer-container.open {
+            width: 50%;
+            min-width: 500px;
+            max-width: 700px;
+        }
+
+    .main-wrapper.drawer-open {
+        margin-right: 50%;
+        min-width: calc(100% - 700px);
+        max-width: calc(100% - 500px);
+    }
+
+    .drawer-container.fullscreen {
+        width: 100% !important;
+        min-width: 100%;
+        max-width: 100%;
+        height: calc(100vh - 63px);
+        top: 63px;
+    }
+
+    .main-wrapper.drawer-open.fullscreen-active {
+        margin-right: 0 !important;
+        display: none;
+    }
+
+    .drawer-content {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        padding: 20px;
+    }
+
+    .drawer-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        flex-shrink: 0;
+        padding-bottom: 10px;
+        border-bottom: 1px solid #E2E8F0;
+    }
+
+    .drawer-title {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif;
+        font-size: 18px;
+        font-weight: 600;
+        color: #1A1D2E;
+    }
+
+    .drawer-buttons {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+    }
+
+    .drawer-footer {
+        display: flex;
+        justify-content: flex-end;
+        gap: 12px;
+        padding-top: 16px;
+        margin-top: 16px;
+        border-top: 1px solid #E2E8F0;
+        background: white;
+        flex-shrink: 0;
+    }
+
+
+    .tags-container {
+        background: #F8F9FC;
+        border-radius: 6px;
+        padding: 8px;
+        margin-top: 6px;
+        border: 1px solid #E2E8F0;
+    }
+
+        .tags-container .mud-input-control {
+            margin-bottom: 0 !important;
+        }
+
+        .tags-container .mud-input {
+            background: white !important;
+            border: 1px solid #E2E8F0 !important;
+            border-radius: 4px !important;
+            font-size: 12px !important;
+            padding: 4px 6px !important;
+            min-height: 28px !important;
+        }
+
+        .tags-container .mud-input-label {
+            font-size: 10px !important;
+            color: #5A6A85 !important;
+            margin-bottom: 2px !important;
+            font-weight: 500;
+        }
+
+    .compact-input .mud-input {
+        font-size: 12px !important;
+        padding: 4px 6px !important;
+        min-height: 28px !important;
+    }
+
+
+    .mud-chip {
+        background: #F0F4F9 !important;
+        color: #1A1D2E !important;
+        border: 1px solid #E2E8F0 !important;
+        font-size: 11px !important;
+        padding: 2px 8px !important;
+        border-radius: 4px !important;
+    }
+
+
+    .mud-input {
+        color: #1A1D2E !important;
+    }
+
+    .mud-input-outlined .mud-input-outlined-border {
+        border-color: #E2E8F0 !important;
+    }
+
+    .mud-input-outlined:hover .mud-input-outlined-border {
+        border-color: #00A3FF !important;
+    }
+
+    .mud-input-outlined.mud-input-focused .mud-input-outlined-border {
+        border-color: #00A3FF !important;
+        border-width: 2px !important;
+    }
+
+    .mud-input-label {
+        color: #5A6A85 !important;
+        font-size: 12px !important;
+        font-weight: 500 !important;
+    }
+
+
+    .column-selector-dialog {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+        z-index: 2000;
+        width: 350px;
+        max-width: 90%;
+        padding: 20px;
+        border: 1px solid #E2E8F0;
+    }
+
+    .overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0,0,0,0.5);
+        z-index: 1999;
+    }
+
+
+    .mud-switch {
+        --mud-switch-checked-color: #00A3FF !important;
+    }
+
+        .mud-switch .mud-switch-track {
+            background-color: #E2E8F0 !important;
+        }
+
+        .mud-switch .mud-switch-thumb {
+            background-color: white !important;
+        }
+
+        .mud-switch.mud-switch-checked .mud-switch-track {
+            background-color: #00A3FF !important;
+        }
+
+        .mud-switch.mud-switch-checked .mud-switch-thumb {
+            background-color: white !important;
+        }
+
+
+    ::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+        background: #F1F5F9;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background: #CBD5E1;
+        border-radius: 4px;
+    }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94A3B8;
+        }
+
+    .cell-content {
+        width: 100%;
+        white-space: normal;
+        word-break: break-word;
+        padding: 4px;
+    }
+
+    .truncate-text {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 100%;
+        display: block;
+    }
+
+    .grid-container {
+        flex: 1;
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        min-height: 0;
+        position: relative;
+    }
+
+    .mud-table-container {
+        max-height: calc(100vh - 280px) !important;
+        overflow: auto !important;
+        position: relative !important;
+    }
+
+    .mud-table {
+        width: 100%;
+    }
+
+    .mud-table-pagination {
+        display: flex !important;
+        justify-content: flex-end !important;
+        align-items: center !important;
+        width: 100% !important;
+        padding: 8px 16px !important;
+        background: white !important;
+        border-top: 1px solid #E2E8F0 !important;
+    }
+
+</style>
+
 @code {
     public class BusinessTagItem
     {
@@ -828,7 +828,7 @@
     private bool drawerFullscreen = false;
     private bool showColumnDialog = false;
 
-    private const string ApiBase = "api/BusinessFunction";
+    // private const string ApiBase = "api/BusinessFunction";
     private List<BusinessFunction> businessFunctions = new();
     private BusinessFunction editingItem = new();
     private bool drawerOpen;
@@ -894,6 +894,22 @@
         await LoadData();
     }
 
+    // private async Task LoadData()
+    // {
+    //     try
+    //     {
+    //         isLoading = true;
+    //         StateHasChanged();
+
+    //         businessFunctions = await Http.GetFromJsonAsync<List<BusinessFunction>>(ApiBase) ?? new();
+    //     }
+    //     finally
+    //     {
+    //         isLoading = false;
+    //         StateHasChanged();
+    //     }
+    // }
+
     private async Task LoadData()
     {
         try
@@ -901,7 +917,7 @@
             isLoading = true;
             StateHasChanged();
 
-            businessFunctions = await Http.GetFromJsonAsync<List<BusinessFunction>>(ApiBase) ?? new();
+            businessFunctions = await BusinessFunctionService.GetAllAsync();
         }
         finally
         {
@@ -972,21 +988,42 @@
         }
     }
 
+    // private async Task DeleteBusinessFunction()
+    // {
+    //     if (_contextRow is null) return;
+
+    //     var response = await Http.DeleteAsync($"{ApiBase}/{_contextRow.Id}");
+
+    //     if (response.IsSuccessStatusCode)
+    //     {
+    //         await LoadData();
+    //         Snackbar.Add($"Business function '{_contextRow.BusinessFunctionName}' deleted successfully", Severity.Success);
+    //     }
+    //     else
+    //     {
+    //         var error = await response.Content.ReadAsStringAsync();
+    //         Snackbar.Add($"Delete failed: {error}", Severity.Error);
+    //     }
+    // }
+
     private async Task DeleteBusinessFunction()
     {
-        if (_contextRow is null) return;
+        if (_contextRow is null)
+            return;
 
-        var response = await Http.DeleteAsync($"{ApiBase}/{_contextRow.Id}");
-
-        if (response.IsSuccessStatusCode)
+        try
         {
+            await BusinessFunctionService.DeleteAsync(_contextRow.Id);
+
             await LoadData();
-            Snackbar.Add($"Business function '{_contextRow.BusinessFunctionName}' deleted successfully", Severity.Success);
+
+            Snackbar.Add(
+                $"Business function '{_contextRow.BusinessFunctionName}' deleted successfully",
+                Severity.Success);
         }
-        else
+        catch (Exception ex)
         {
-            var error = await response.Content.ReadAsStringAsync();
-            Snackbar.Add($"Delete failed: {error}", Severity.Error);
+            Snackbar.Add($"Delete failed: {ex.Message}", Severity.Error);
         }
     }
 
@@ -1173,6 +1210,37 @@
         StateHasChanged();
     }
 
+    // private async Task Save()
+    // {
+    //     editingItem.BusinessTagValue = string.Join(";",
+    //         BusinessTags
+    //             .Where(x => !string.IsNullOrWhiteSpace(x.Name))
+    //             .Select(x => $"{x.Name}={x.Value}"));
+
+    //     HttpResponseMessage response;
+
+    //     if (isCreate)
+    //     {
+    //         response = await Http.PostAsJsonAsync(ApiBase, editingItem);
+    //     }
+    //     else
+    //     {
+    //         response = await Http.PutAsJsonAsync($"{ApiBase}/{editingItem.Id}", editingItem);
+    //     }
+
+    //     if (response.IsSuccessStatusCode)
+    //     {
+    //         await LoadData();
+    //         CloseDrawer();
+    //         Snackbar.Add(isCreate ? "Business function added successfully" : "Business function updated successfully", Severity.Success);
+    //     }
+    //     else
+    //     {
+    //         var error = await response.Content.ReadAsStringAsync();
+    //         Snackbar.Add($"Save failed: {error}", Severity.Error);
+    //     }
+    // }
+
     private async Task Save()
     {
         editingItem.BusinessTagValue = string.Join(";",
@@ -1180,27 +1248,29 @@
                 .Where(x => !string.IsNullOrWhiteSpace(x.Name))
                 .Select(x => $"{x.Name}={x.Value}"));
 
-        HttpResponseMessage response;
+        try
+        {
+            if (isCreate)
+            {
+                await BusinessFunctionService.CreateAsync(editingItem);
+            }
+            else
+            {
+                await BusinessFunctionService.UpdateAsync(editingItem);
+            }
 
-        if (isCreate)
-        {
-            response = await Http.PostAsJsonAsync(ApiBase, editingItem);
-        }
-        else
-        {
-            response = await Http.PutAsJsonAsync($"{ApiBase}/{editingItem.Id}", editingItem);
-        }
-
-        if (response.IsSuccessStatusCode)
-        {
             await LoadData();
             CloseDrawer();
-            Snackbar.Add(isCreate ? "Business function added successfully" : "Business function updated successfully", Severity.Success);
+
+            Snackbar.Add(
+                isCreate
+                    ? "Business function added successfully"
+                    : "Business function updated successfully",
+                Severity.Success);
         }
-        else
+        catch (Exception ex)
         {
-            var error = await response.Content.ReadAsStringAsync();
-            Snackbar.Add($"Save failed: {error}", Severity.Error);
+            Snackbar.Add($"Save failed: {ex.Message}", Severity.Error);
         }
     }
 }
