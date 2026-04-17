@@ -30,3 +30,4 @@ public partial class CloudAccountManualDetail
 
     public virtual CloudAccount? CloudAccRefNavigation { get; set; }
 }
+

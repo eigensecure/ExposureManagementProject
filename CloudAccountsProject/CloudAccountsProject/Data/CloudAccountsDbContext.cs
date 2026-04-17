@@ -53,7 +53,6 @@ public partial class CloudAccountsDbContext : DbContext
             entity.Property(e => e.NewValues).HasColumnType("json");
             entity.Property(e => e.OldValues).HasColumnType("json");
             entity.Property(e => e.PrimaryKey).HasColumnType("json");
-            entity.Property(e => e.Reference).HasMaxLength(200);
             entity.Property(e => e.TableName).HasMaxLength(200);
             entity.Property(e => e.Type).HasMaxLength(200);
         });
@@ -75,21 +74,13 @@ public partial class CloudAccountsDbContext : DbContext
         {
             entity.HasKey(e => e.Id).HasName("PK_Cloud_Accounts");
 
-            entity.Property(e => e.CloudAccountId)
-                .HasMaxLength(250)
-                .HasColumnName("Cloud_Account_ID");
-            entity.Property(e => e.CloudName)
-                .HasMaxLength(250)
-                .HasColumnName("Cloud_Name");
-            entity.Property(e => e.CloudOrgId)
-                .HasMaxLength(250)
-                .HasColumnName("Cloud_ORG_ID");
+            entity.Property(e => e.CloudAccountId).HasMaxLength(250);
+            entity.Property(e => e.CloudName).HasMaxLength(250);
+            entity.Property(e => e.CloudOrgId).HasMaxLength(250);
             entity.Property(e => e.CloudRootAccountId)
                 .HasMaxLength(250)
-                .HasColumnName("Cloud_RootAccount_ID");
-            entity.Property(e => e.DeploymentMethod)
-                .HasMaxLength(150)
-                .HasColumnName("Deployment_Method");
+                .HasColumnName("CloudRootAccountID");
+            entity.Property(e => e.DeploymentMethod).HasMaxLength(150);
             entity.Property(e => e.Dspmstatus)
                 .HasMaxLength(100)
                 .HasColumnName("DSPMStatus");
@@ -97,15 +88,13 @@ public partial class CloudAccountsDbContext : DbContext
             entity.Property(e => e.Iomstatus)
                 .HasMaxLength(100)
                 .HasColumnName("IOMStatus");
-            entity.Property(e => e.LastUpdatedAtCrwd).HasColumnName("Last_Updated_At_CRWD");
+            entity.Property(e => e.LastUpdatedAtCrwd).HasColumnName("Last_UpdatedAtCRWD");
             entity.Property(e => e.OneClickSensorStatus).HasMaxLength(100);
             entity.Property(e => e.Provider).HasMaxLength(50);
             entity.Property(e => e.RawJson).HasColumnType("json");
             entity.Property(e => e.RealTimeVisibilityAndDetectionStatus).HasMaxLength(100);
-            entity.Property(e => e.RegisteredAtCrwd).HasColumnName("Registered_At_CRWD");
-            entity.Property(e => e.RegistrationType)
-                .HasMaxLength(150)
-                .HasColumnName("Registration_Type");
+            entity.Property(e => e.RegisteredAtCrwd).HasColumnName("RegisteredAtCRWD");
+            entity.Property(e => e.RegistrationType).HasMaxLength(150);
             entity.Property(e => e.VulnerabilityScanningStatus).HasMaxLength(100);
         });
 

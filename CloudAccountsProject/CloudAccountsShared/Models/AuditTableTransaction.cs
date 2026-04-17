@@ -11,8 +11,6 @@ public partial class AuditTableTransaction
 
     public string? TableName { get; set; }
 
-    public string? Reference { get; set; }
-
     public string? ModifiedByUser { get; set; }
 
     public string? Type { get; set; }

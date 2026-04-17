@@ -55,7 +55,6 @@ public class CloudHistoryRepository : ICloudHistoryRepository
         return [.. auditEntities.Select(x => new AuditHistoryDTO
         {
             Id = x.Id,
-            AuditReference = x.Reference,
             TableName = x.TableName,
             PrimaryKey = x.PrimaryKey,
             ModifiedByUser = x.ModifiedByUser,
@@ -81,7 +80,6 @@ public class CloudHistoryRepository : ICloudHistoryRepository
         return [.. auditEntities.Select(x => new AuditHistoryDTO
         {
             Id = x.Id,
-            AuditReference = x.Reference,
             TableName = x.TableName,
             PrimaryKey = x.PrimaryKey,
             ModifiedByUser = x.ModifiedByUser,

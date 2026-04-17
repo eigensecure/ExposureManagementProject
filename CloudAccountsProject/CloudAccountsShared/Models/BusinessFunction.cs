@@ -28,4 +28,3 @@ public partial class BusinessFunction
 
     public virtual ICollection<CloudAccountManualDetail> CloudAccountManualDetails { get; set; } = new List<CloudAccountManualDetail>();
 }
-

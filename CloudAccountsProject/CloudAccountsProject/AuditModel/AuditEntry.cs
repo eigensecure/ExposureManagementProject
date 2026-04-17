@@ -47,7 +47,6 @@ public class AuditEntry
 
         auditTransaction.PrimaryKey = JsonConvert.SerializeObject(KeyValues);
         auditTransaction.TableName = TableName;
-        auditTransaction.Reference = Reference;
         auditTransaction.DateTime = DateTime.UtcNow;
         auditTransaction.OldValues = OldValues.Count == 0 ? null : JsonConvert.SerializeObject(OldValues);
         auditTransaction.NewValues = NewValues.Count == 0 ? null : JsonConvert.SerializeObject(NewValues);
