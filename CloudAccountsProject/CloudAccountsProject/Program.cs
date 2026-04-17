@@ -33,6 +33,7 @@ builder.Services.AddScoped<ICloudAccountRepository, CloudAccountRepository>();
 builder.Services.AddScoped<IBusinessFunctionRepository, BusinessFunctionRepository>();
 builder.Services.AddScoped<ICloudHistoryRepository, CloudHistoryRepository>();
 builder.Services.AddScoped<ICloudRecordsRepo, CloudRecordsRepo>();
+builder.Services.AddScoped<ICrowdGroupMasterRepository, CrowdGroupMasterRepository>();
 
 
 builder.Services.AddControllers();

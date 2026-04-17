@@ -16,6 +16,7 @@ builder.Services.AddMudServices();
 builder.Services.AddScoped<ICloudAccountService, CloudAccountService>();
 builder.Services.AddScoped<IBusinessFunctionService, BusinessFunctionService>();
 builder.Services.AddScoped<ICloudRecordsService, CloudRecordsService>();
+builder.Services.AddScoped<ICrowdGroupMasterService, CrowdGroupMasterService>();
 
 var apiBaseUrl = builder.Configuration["ServerURL:ActiveUrl"];
 var activeBaseUrl = builder.Configuration[$"ServerURL:{apiBaseUrl}"];
