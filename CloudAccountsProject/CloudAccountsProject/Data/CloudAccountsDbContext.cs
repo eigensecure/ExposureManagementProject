@@ -116,12 +116,12 @@ public partial class CloudAccountsDbContext : DbContext
             entity.Property(e => e.CloudTagEmail).HasMaxLength(255);
             entity.Property(e => e.OverallStatus).HasMaxLength(100);
 
-            entity.HasOne(d => d.BusinessFunction).WithMany(p => p.CloudAccountManualDetails)
-                .HasForeignKey(d => d.BusinessFunctionId)
+            entity.HasOne(d => d.BusFuncRefNavigation).WithMany(p => p.CloudAccountManualDetails)
+                .HasForeignKey(d => d.BusFuncRef)
                 .HasConstraintName("FK_CloudAccountManualDetails_BusinessFunction");
 
-            entity.HasOne(d => d.CloudAccount).WithMany(p => p.CloudAccountManualDetails)
-                .HasForeignKey(d => d.CloudAccountId)
+            entity.HasOne(d => d.CloudAccRefNavigation).WithMany(p => p.CloudAccountManualDetails)
+                .HasForeignKey(d => d.CloudAccRef)
                 .HasConstraintName("FK_CloudAccountManualDetails_CloudAccounts");
         });
 

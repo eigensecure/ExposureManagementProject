@@ -7,25 +7,27 @@
         <MudText Typo="Typo.h6" Color="Color.Primary">@Title</MudText>
     </TitleContent>
     <DialogContent>
-        @if (AuditRecords == null || !AuditRecords.Any())
+        @if (ValidAuditRecords == null || !ValidAuditRecords.Any())
         {
-            <MudText>No history records found.</MudText>
+            <MudText>No meaningful history records found.</MudText>
         }
         else
         {
             <MudGrid>
                 <MudItem xs="12" Class="d-flex justify-space-between align-center">
                     <MudIconButton Icon="@Icons.Material.Filled.ChevronLeft"
+                                   Color="Color.Primary"
                                    Disabled="@(currentIndex == 0)"
                                    OnClick="@(() => Navigate(-1))" />
                     <MudText Typo="Typo.subtitle1" Color="Color.Success">
-                        Version @(currentIndex + 1) of @AuditRecords.Count
+                        Version @(currentIndex + 1) of @ValidAuditRecords.Count
                         <MudText Typo="Typo.body2" Style="display: inline-block; margin-left: 16px;">
                             @(currentRecord?.Type) by @(currentRecord?.ModifiedByUser) on @(currentRecord?.DateTime?.ToString("dd MMM yyyy, hh:mm tt"))
                         </MudText>
                     </MudText>
                     <MudIconButton Icon="@Icons.Material.Filled.ChevronRight"
-                                   Disabled="@(currentIndex == AuditRecords.Count - 1)"
+                                   Color="Color.Primary"
+                                   Disabled="@(currentIndex == ValidAuditRecords.Count - 1)"
                                    OnClick="@(() => Navigate(1))" />
                 </MudItem>
                 <MudItem xs="12">
@@ -49,30 +51,44 @@
         }
     </DialogContent>
     <DialogActions>
-        <MudButton Variant="Variant.Text" Color="Color.Default" OnClick="Close">Close</MudButton>
+        <MudButton Variant="Variant.Text" Color="Color.Secondary" OnClick="Close">Close</MudButton>
     </DialogActions>
 </MudDialog>
 
 @code {
     [CascadingParameter] private IMudDialogInstance MudDialog { get; set; } = default!;
 
-    [Parameter] public string Title { get; set; } = "History";
+    [Parameter] public string Title { get; set; } = "Business Function Audit History";
     [Parameter] public List<AuditHistoryDTO> AuditRecords { get; set; } = new();
 
     private int currentIndex = 0;
-    private AuditHistoryDTO? currentRecord => AuditRecords?.ElementAtOrDefault(currentIndex);
+    private AuditHistoryDTO? currentRecord => ValidAuditRecords?.ElementAtOrDefault(currentIndex);
     private List<FieldChange> changedFields = new();
+
+    private static readonly HashSet<string> ExcludedFields = new(
+        Enum.GetNames(typeof(UnwantedField)),
+        StringComparer.OrdinalIgnoreCase
+    );
+
+    private List<AuditHistoryDTO> ValidAuditRecords = new();
 
     protected override void OnInitialized()
     {
         base.OnInitialized();
+
+        ValidAuditRecords = AuditRecords
+            .Where(record => HasValidChanges(record))
+            .ToList();
+
+        currentIndex = 0;
         LoadCurrentVersion();
     }
 
     private void Navigate(int direction)
     {
         var newIndex = currentIndex + direction;
-        if (newIndex >= 0 && newIndex < AuditRecords.Count)
+
+        if (newIndex >= 0 && newIndex < ValidAuditRecords.Count)
         {
             currentIndex = newIndex;
             LoadCurrentVersion();
@@ -92,8 +108,12 @@
 
         foreach (var key in allKeys)
         {
+            if (ExcludedFields.Contains(key))
+                continue;
+
             oldDict.TryGetValue(key, out var oldVal);
             newDict.TryGetValue(key, out var newVal);
+
             var oldStr = oldVal?.ToString() ?? "NULL";
             var newStr = newVal?.ToString() ?? "NULL";
 
@@ -102,8 +122,32 @@
                 changedFields.Add(new FieldChange(key, oldStr, newStr));
             }
         }
+    }
 
-        StateHasChanged();
+    private bool HasValidChanges(AuditHistoryDTO record)
+    {
+        var oldDict = DeserializeJson(record.OldValues);
+        var newDict = DeserializeJson(record.NewValues);
+
+        var allKeys = new HashSet<string>(oldDict.Keys);
+        allKeys.UnionWith(newDict.Keys);
+
+        foreach (var key in allKeys)
+        {
+            if (ExcludedFields.Contains(key))
+                continue;
+
+            oldDict.TryGetValue(key, out var oldVal);
+            newDict.TryGetValue(key, out var newVal);
+
+            var oldStr = oldVal?.ToString() ?? "NULL";
+            var newStr = newVal?.ToString() ?? "NULL";
+
+            if (oldStr != newStr)
+                return true;
+        }
+
+        return false;
     }
 
     private Dictionary<string, object> DeserializeJson(string? json)
@@ -122,7 +166,7 @@
         }
     }
 
-    private void Close() => MudDialog.Close();
+    private void Close() => MudDialog.Close(DialogResult.Ok(true));
 
     private record FieldChange(string Key, string OldValue, string NewValue);
 }

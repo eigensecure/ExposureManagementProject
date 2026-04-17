@@ -4,9 +4,9 @@ public partial class CloudAccountManualDetail
 {
     public int Id { get; set; }
 
-    public int? CloudAccountId { get; set; }
+    public int? CloudAccRef { get; set; }
 
-    public int? BusinessFunctionId { get; set; }
+    public int? BusFuncRef { get; set; }
 
     public string? AccountType { get; set; }
 
@@ -26,7 +26,7 @@ public partial class CloudAccountManualDetail
 
     public DateTime DateModified { get; set; }
 
-    public virtual BusinessFunction? BusinessFunction { get; set; }
+    public virtual BusinessFunction? BusFuncRefNavigation { get; set; }
 
-    public virtual CloudAccount? CloudAccount { get; set; }
+    public virtual CloudAccount? CloudAccRefNavigation { get; set; }
 }

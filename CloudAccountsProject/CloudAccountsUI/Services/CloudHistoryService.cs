@@ -38,4 +38,48 @@ public class CloudHistoryService : ICloudHistoryService
             throw;
         }
     }
+
+    public async Task<List<AuditHistoryDTO>> GetManAuditByRef(int Id)
+    {
+        try
+        {
+            var url = $"api/CloudHistory/auditTransaction/{Id}";
+
+            var response = await _httpClient.GetAsync(url);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var message = await response.Content.ReadAsStringAsync();
+                throw new Exception($"HTTP {response.StatusCode}: {message}");
+            }
+
+            return await response.Content.ReadFromJsonAsync<List<AuditHistoryDTO>>(_options);
+        }
+        catch (Exception)
+        {
+            throw;
+        }
+    }
+
+    public async Task<List<AuditHistoryDTO>> GetBusAuditByRef(int Id)
+    {
+        try
+        {
+            var url = $"api/CloudHistory/auditBusiness/{Id}";
+
+            var response = await _httpClient.GetAsync(url);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var message = await response.Content.ReadAsStringAsync();
+                throw new Exception($"HTTP {response.StatusCode}: {message}");
+            }
+
+            return await response.Content.ReadFromJsonAsync<List<AuditHistoryDTO>>(_options);
+        }
+        catch (Exception)
+        {
+            throw;
+        }
+    }
 }

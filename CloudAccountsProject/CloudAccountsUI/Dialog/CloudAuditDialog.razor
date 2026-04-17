@@ -1,0 +1,272 @@
+﻿@using System.Text.Json
+@using CloudAccountsShared.Models.DTOs
+@using CloudAccountsUI.Services.Contracts
+@using MudBlazor
+@inject ICloudHistoryService CloudHistoryService
+@inject ISnackbar Snackbar
+
+<MudDialog>
+    <TitleContent>
+        <div class="d-flex justify-space-between align-center">
+            <MudText Typo="Typo.h6" Color="Color.Primary">@Title</MudText>
+            <MudTooltip Text="@(isMasterMode ? "Switch to Transaction" : "Switch to Master")">
+                <MudIconButton Icon="@(isMasterMode ? Icons.Material.Filled.SwapCalls : Icons.Material.Filled.SwapCalls)"
+                               Color="Color.Primary"
+                               OnClick="@ToggleModeAsync"
+                               Disabled="@isLoading" />
+            </MudTooltip>
+        </div>
+    </TitleContent>
+    <DialogContent>
+        @if (isLoading)
+        {
+            <MudProgressLinear Indeterminate Color="Color.Primary" Class="my-4" />
+        }
+        else if (ValidCurrentRecords == null || !ValidCurrentRecords.Any())
+        {
+            <MudText>No meaningful history records found for @(isMasterMode ? "Master" : "Transaction").</MudText>
+        }
+        else
+        {
+            <MudGrid>
+                <MudItem xs="12" Class="d-flex justify-space-between align-center">
+                    <MudIconButton Icon="@Icons.Material.Filled.ChevronLeft"
+                                   Color="Color.Primary"
+                                   Disabled="@(currentIndex == 0)"
+                                   OnClick="@(() => Navigate(-1))" />
+                    <MudText Typo="Typo.subtitle1" Color="Color.Success">
+                        Version @(currentIndex + 1) of @ValidCurrentRecords.Count
+                        <MudText Typo="Typo.body2" Style="display: inline-block; margin-left: 16px;">
+                            @(currentRecord?.Type) by @(currentRecord?.ModifiedByUser) on @(currentRecord?.DateTime?.ToString("dd MMM yyyy, hh:mm tt"))
+                        </MudText>
+                    </MudText>
+                    <MudIconButton Icon="@Icons.Material.Filled.ChevronRight"
+                                   Color="Color.Primary"
+                                   Disabled="@(currentIndex == ValidCurrentRecords.Count - 1)"
+                                   OnClick="@(() => Navigate(1))" />
+                </MudItem>
+                <MudItem xs="12">
+                    <MudTable Items="@changedFields" Dense="true" Hover="true" Bordered="true" Striped="true">
+                        <HeaderContent>
+                            <MudTh>Field</MudTh>
+                            <MudTh>Old Value</MudTh>
+                            <MudTh>New Value</MudTh>
+                        </HeaderContent>
+                        <RowTemplate>
+                            <MudTd DataLabel="Field">@context.Key</MudTd>
+                            <MudTd DataLabel="Old Value">@context.OldValue</MudTd>
+                            <MudTd DataLabel="New Value">@context.NewValue</MudTd>
+                        </RowTemplate>
+                        <NoRecordsContent>
+                            <MudText>No field changes detected.</MudText>
+                        </NoRecordsContent>
+                    </MudTable>
+                </MudItem>
+            </MudGrid>
+        }
+    </DialogContent>
+    <DialogActions>
+        <MudButton Variant="Variant.Text" Color="Color.Secondary" OnClick="Close">Close</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] private IMudDialogInstance MudDialog { get; set; } = default!;
+
+    [Parameter] public string Title { get; set; } = "History";
+    [Parameter] public List<AuditHistoryDTO> AuditRecords { get; set; } = new();
+
+    private List<AuditHistoryDTO>? masterRecords;
+    private List<AuditHistoryDTO>? transactionRecords;
+    private bool isMasterMode = true;
+    private bool isLoading = false;
+    private int currentIndex = 0;
+    private List<FieldChange> changedFields = new();
+    private int? extractedPrimaryKeyValue = null; 
+
+    private static readonly HashSet<string> ExcludedFields = new(
+        Enum.GetNames(typeof(UnwantedField)),
+        StringComparer.OrdinalIgnoreCase
+    );
+
+    private List<AuditHistoryDTO> ValidCurrentRecords
+    {
+        get
+        {
+            var source = isMasterMode ? masterRecords : transactionRecords;
+            return source?.Where(record => HasValidChanges(record)).ToList() ?? new List<AuditHistoryDTO>();
+        }
+    }
+
+    private AuditHistoryDTO? currentRecord => ValidCurrentRecords.ElementAtOrDefault(currentIndex);
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        masterRecords = AuditRecords;
+        currentIndex = 0;
+        
+        ExtractPrimaryKeyValue();
+        
+        LoadCurrentVersion();
+    }
+
+    private void ExtractPrimaryKeyValue()
+    {
+        var firstRecord = masterRecords?.FirstOrDefault();
+        if (firstRecord != null && !string.IsNullOrEmpty(firstRecord.PrimaryKey))
+        {
+            try
+            {
+                using var document = JsonDocument.Parse(firstRecord.PrimaryKey);
+                var root = document.RootElement;
+                
+                if (root.TryGetProperty("Id", out var idProperty))
+                {
+                    extractedPrimaryKeyValue = idProperty.GetInt32();
+                }
+                else
+                {
+                    foreach (var property in root.EnumerateObject())
+                    {
+                        if (property.Value.ValueKind == JsonValueKind.Number)
+                        {
+                            extractedPrimaryKeyValue = property.Value.GetInt32();
+                            break;
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Failed to parse PrimaryKey JSON: {ex.Message}");
+                extractedPrimaryKeyValue = null;
+            }
+        }
+    }
+
+    private async Task ToggleModeAsync()
+    {
+        if (isLoading) return;
+
+        isMasterMode = !isMasterMode;
+        currentIndex = 0;
+
+        if (!isMasterMode && transactionRecords == null)
+        {
+            isLoading = true;
+            StateHasChanged();
+
+            try
+            {
+                if (extractedPrimaryKeyValue.HasValue)
+                {
+                    transactionRecords = await CloudHistoryService.GetManAuditByRef(extractedPrimaryKeyValue.Value);
+                }
+                else
+                {
+                    throw new Exception("Unable to extract primary key value from master record");
+                }
+            }
+            catch (Exception ex)
+            {
+                Snackbar.Add($"Failed to load transaction history: {ex.Message}", Severity.Error);
+                transactionRecords = new List<AuditHistoryDTO>();
+                isMasterMode = true;
+            }
+            finally
+            {
+                isLoading = false;
+            }
+        }
+
+        LoadCurrentVersion();
+        StateHasChanged();
+    }
+
+    private void Navigate(int direction)
+    {
+        var newIndex = currentIndex + direction;
+        if (newIndex >= 0 && newIndex < ValidCurrentRecords.Count)
+        {
+            currentIndex = newIndex;
+            LoadCurrentVersion();
+        }
+    }
+
+    private void LoadCurrentVersion()
+    {
+        changedFields.Clear();
+        var record = currentRecord;
+        if (record == null) return;
+
+        var oldDict = DeserializeJson(record.OldValues);
+        var newDict = DeserializeJson(record.NewValues);
+
+        var allKeys = new HashSet<string>(oldDict.Keys);
+        allKeys.UnionWith(newDict.Keys);
+
+        foreach (var key in allKeys)
+        {
+            if (ExcludedFields.Contains(key))
+                continue;
+
+            oldDict.TryGetValue(key, out var oldVal);
+            newDict.TryGetValue(key, out var newVal);
+
+            var oldStr = oldVal?.ToString() ?? "NULL";
+            var newStr = newVal?.ToString() ?? "NULL";
+
+            if (oldStr != newStr)
+            {
+                changedFields.Add(new FieldChange(key, oldStr, newStr));
+            }
+        }
+    }
+
+    private bool HasValidChanges(AuditHistoryDTO record)
+    {
+        var oldDict = DeserializeJson(record.OldValues);
+        var newDict = DeserializeJson(record.NewValues);
+
+        var allKeys = new HashSet<string>(oldDict.Keys);
+        allKeys.UnionWith(newDict.Keys);
+
+        foreach (var key in allKeys)
+        {
+            if (ExcludedFields.Contains(key))
+                continue;
+
+            oldDict.TryGetValue(key, out var oldVal);
+            newDict.TryGetValue(key, out var newVal);
+
+            var oldStr = oldVal?.ToString() ?? "NULL";
+            var newStr = newVal?.ToString() ?? "NULL";
+
+            if (oldStr != newStr)
+                return true;
+        }
+
+        return false;
+    }
+
+    private Dictionary<string, object> DeserializeJson(string? json)
+    {
+        if (string.IsNullOrWhiteSpace(json))
+            return new Dictionary<string, object>();
+
+        try
+        {
+            return JsonSerializer.Deserialize<Dictionary<string, object>>(json)
+                   ?? new Dictionary<string, object>();
+        }
+        catch
+        {
+            return new Dictionary<string, object>();
+        }
+    }
+
+    private void Close() => MudDialog.Close(DialogResult.Ok(true));
+
+    private record FieldChange(string Key, string OldValue, string NewValue);
+}

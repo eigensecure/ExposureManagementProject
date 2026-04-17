@@ -19,4 +19,17 @@ public class CloudHistoryController : BaseApiController
         return Ok(result);
     }
 
+    [HttpGet("auditTransaction/{Id}")]
+    public async Task<IActionResult> GetManAuditByRef(int Id)
+    {
+        var result = await _historyRepository.GetManAuditByRef(Id);
+        return Ok(result);
+    }
+
+    [HttpGet("auditBusiness/{Id}")]
+    public async Task<IActionResult> GetBusAuditByRef(int Id)
+    {
+        var result = await _historyRepository.GetBusAuditByRef(Id);
+        return Ok(result);
+    }
 }

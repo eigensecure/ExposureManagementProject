@@ -1028,10 +1028,11 @@
     private async Task ShowAudits()
     {
         var auditResult = await cloudhistoryservice.GetAuditByAccId(_contextRow.CloudAccountId);
+    
         var parameters = new DialogParameters
         {
-            ["Title"] = $"Audit of Cloud Account ID: '{_contextRow.CloudAccountId}'",
-            ["AuditRecords"] = auditResult
+            ["Title"] = $"Audit of Cloud Account ID: {_contextRow.CloudAccountId}",
+            ["AuditRecords"] = auditResult  
         };
 
         var options = new DialogOptions
@@ -1041,7 +1042,7 @@
             FullWidth = true
         };
 
-        var dialog = await DialogService.ShowAsync<HistoryDialog>("", parameters, options);
+        var dialog = await DialogService.ShowAsync<CloudAuditDialog>("", parameters, options);
         var result = await dialog.Result;
     }
 
@@ -1077,14 +1078,14 @@
 
         if (selected is not null)
         {
-            editingAccount.BusinessFunctionId = selected.Id;
+            editingAccount.BusFuncRef = selected.Id;
             editingAccount.BusinessFunctionOwner = selected.BusinessFunctionOwner;
             editingAccount.BusinessFunctionLtMember = selected.BusinessFunctionLtMember;
             editingAccount.BusinessFunctionSpoc = selected.BusinessFunctionSpoc;
         }
         else
         {
-            editingAccount.BusinessFunctionId = null;
+            editingAccount.BusFuncRef = null;
             editingAccount.BusinessFunctionOwner = string.Empty;
             editingAccount.BusinessFunctionLtMember = string.Empty;
             editingAccount.BusinessFunctionSpoc = string.Empty;
@@ -1093,38 +1094,6 @@
         StateHasChanged();
     }
 
-    // private async Task OpenDrawer(CloudAccount account)
-    // {
-    //     drawerFullscreen = false;
-    //     drawerOpen = false;
-    //     await Task.Delay(50);
-
-    //     var selectedBusinessFunction = BusinessFunctions.FirstOrDefault(x =>
-    //         x.Id == account.CloudAccountManualDetail?.BusinessFunctionId);
-
-    //     editingAccount = new CloudAccountEditModel
-    //     {
-    //         Id = account.Id,
-    //         CloudName = account.CloudName,
-    //         CloudOrgId = account.CloudOrgId,
-    //         Iomstatus = account.Iomstatus,
-    //         RealTimeVisibilityAndDetectionStatus = account.RealTimeVisibilityAndDetectionStatus,
-
-    //         BusinessFunctionId = account.CloudAccountManualDetail?.BusinessFunctionId,
-    //         BusinessFunctionName = selectedBusinessFunction?.BusinessFunctionName,
-    //         BusinessFunctionOwner = selectedBusinessFunction?.BusinessFunctionOwner,
-    //         BusinessFunctionLtMember = selectedBusinessFunction?.BusinessFunctionLtMember,
-    //         BusinessFunctionSpoc = selectedBusinessFunction?.BusinessFunctionSpoc,
-
-    //         AccountType = account.CloudAccountManualDetail?.AccountType,
-    //         OverallStatus = account.CloudAccountManualDetail?.OverallStatus,
-    //         Remarks = account.CloudAccountManualDetail?.Remarks,
-    //         CloudTagEmail = account.CloudAccountManualDetail?.CloudTagEmail
-    //     };
-
-    //     drawerOpen = true;
-    //     StateHasChanged();
-    // }
     private async Task OpenDrawer(CloudAccount account)
     {
         drawerFullscreen = false;
@@ -1133,7 +1102,7 @@
 
         
         var selectedBusinessFunction = BusinessFunctions.FirstOrDefault(x =>
-            x.Id == detail?.BusinessFunctionId);
+            x.Id == detail?.BusFuncRef);
 
         editingAccount = new CloudAccountEditModel
         {
@@ -1144,7 +1113,7 @@
             Iomstatus = account.Iomstatus,
             RealTimeVisibilityAndDetectionStatus = account.RealTimeVisibilityAndDetectionStatus,
 
-            BusinessFunctionId = detail?.BusinessFunctionId,
+            BusFuncRef = detail?.BusFuncRef,
             BusinessFunctionName = selectedBusinessFunction?.BusinessFunctionName,
             BusinessFunctionOwner = selectedBusinessFunction?.BusinessFunctionOwner,
             BusinessFunctionLtMember = selectedBusinessFunction?.BusinessFunctionLtMember,
@@ -1170,47 +1139,6 @@
         StateHasChanged();
     }
 
-    // private async Task SaveEdit()
-    // {
-    //     if (editingAccount is null)
-    //         return;
-
-    //     var existing = cloudAccounts.FirstOrDefault(x => x.Id == editingAccount.Id);
-
-    //     if (existing is null)
-    //         return;
-
-    //     existing.CloudName = editingAccount.CloudName;
-    //     existing.CloudOrgId = editingAccount.CloudOrgId;
-    //     existing.Iomstatus = editingAccount.Iomstatus;
-    //     existing.RealTimeVisibilityAndDetectionStatus =
-    //         editingAccount.RealTimeVisibilityAndDetectionStatus;
-
-    //     existing.DateModified = DateTime.UtcNow;
-
-    //     existing.CloudAccountManualDetail ??= new CloudAccountManualDetail();
-
-    //     existing.CloudAccountManualDetail.CloudAccountId = existing.Id;
-    //     existing.CloudAccountManualDetail.BusinessFunctionId = editingAccount.BusinessFunctionId;
-    //     existing.CloudAccountManualDetail.AccountType = editingAccount.AccountType;
-    //     existing.CloudAccountManualDetail.OverallStatus = editingAccount.OverallStatus;
-    //     existing.CloudAccountManualDetail.Remarks = editingAccount.Remarks;
-    //     existing.CloudAccountManualDetail.CloudTagEmail = editingAccount.CloudTagEmail;
-
-    //     var response = await Http.PutAsJsonAsync($"{ApiBase}/{existing.Id}", existing);
-
-    //     if (response.IsSuccessStatusCode)
-    //     {
-    //         cloudAccounts = await Http.GetFromJsonAsync<List<CloudAccount>>(ApiBase) ?? new();
-    //         CloseDrawer();
-    //         Snackbar.Add("Cloud account updated successfully", Severity.Success);
-    //     }
-    //     else
-    //     {
-    //         var error = await response.Content.ReadAsStringAsync();
-    //         Snackbar.Add($"Save failed: {error}", Severity.Error);
-    //     }
-    // }
     private async Task SaveEdit()
     {
         if (editingAccount is null)
@@ -1238,7 +1166,7 @@
             detail = new CloudAccountManualDetail
             {
                 Id = editingAccount.CloudAccountManualDetailId ?? 0,
-                CloudAccountId = existing.Id,
+                BusFuncRef = existing.Id,
                 DateCreated = DateTime.UtcNow,
                 FirstUpdatedDate = DateTime.UtcNow
             };
@@ -1250,7 +1178,7 @@
             detail.Id = editingAccount.CloudAccountManualDetailId ?? detail.Id;
         }
 
-        detail.BusinessFunctionId = editingAccount.BusinessFunctionId;
+        detail.BusFuncRef = editingAccount.BusFuncRef;
         detail.AccountType = editingAccount.AccountType;
         detail.OverallStatus = editingAccount.OverallStatus;
         detail.Remarks = editingAccount.Remarks;

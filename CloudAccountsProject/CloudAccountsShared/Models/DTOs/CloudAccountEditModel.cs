@@ -10,7 +10,7 @@ public class CloudAccountEditModel
     public string? Iomstatus { get; set; }
     public string? RealTimeVisibilityAndDetectionStatus { get; set; }
 
-    public int? BusinessFunctionId { get; set; }
+    public int? BusFuncRef { get; set; }
     public string? BusinessFunctionName { get; set; }
 
     public string? BusinessFunctionOwner { get; set; }

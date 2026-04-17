@@ -1,9 +1,13 @@
 ﻿@page "/businessfunction"
 @using CloudAccountsShared.Models
+@using CloudAccountsUI.Dialog
+@using CloudAccountsUI.Services.Contracts
 @using MudBlazor
 @inject HttpClient Http
 @inject ISnackbar Snackbar
 @inject IDialogService DialogService
+@inject ICloudHistoryService cloudhistoryservice
+
 
 <style>
     /* Page Full Width Fix */
@@ -793,8 +797,8 @@
     <MudMenuItem Icon="@Icons.Material.Filled.Edit" OnClick="@(() => EditFromContext())">
         Edit @_contextRow?.BusinessFunctionName
     </MudMenuItem>
-    <MudMenuItem Icon="@Icons.Material.Filled.Info" OnClick="@ShowDetails">
-        View Details
+    <MudMenuItem Icon="@Icons.Material.Filled.Info" OnClick="@ShowAudits">
+        View Audits for @_contextRow?.BusinessFunctionName
     </MudMenuItem>
     <MudMenuItem Icon="@Icons.Material.Filled.Delete" OnClick="@ConfirmDelete">
         Delete
@@ -926,12 +930,25 @@
         }
     }
 
-    private void ShowDetails()
+    private async Task ShowAudits()
     {
-        if (_contextRow is not null)
+        var auditResult = await cloudhistoryservice.GetBusAuditByRef(_contextRow.Id);
+
+        var parameters = new DialogParameters
         {
-            Snackbar.Add($"Business Function: {_contextRow.BusinessFunctionName} | Owner: {_contextRow.BusinessFunctionOwner} | SPOC: {_contextRow.BusinessFunctionSpoc}", Severity.Info);
-        }
+            ["Title"] = $"Audit of Business Function: {_contextRow.BusinessFunctionName}",
+            ["AuditRecords"] = auditResult
+        };
+
+        var options = new DialogOptions
+        {
+            CloseOnEscapeKey = true,
+            MaxWidth = MaxWidth.Medium,
+            FullWidth = true
+        };
+
+        var dialog = await DialogService.ShowAsync<BusinessAuditDialog>("", parameters, options);
+        var result = await dialog.Result;
     }
 
     private async Task ConfirmDelete()

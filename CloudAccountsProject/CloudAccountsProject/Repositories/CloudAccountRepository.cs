@@ -320,8 +320,8 @@ public class CloudAccountRepository : ICloudAccountRepository
                 {
                     var newDetail = new CloudAccountManualDetail
                     {
-                        CloudAccountId = existing.Id,
-                        BusinessFunctionId = incoming.BusinessFunctionId,
+                        CloudAccRef = existing.Id,
+                        BusFuncRef = incoming.BusFuncRef,
                         AccountType = incoming.AccountType,
                         OverallStatus = incoming.OverallStatus,
                         Remarks = incoming.Remarks,
@@ -337,7 +337,7 @@ public class CloudAccountRepository : ICloudAccountRepository
                 }
                 else
                 {
-                    existingDetail.BusinessFunctionId = incoming.BusinessFunctionId;
+                    existingDetail.BusFuncRef = incoming.BusFuncRef;
                     existingDetail.AccountType = incoming.AccountType;
                     existingDetail.OverallStatus = incoming.OverallStatus;
                     existingDetail.Remarks = incoming.Remarks;
