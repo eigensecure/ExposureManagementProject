@@ -8,5 +8,11 @@ public static class ServicesConfig
     public static void AddDIServices(this IServiceCollection Services)
     {
         Services.AddScoped<ICloudHistoryService, CloudHistoryService>();
+
+        Services.AddScoped<IBusinessFunctionService, BusinessFunctionService>();
+
+        Services.AddScoped<ICloudRecordsService, CloudRecordsService>();
+
+        Services.AddScoped<ICrowdGroupMasterService, CrowdGroupMasterService>();
     }
 }

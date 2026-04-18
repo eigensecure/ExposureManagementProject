@@ -1,4 +1,5 @@
 ﻿using CloudAccountsProject.Repositories.Contracts;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CloudAccountsProject.Controllers;
@@ -12,6 +13,7 @@ public class CloudHistoryController : BaseApiController
         _historyRepository = repository;
     }
 
+    [Authorize]
     [HttpGet("auditMaster/{accId}")]
     public async Task<IActionResult> GetAuditByAccId(string accId)
     {
@@ -19,6 +21,7 @@ public class CloudHistoryController : BaseApiController
         return Ok(result);
     }
 
+    [Authorize]
     [HttpGet("auditTransaction/{Id}")]
     public async Task<IActionResult> GetManAuditByRef(int Id)
     {
@@ -26,6 +29,7 @@ public class CloudHistoryController : BaseApiController
         return Ok(result);
     }
 
+    [Authorize]
     [HttpGet("auditBusiness/{Id}")]
     public async Task<IActionResult> GetBusAuditByRef(int Id)
     {

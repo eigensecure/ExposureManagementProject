@@ -4,14 +4,9 @@ using System.Net.Http.Json;
 
 namespace CloudAccountsUI.Services
 {
-    public class CrowdGroupMasterService : ICrowdGroupMasterService
+    public class CrowdGroupMasterService(IHttpClientFactory httpClient) : ICrowdGroupMasterService
     {
-        private readonly HttpClient _httpClient;
-
-        public CrowdGroupMasterService(HttpClient httpClient)
-        {
-            _httpClient = httpClient;
-        }
+        private readonly HttpClient _httpClient = httpClient.CreateClient("ApiClient");
 
         public async Task<List<CrowdGroupMaster>> GetAllAsync()
         {

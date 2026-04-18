@@ -1,5 +1,6 @@
 ﻿using CloudAccountsProject.Repositories.Contracts;
 using CloudAccountsShared.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CloudAccountsProject.Controllers;
@@ -13,6 +14,7 @@ public class BusinessFunctionController : BaseApiController
         _repository = repository;
     }
 
+    [Authorize]
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
@@ -20,6 +22,7 @@ public class BusinessFunctionController : BaseApiController
         return Ok(result);
     }
 
+    [Authorize]
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(int id)
     {
@@ -31,6 +34,7 @@ public class BusinessFunctionController : BaseApiController
         return Ok(result);
     }
 
+    [Authorize]
     [HttpPost]
     public async Task<IActionResult> Create(BusinessFunction item)
     {
@@ -45,6 +49,7 @@ public class BusinessFunctionController : BaseApiController
         }
     }
 
+    [Authorize]
     [HttpPut("{id}")]
     public async Task<IActionResult> Update(int id, BusinessFunction item)
     {

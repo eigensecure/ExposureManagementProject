@@ -1,18 +1,15 @@
 ﻿using CloudAccountsProject.Repositories.Contracts;
 using CloudAccountsShared.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CloudAccountsProject.Controllers
 {
-    public class CrowdGroupMasterController : BaseApiController
+    public class CrowdGroupMasterController(ICrowdGroupMasterRepository repository) : BaseApiController
     {
-        private readonly ICrowdGroupMasterRepository _repository;
+        private readonly ICrowdGroupMasterRepository _repository = repository;
 
-        public CrowdGroupMasterController(ICrowdGroupMasterRepository repository)
-        {
-            _repository = repository;
-        }
-
+        [Authorize]
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
@@ -20,6 +17,7 @@ namespace CloudAccountsProject.Controllers
             return Ok(result);
         }
 
+        [Authorize]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
@@ -31,23 +29,28 @@ namespace CloudAccountsProject.Controllers
             return Ok(result);
         }
 
+        [Authorize]
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CrowdGroupMaster group)
         {
+            group.CreatedBy = User.Identity?.Name;
             var result = await _repository.CreateAsync(group);
             return Ok(result);
         }
 
+        [Authorize]
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, [FromBody] CrowdGroupMaster group)
         {
             if (id != group.Id)
                 return BadRequest();
 
+            group.UpdatedBy = User.Identity?.Name;
             var result = await _repository.UpdateAsync(group);
             return Ok(result);
         }
 
+        [Authorize]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {

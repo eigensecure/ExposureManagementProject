@@ -73,9 +73,9 @@
                             <PropertyColumn Property="x => x.BusinessFunctionId" Title="Business Function ID" Resizable="true" />
                             <PropertyColumn Property="x => x.AllAccountIds" Title="All Account IDs" Resizable="true" />
 
-                            <PropertyColumn Property="x => x.UpdatedDate" Title="Updated Date" Resizable="true">
+                            <PropertyColumn Property="x => x.DateModified" Title="Updated Date" Resizable="true">
                                 <CellTemplate Context="cell">
-                                    <span>@(cell.Item.UpdatedDate == default ? "-" : cell.Item.UpdatedDate.ToString("yyyy-MM-dd HH:mm"))</span>
+                                    <span>@(cell.Item.DateModified == default ? "-" : cell.Item.DateModified.ToString("yyyy-MM-dd HH:mm"))</span>
                                 </CellTemplate>
                             </PropertyColumn>
                         </Columns>
@@ -501,8 +501,8 @@
         {
             CreatedBy = "Current User",
             UpdatedBy = "Current User",
-            CreatedDate = DateTime.UtcNow,
-            UpdatedDate = DateTime.UtcNow,
+            DateCreated = DateTime.UtcNow,
+            DateModified = DateTime.UtcNow,
             BusinessFunctionId = businessFunctions.FirstOrDefault()?.Id ?? 0
         };
 
@@ -528,8 +528,8 @@
             BusinessFunctionId = group.BusinessFunctionId,
             CreatedBy = group.CreatedBy,
             UpdatedBy = "Current User",
-            CreatedDate = group.CreatedDate,
-            UpdatedDate = DateTime.UtcNow
+            DateCreated = group.DateCreated,
+            DateModified = DateTime.UtcNow
         };
 
         Console.WriteLine($"EditGroup - BusinessFunctionId: {editingGroup.BusinessFunctionId}");

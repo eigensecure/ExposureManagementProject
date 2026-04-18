@@ -14,6 +14,7 @@ public class AuditEntry
     public string UserId { get; set; }
     public string TableName { get; set; }
     public string Reference { get; set; }
+    public string ModifiedBy { get; set; }
     public Dictionary<string, object> KeyValues { get; } = new Dictionary<string, object>();
     public Dictionary<string, object> OldValues { get; } = new Dictionary<string, object>();
     public Dictionary<string, object> NewValues { get; } = new Dictionary<string, object>();
@@ -33,6 +34,7 @@ public class AuditEntry
         auditMaster.PrimaryKey = JsonConvert.SerializeObject(KeyValues);
         auditMaster.TableName = TableName;
         auditMaster.CloudAccountId = Reference;
+        auditMaster.ModifiedByUser = ModifiedBy;
         auditMaster.DateTime = DateTime.UtcNow;     
         auditMaster.OldValues = OldValues.Count == 0 ? null : JsonConvert.SerializeObject(OldValues);
         auditMaster.NewValues = NewValues.Count == 0 ? null : JsonConvert.SerializeObject(NewValues);
@@ -47,6 +49,7 @@ public class AuditEntry
 
         auditTransaction.PrimaryKey = JsonConvert.SerializeObject(KeyValues);
         auditTransaction.TableName = TableName;
+        auditTransaction.ModifiedByUser = ModifiedBy;
         auditTransaction.DateTime = DateTime.UtcNow;
         auditTransaction.OldValues = OldValues.Count == 0 ? null : JsonConvert.SerializeObject(OldValues);
         auditTransaction.NewValues = NewValues.Count == 0 ? null : JsonConvert.SerializeObject(NewValues);

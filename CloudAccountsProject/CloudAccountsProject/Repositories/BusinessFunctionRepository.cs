@@ -5,14 +5,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CloudAccountsProject.Repositories;
 
-public class BusinessFunctionRepository : IBusinessFunctionRepository
+public class BusinessFunctionRepository(CloudAccountsDbContext context) : IBusinessFunctionRepository
 {
-    private readonly CloudAccountsDbContext _context;
-
-    public BusinessFunctionRepository(CloudAccountsDbContext context)
-    {
-        _context = context;
-    }
+    private readonly CloudAccountsDbContext _context = context;
 
     public async Task<List<BusinessFunction>> GetAllAsync()
     {

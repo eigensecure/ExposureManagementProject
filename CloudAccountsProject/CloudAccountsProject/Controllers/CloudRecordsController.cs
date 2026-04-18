@@ -1,14 +1,15 @@
 ﻿using CloudAccountsProject.Repositories.Contracts;
 using CloudAccountsShared.Models.DTOs;
 using Microsoft.AspNetCore.Mvc;
-using System.Runtime.InteropServices;
+using Microsoft.AspNetCore.Authorization;
 
 namespace CloudAccountsProject.Controllers;
 
-public class CloudRecordsController(ICloudRecordsRepo cloudAccountRepo) : BaseApiController
+public class CloudRecordsController(ICloudRecordsRepository cloudAccountRepo) : BaseApiController
 {
-    private readonly ICloudRecordsRepo _cloudAccountRepo = cloudAccountRepo;
+    private readonly ICloudRecordsRepository _cloudAccountRepo = cloudAccountRepo;
 
+    [Authorize]
     [HttpGet("details")]
     public async Task<IActionResult> GetCloudAccountDetails()
     {
@@ -21,11 +22,14 @@ public class CloudRecordsController(ICloudRecordsRepo cloudAccountRepo) : BaseAp
         });
     }
 
+    [Authorize]
     [HttpPost("savedetails")]
     public async Task<IActionResult> SaveBusManDetailsAsync([FromBody] CloudAccountDetailsDTO item)
     {
         try
         {
+            item.FirstUpdatedBy = User.Identity?.Name;
+            item.LastUpdatedBy = User.Identity?.Name;
             await _cloudAccountRepo.SaveBusManDetailsAsync(item);
 
             return Ok("Updated Successfully");

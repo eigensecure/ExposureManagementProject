@@ -31,6 +31,8 @@ public partial class CloudAccountDetailsDTO
     public string? OverallStatus { get; set; }
     public string? ManualRemarks { get; set; }
     public string? AttachmentPath { get; set; }
+    public string? FirstUpdatedBy { get; set; }
+    public string? LastUpdatedBy { get; set; }
 
     // BusinessFunction
     public int? BusinessFunctionId { get; set; }

@@ -5,17 +5,10 @@ using System.Text.Json;
 
 namespace CloudAccountsUI.Services;
 
-public class CloudHistoryService : ICloudHistoryService
+public class CloudHistoryService(IHttpClientFactory httpClient) : ICloudHistoryService
 {
-    private readonly HttpClient _httpClient;
-    private readonly JsonSerializerOptions _options;
-
-    public CloudHistoryService(HttpClient httpClient)
-    {
-        _httpClient = httpClient;
-        this._options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
-
-    }
+    private readonly HttpClient _httpClient = httpClient.CreateClient("ApiClient");
+    private readonly JsonSerializerOptions _options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
 
     public async Task<List<AuditHistoryDTO>> GetAuditByAccId(string accId)
     {

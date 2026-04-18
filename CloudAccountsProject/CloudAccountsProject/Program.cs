@@ -1,8 +1,12 @@
 using CloudAccountsProject.Data;
+using CloudAccountsProject.RepoConfig;
 using CloudAccountsProject.Repositories;
 using CloudAccountsProject.Repositories.Contracts;
 using CloudAccountsProjects.Data;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -14,29 +18,43 @@ var config = new ConfigurationBuilder()
 
 var activeClientURL = config["ClientURL:ActiveURL"];
 var clientURL = config[$"ClientURL:{activeClientURL}"];
+var jwtKey = builder.Configuration["Jwt:Key"];
 
-builder.Services.AddControllers()
-    .AddJsonOptions(options =>
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
     {
-        options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
-    });
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+
+        ValidIssuer = builder.Configuration["Jwt:Issuer"],
+        ValidAudience = builder.Configuration["Jwt:Audience"],
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey))
+    };
+});
+
+builder.Services.AddAuthorization();
+
+builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddControllers();
+
 builder.Services.AddOpenApi();
 
 builder.Services.AddDbContext<CloudAccountsDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
 builder.Services.AddDbContext<CloudAccountsDbSPContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-builder.Services.AddScoped<ICloudAccountRepository, CloudAccountRepository>();
-builder.Services.AddScoped<IBusinessFunctionRepository, BusinessFunctionRepository>();
-builder.Services.AddScoped<ICloudHistoryRepository, CloudHistoryRepository>();
-builder.Services.AddScoped<ICloudRecordsRepo, CloudRecordsRepo>();
-builder.Services.AddScoped<ICrowdGroupMasterRepository, CrowdGroupMasterRepository>();
-
-
-builder.Services.AddControllers();
+builder.Services.AddDIServices();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -53,6 +71,10 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
+app.UseCors("AllowWasm");
+
+app.UseAuthentication(); 
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -62,8 +84,6 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
-
-app.UseCors("AllowWasm");
 
 app.MapControllers();
 

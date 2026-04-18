@@ -6,16 +6,11 @@ using System.Text.Json;
 
 namespace CloudAccountsUI.Services
 {
-    public class BusinessFunctionService : IBusinessFunctionService
+    public class BusinessFunctionService(IHttpClientFactory httpClient) : IBusinessFunctionService
     {
-        private readonly HttpClient _httpClient;
+        private readonly HttpClient _httpClient = httpClient.CreateClient("ApiClient");
         private readonly JsonSerializerOptions _options =
             new() { PropertyNameCaseInsensitive = true };
-
-        public BusinessFunctionService(HttpClient httpClient)
-        {
-            _httpClient = httpClient;
-        }
 
         public async Task<List<BusinessFunction>> GetAllAsync()
         {

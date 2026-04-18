@@ -27,4 +27,6 @@ public partial class BusinessFunction
     public DateTime DateModified { get; set; }
 
     public virtual ICollection<CloudAccountManualDetail> CloudAccountManualDetails { get; set; } = new List<CloudAccountManualDetail>();
+
+    public virtual ICollection<CrowdGroupMaster> CrowdGroupMasters { get; set; } = new List<CrowdGroupMaster>();
 }

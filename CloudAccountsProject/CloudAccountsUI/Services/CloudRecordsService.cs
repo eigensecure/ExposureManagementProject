@@ -3,26 +3,9 @@ using CloudAccountsUI.Services.Contracts;
 using System.Net.Http.Json;
 
 namespace CloudAccountsUI.Services;
-public class CloudRecordsService(HttpClient httpClient) : ICloudRecordsService
+public class CloudRecordsService(IHttpClientFactory httpClient) : ICloudRecordsService
 {
-    private readonly HttpClient _httpClient = httpClient;
-
-    //public async Task<List<CloudAccountDetailsDTO>> GetCloudAccountDetailsAsync()
-    //{
-    //    var result = await _httpClient.GetFromJsonAsync<List<CloudAccountDetailsDTO>>(
-    //        "api/CloudRecords/details");
-
-    //    return result ?? new List<CloudAccountDetailsDTO>();
-    //}
-
-    //public async Task<(List<CloudAccountDetailsDTO> CloudAccounts, List<CloudAccountColumnMetadata> ColumnMetadata)> GetCloudAccountDetailsAsync()
-    //{
-    //    var result = await _httpClient.GetFromJsonAsync<
-    //        (List<CloudAccountDetailsDTO> CloudAccounts, List<CloudAccountColumnMetadata> ColumnMetadata)>(
-    //        "api/CloudRecords/details");
-
-    //    return result;
-    //}
+    private readonly HttpClient _httpClient = httpClient.CreateClient("ApiClient");
 
     public async Task<(List<CloudAccountDetailsDTO> CloudAccounts, List<CloudAccountColumnMetadata> ColumnMetadata)> GetCloudAccountDetailsAsync()
     {

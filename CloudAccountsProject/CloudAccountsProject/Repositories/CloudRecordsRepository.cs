@@ -9,20 +9,13 @@ using System.Text.Json;
 
 namespace CloudAccountsProject.Repositories;
 
-public class CloudRecordsRepo(CloudAccountsDbContext Dbcontext,
+public class CloudRecordsRepository(CloudAccountsDbContext Dbcontext,
     CloudAccountsDbSPContext DbSPcontext,
-    IWebHostEnvironment environment) : ICloudRecordsRepo
+    IWebHostEnvironment environment) : ICloudRecordsRepository
 {
     private readonly CloudAccountsDbContext _Dbcontext = Dbcontext;
     private readonly CloudAccountsDbSPContext _DbSPcontext = DbSPcontext;
     private readonly IWebHostEnvironment _environment = environment;
-
-    //public async Task<List<CloudAccountDetailsDTO>> GetCloudAccountDetailsAsync()
-    //{
-    //    return await _DbSPcontext.CloudAccountDetailsDTOs
-    //        .FromSqlRaw("EXEC dbo.GetCloudAccountDetails")
-    //        .ToListAsync();
-    //}
 
     public async Task<(List<CloudAccountDetailsDTO> CloudAccounts, List<CloudAccountColumnMetadata> ColumnMetadata)> GetCloudAccountDetailsAsync()
     {
@@ -119,6 +112,7 @@ public class CloudRecordsRepo(CloudAccountsDbContext Dbcontext,
                 manualDetail.OverallStatus = item.OverallStatus;
                 manualDetail.Remarks = item.ManualRemarks;
                 manualDetail.AttachmentPath = item.AttachmentPath;
+                manualDetail.LastUpdatedBy = item.LastUpdatedBy;
                 manualDetail.DateModified = now;
             }
         }
@@ -134,6 +128,7 @@ public class CloudRecordsRepo(CloudAccountsDbContext Dbcontext,
                 OverallStatus = item.OverallStatus,
                 Remarks = item.ManualRemarks,
                 AttachmentPath = item.AttachmentPath,
+                FirstUpdatedBy = item.FirstUpdatedBy,
                 DateCreated = now,
                 DateModified = now
             };

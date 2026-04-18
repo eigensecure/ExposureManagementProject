@@ -5,19 +5,14 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CloudAccountsProject.Repositories
 {
-    public class CrowdGroupMasterRepository : ICrowdGroupMasterRepository
+    public class CrowdGroupMasterRepository(CloudAccountsDbContext context) : ICrowdGroupMasterRepository
     {
-        private readonly CloudAccountsDbContext _context;
-
-        public CrowdGroupMasterRepository(CloudAccountsDbContext context)
-        {
-            _context = context;
-        }
+        private readonly CloudAccountsDbContext _context = context;
 
         public async Task<List<CrowdGroupMaster>> GetAllAsync()
         {
             return await _context.CrowdGroupMasters
-                .OrderByDescending(x => x.CreatedDate)
+                .OrderByDescending(x => x.DateCreated)
                 .ToListAsync();
         }
 
@@ -29,8 +24,8 @@ namespace CloudAccountsProject.Repositories
 
         public async Task<CrowdGroupMaster> CreateAsync(CrowdGroupMaster group)
         {
-            group.CreatedDate = DateTime.UtcNow;
-            group.UpdatedDate = DateTime.UtcNow;
+            group.DateCreated = DateTime.UtcNow;
+            group.DateModified = DateTime.UtcNow;
 
             _context.CrowdGroupMasters.Add(group);
             await _context.SaveChangesAsync();
@@ -55,7 +50,7 @@ namespace CloudAccountsProject.Repositories
             existing.Remarks = group.Remarks;
             existing.AllAccountIds = group.AllAccountIds;
             existing.UpdatedBy = group.UpdatedBy;
-            existing.UpdatedDate = DateTime.UtcNow;
+            existing.DateModified = DateTime.UtcNow;
             existing.LastsuccessfulDateofapi = group.LastsuccessfulDateofapi;
             existing.CommentsLogs = group.CommentsLogs;
 

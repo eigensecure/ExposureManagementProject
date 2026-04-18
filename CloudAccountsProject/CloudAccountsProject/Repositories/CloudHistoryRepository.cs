@@ -7,14 +7,9 @@ using System.Text;
 
 namespace CloudAccountsProject.Repositories;
 
-public class CloudHistoryRepository : ICloudHistoryRepository
+public class CloudHistoryRepository(CloudAccountsDbContext context) : ICloudHistoryRepository
 {
-    private readonly CloudAccountsDbContext _context;
-
-    public CloudHistoryRepository(CloudAccountsDbContext context)
-    {
-        _context = context;
-    }
+    private readonly CloudAccountsDbContext _context = context;
 
     public async Task<List<AuditHistoryDTO>> GetAuditByAccId(string accId)
     {

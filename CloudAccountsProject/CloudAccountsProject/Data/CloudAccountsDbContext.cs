@@ -7,13 +7,12 @@ namespace CloudAccountsProjects.Data;
 
 public partial class CloudAccountsDbContext : DbContext
 {
-    public CloudAccountsDbContext()
-    {
-    }
+    private readonly IHttpContextAccessor _httpContextAccessor;
 
-    public CloudAccountsDbContext(DbContextOptions<CloudAccountsDbContext> options)
+    public CloudAccountsDbContext(DbContextOptions<CloudAccountsDbContext> options, IHttpContextAccessor httpContextAccessor)
         : base(options)
     {
+        _httpContextAccessor = httpContextAccessor;
     }
 
     public virtual DbSet<AuditTableMaster> AuditTableMasters { get; set; }
@@ -27,6 +26,8 @@ public partial class CloudAccountsDbContext : DbContext
     public virtual DbSet<CloudAccountManualDetail> CloudAccountManualDetails { get; set; }
 
     public virtual DbSet<CrowdGroupMaster> CrowdGroupMasters { get; set; }
+
+    public virtual DbSet<UserTable> UserTables { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -141,6 +142,44 @@ public partial class CloudAccountsDbContext : DbContext
             entity.Property(e => e.UpdatedBy).HasMaxLength(255);
         });
 
+        modelBuilder.Entity<CrowdGroupMaster>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK_CrowdGroupMaster_Id");
+
+            entity.ToTable("CrowdGroupMaster");
+
+            entity.Property(e => e.AllAccountIds).HasColumnName("AllAccountIDs");
+            entity.Property(e => e.CreatedBy).HasMaxLength(255);
+            entity.Property(e => e.CrwdgroupName)
+                .HasMaxLength(255)
+                .HasColumnName("CRWDGroupName");
+            entity.Property(e => e.FilterBy)
+                .HasMaxLength(500)
+                .HasColumnName("FilterBY");
+            entity.Property(e => e.GroupId)
+                .HasMaxLength(255)
+                .HasColumnName("GroupID");
+            entity.Property(e => e.GroupType).HasMaxLength(50);
+            entity.Property(e => e.LastsuccessfulDateofapi).HasColumnName("LASTSuccessfulDATEOFAPI");
+            entity.Property(e => e.Provider).HasMaxLength(50);
+            entity.Property(e => e.UpdatedBy).HasMaxLength(255);
+
+            entity.HasOne(d => d.BusinessFunction).WithMany(p => p.CrowdGroupMasters)
+                .HasForeignKey(d => d.BusinessFunctionId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_CrowdGroupMaster_BusinessFunction");
+        });
+
+        modelBuilder.Entity<UserTable>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK_User_Table");
+
+            entity.ToTable("UserTable");
+
+            entity.Property(e => e.Username).HasMaxLength(50);
+        });
+
+
         OnModelCreatingPartial(modelBuilder);
     }
 
@@ -174,7 +213,6 @@ public partial class CloudAccountsDbContext : DbContext
 
     private List<AuditEntry> OnBeforeSaveChanges()
     {
-        //ChangeTracker.DetectChanges();
         var auditEntries = new List<AuditEntry>();
         foreach (var entry in ChangeTracker.Entries())
         {
@@ -186,9 +224,20 @@ public partial class CloudAccountsDbContext : DbContext
             }
 
             var auditEntry = new AuditEntry(entry);
+            var context = _httpContextAccessor.HttpContext;
+            //Console.WriteLine(context);
+            //var isAuth = _httpContextAccessor.HttpContext?.User?.Identity?.IsAuthenticated;
+            //Console.WriteLine(isAuth);
+            //var claims = _httpContextAccessor.HttpContext?.User?.Claims;
+
+            //foreach (var claim in claims)
+            //{
+            //    Console.WriteLine($"{claim.Type} : {claim.Value}");
+            //}
             auditEntry.TableName = entry.Metadata.GetTableName();
             auditEntry.IsMaster = MasterTables.Any(t => t.IsAssignableFrom(entry.Entity.GetType()));
             auditEntry.Reference = GetReference(entry);
+            auditEntry.ModifiedBy = _httpContextAccessor.HttpContext?.User?.Identity?.Name;
 
             auditEntries.Add(auditEntry);
             foreach (var property in entry.Properties)
@@ -235,7 +284,6 @@ public partial class CloudAccountsDbContext : DbContext
                 continue;
         }
 
-        // Save audit entities that have all the modifications
         foreach (var auditEntry in auditEntries.Where(_ => !_.HasTemporaryProperties))
         {
             if (auditEntry.IsMaster) AuditTableMasters.Add(auditEntry.ToAuditMaster());
@@ -252,7 +300,6 @@ public partial class CloudAccountsDbContext : DbContext
 
         foreach (var auditEntry in auditEntries)
         {
-            // Get the final value of the temporary properties
             foreach (var prop in auditEntry.TemporaryProperties)
             {
                 if (prop.Metadata.IsPrimaryKey())
