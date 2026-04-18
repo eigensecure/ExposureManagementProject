@@ -156,6 +156,19 @@
                         <MudText Typo="Typo.subtitle2" Style="color: #1A1D2E; font-size: 13px; font-weight: 600;">Cloud Details</MudText>
 
                         <MudTextField T="string"
+                                      Label="Provider"
+                                      Variant="Variant.Outlined"
+                                      @bind-Value="editingAccount.Provider"
+                                      Disabled="true"
+                                      Dense="true" />
+
+                        <MudTextField T="string"
+                                      Label="Cloud Account ID"
+                                      Variant="Variant.Outlined"
+                                      @bind-Value="editingAccount.CloudAccountId"
+                                      Dense="true" />
+
+                        <MudTextField T="string"
                                       Label="Cloud Name"
                                       Variant="Variant.Outlined"
                                       @bind-Value="editingAccount.CloudName"
@@ -168,6 +181,38 @@
                                       Dense="true" />
 
                         <MudTextField T="string"
+                                      Label="Cloud Root Account ID"
+                                      Variant="Variant.Outlined"
+                                      @bind-Value="editingAccount.CloudRootAccountID"
+                                      Dense="true" />
+
+                        <MudTextField T="string"
+                                      Label="Registration Type"
+                                      Variant="Variant.Outlined"
+                                      @bind-Value="editingAccount.RegistrationType"
+                                      Dense="true" />
+
+                        <MudTextField T="string"
+                                      Label="Deployment Method"
+                                      Variant="Variant.Outlined"
+                                      @bind-Value="editingAccount.DeploymentMethod"
+                                      Dense="true" />
+
+                        <MudTextField T="string"
+                                      Label="Registered At CRWD"
+                                      Variant="Variant.Outlined"
+                                      Value="@(editingAccount.RegisteredAtCRWD?.ToString("yyyy-MM-dd HH:mm") ?? "-")"
+                                      Disabled="true"
+                                      Dense="true" />
+
+                        <MudTextField T="string"
+                                      Label="Last Updated At CRWD"
+                                      Variant="Variant.Outlined"
+                                      Value="@(editingAccount.LastUpdatedAtCRWD?.ToString("yyyy-MM-dd HH:mm") ?? "-")"
+                                      Disabled="true"
+                                      Dense="true" />
+
+                        <MudTextField T="string"
                                       Label="IOM Status"
                                       Variant="Variant.Outlined"
                                       @bind-Value="editingAccount.IOMStatus"
@@ -177,6 +222,30 @@
                                       Label="RTVD Status"
                                       Variant="Variant.Outlined"
                                       @bind-Value="editingAccount.RealTimeVisibilityAndDetectionStatus"
+                                      Dense="true" />
+
+                        <MudTextField T="string"
+                                      Label="1-Click Sensor Status"
+                                      Variant="Variant.Outlined"
+                                      @bind-Value="editingAccount.OneClickSensorStatus"
+                                      Dense="true" />
+
+                        <MudTextField T="string"
+                                      Label="Identity Protection Status"
+                                      Variant="Variant.Outlined"
+                                      @bind-Value="editingAccount.IdentityProtectionStatus"
+                                      Dense="true" />
+
+                        <MudTextField T="string"
+                                      Label="DSPM Status"
+                                      Variant="Variant.Outlined"
+                                      @bind-Value="editingAccount.DSPMStatus"
+                                      Dense="true" />
+
+                        <MudTextField T="string"
+                                      Label="Vulnerability Scanning Status"
+                                      Variant="Variant.Outlined"
+                                      @bind-Value="editingAccount.VulnerabilityScanningStatus"
                                       Dense="true" />
 
                         <MudDivider Class="my-3" />
@@ -231,7 +300,7 @@
 
                             <MudSelectItem Value='"Hybrid"'>Hybrid</MudSelectItem>
                             <MudSelectItem Value='"Managed"'>Managed</MudSelectItem>
-                            <MudSelectItem Value='"Self-Managed"'>Self-Managed</MudSelectItem>
+                            <MudSelectItem Value='"Self - Managed"'>Self-Managed</MudSelectItem>
                             <MudSelectItem Value='"Sandbox"'>Sandbox</MudSelectItem>
                             <MudSelectItem Value='"SingleAccount"'>SingleAccount</MudSelectItem>
                         </MudSelect>
@@ -252,6 +321,12 @@
                                       Variant="Variant.Outlined"
                                       Lines="3"
                                       @bind-Value="editingAccount.ManualRemarks" />
+
+                        <MudTextField T="string"
+                                      Label="Attachment Path"
+                                      Variant="Variant.Outlined"
+                                      @bind-Value="editingAccount.AttachmentPath"
+                                      Dense="true" />
                     </MudStack>
                 </div>
 
@@ -899,16 +974,16 @@
     private void RefreshColumnSelectorItems()
     {
         tempColumnSelectorItems.Clear();
-        
+
         foreach (var column in AvailableColumns)
         {
             // Skip if the column should be hidden for the current provider
             if (ShouldHideColumn(column.GenericKey))
                 continue;
-            
+
             // Get the display title based on the current selected provider
             var displayTitle = GetColumnDisplayTitleForProvider(column.GenericKey, selectedProvider);
-            
+
             tempColumnSelectorItems.Add(new ColumnSelectorItem
             {
                 GenericKey = column.GenericKey,
@@ -936,18 +1011,18 @@
     private object? GetPropertyValue(CloudAccountDetailsDTO item, string propertyName)
     {
         if (item == null) return null;
-        
+
         var property = typeof(CloudAccountDetailsDTO).GetProperty(propertyName);
         if (property == null) return null;
-        
+
         var value = property.GetValue(item);
-        
+
         // Format DateTime values
         if (value is DateTime dateTime)
         {
             return dateTime.ToString("yyyy-MM-dd HH:mm");
         }
-        
+
         return value;
     }
 
@@ -971,7 +1046,7 @@
         {
             column.IsVisible = true;
         }
-        
+
         // Refresh the temporary items to reflect the reset
         RefreshColumnSelectorItems();
         StateHasChanged();
@@ -988,7 +1063,7 @@
                 column.IsVisible = tempItem.IsVisible;
             }
         }
-        
+
         showColumnDialog = false;
         StateHasChanged();
     }
