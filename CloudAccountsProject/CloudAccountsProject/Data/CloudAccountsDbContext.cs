@@ -104,8 +104,6 @@ public partial class CloudAccountsDbContext : DbContext
         modelBuilder.Entity<CloudAccountManualDetail>(entity =>
         {
             entity.Property(e => e.AccountType).HasMaxLength(100);
-            entity.Property(e => e.FirstUpdatedBy).HasMaxLength(200);
-            entity.Property(e => e.LastUpdatedBy).HasMaxLength(200);
             entity.Property(e => e.OverallStatus).HasMaxLength(100);
 
             entity.HasOne(d => d.BusFuncRefNavigation).WithMany(p => p.CloudAccountManualDetails)
@@ -123,10 +121,9 @@ public partial class CloudAccountsDbContext : DbContext
 
             entity.ToTable("CrowdGroupMaster");
 
-            entity.HasIndex(e => e.CrwdgroupName, "UQ_CrowdGroupMaster_CRWD_GROUP_NAME").IsUnique();
+            entity.HasIndex(e => e.CrwdgroupName, "UQ_CrowdGroupMaster_CRWDGroupName").IsUnique();
 
             entity.Property(e => e.AllAccountIds).HasColumnName("AllAccountIDs");
-            entity.Property(e => e.CreatedBy).HasMaxLength(255);
             entity.Property(e => e.CrwdgroupName)
                 .HasMaxLength(255)
                 .HasColumnName("CRWDGroupName");
@@ -139,30 +136,6 @@ public partial class CloudAccountsDbContext : DbContext
             entity.Property(e => e.GroupType).HasMaxLength(50);
             entity.Property(e => e.LastsuccessfulDateofapi).HasColumnName("LASTSuccessfulDATEOFAPI");
             entity.Property(e => e.Provider).HasMaxLength(50);
-            entity.Property(e => e.UpdatedBy).HasMaxLength(255);
-        });
-
-        modelBuilder.Entity<CrowdGroupMaster>(entity =>
-        {
-            entity.HasKey(e => e.Id).HasName("PK_CrowdGroupMaster_Id");
-
-            entity.ToTable("CrowdGroupMaster");
-
-            entity.Property(e => e.AllAccountIds).HasColumnName("AllAccountIDs");
-            entity.Property(e => e.CreatedBy).HasMaxLength(255);
-            entity.Property(e => e.CrwdgroupName)
-                .HasMaxLength(255)
-                .HasColumnName("CRWDGroupName");
-            entity.Property(e => e.FilterBy)
-                .HasMaxLength(500)
-                .HasColumnName("FilterBY");
-            entity.Property(e => e.GroupId)
-                .HasMaxLength(255)
-                .HasColumnName("GroupID");
-            entity.Property(e => e.GroupType).HasMaxLength(50);
-            entity.Property(e => e.LastsuccessfulDateofapi).HasColumnName("LASTSuccessfulDATEOFAPI");
-            entity.Property(e => e.Provider).HasMaxLength(50);
-            entity.Property(e => e.UpdatedBy).HasMaxLength(255);
 
             entity.HasOne(d => d.BusinessFunction).WithMany(p => p.CrowdGroupMasters)
                 .HasForeignKey(d => d.BusinessFunctionId)

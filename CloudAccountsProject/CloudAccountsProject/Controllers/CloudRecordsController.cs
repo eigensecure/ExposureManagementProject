@@ -28,8 +28,6 @@ public class CloudRecordsController(ICloudRecordsRepository cloudAccountRepo) : 
     {
         try
         {
-            item.FirstUpdatedBy = User.Identity?.Name;
-            item.LastUpdatedBy = User.Identity?.Name;
             await _cloudAccountRepo.SaveBusManDetailsAsync(item);
 
             return Ok("Updated Successfully");

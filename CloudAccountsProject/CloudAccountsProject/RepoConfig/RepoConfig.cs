@@ -7,6 +7,8 @@ public static class RepoConfig
 {
     public static void AddDIServices(this IServiceCollection Services)
     {
+        Services.AddScoped<ICloudAccountRepository, CloudAccountRepository>();
+
         Services.AddScoped<ICloudHistoryRepository, CloudHistoryRepository>();
 
         Services.AddScoped<IBusinessFunctionRepository, BusinessFunctionRepository>();

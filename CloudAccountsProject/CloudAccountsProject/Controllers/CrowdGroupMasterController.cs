@@ -33,7 +33,6 @@ namespace CloudAccountsProject.Controllers
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CrowdGroupMaster group)
         {
-            group.CreatedBy = User.Identity?.Name;
             var result = await _repository.CreateAsync(group);
             return Ok(result);
         }
@@ -45,7 +44,6 @@ namespace CloudAccountsProject.Controllers
             if (id != group.Id)
                 return BadRequest();
 
-            group.UpdatedBy = User.Identity?.Name;
             var result = await _repository.UpdateAsync(group);
             return Ok(result);
         }

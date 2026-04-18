@@ -23,17 +23,13 @@ public partial class CrowdGroupMaster
 
     public string AllAccountIds { get; set; } = null!;
 
-    public string CreatedBy { get; set; } = null!;
+    public DateTime? LastsuccessfulDateofapi { get; set; }
 
-    public string UpdatedBy { get; set; } = null!;
+    public string? CommentsLogs { get; set; }
 
     public DateTime DateCreated { get; set; }
 
     public DateTime DateModified { get; set; }
-
-    public DateTime? LastsuccessfulDateofapi { get; set; }
-
-    public string? CommentsLogs { get; set; }
 
     public virtual BusinessFunction BusinessFunction { get; set; } = null!;
 }

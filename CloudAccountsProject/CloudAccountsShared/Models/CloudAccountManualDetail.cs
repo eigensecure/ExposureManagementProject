@@ -16,10 +16,6 @@ public partial class CloudAccountManualDetail
 
     public string? AttachmentPath { get; set; }
 
-    public string? FirstUpdatedBy { get; set; }
-
-    public string? LastUpdatedBy { get; set; }
-
     public DateTime DateCreated { get; set; }
 
     public DateTime DateModified { get; set; }
@@ -28,4 +24,3 @@ public partial class CloudAccountManualDetail
 
     public virtual CloudAccount? CloudAccRefNavigation { get; set; }
 }
-

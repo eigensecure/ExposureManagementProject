@@ -19,7 +19,6 @@ public class CloudAccountsController : BaseApiController
         _environment = environment;
     }
 
-    [Authorize]
     [HttpPost("import/{provider}")]
     public async Task<IActionResult> Import(string provider)
     {

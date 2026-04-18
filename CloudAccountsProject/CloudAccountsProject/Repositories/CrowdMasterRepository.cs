@@ -49,7 +49,6 @@ namespace CloudAccountsProject.Repositories
             existing.Provider = group.Provider;
             existing.Remarks = group.Remarks;
             existing.AllAccountIds = group.AllAccountIds;
-            existing.UpdatedBy = group.UpdatedBy;
             existing.DateModified = DateTime.UtcNow;
             existing.LastsuccessfulDateofapi = group.LastsuccessfulDateofapi;
             existing.CommentsLogs = group.CommentsLogs;

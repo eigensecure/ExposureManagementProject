@@ -112,7 +112,6 @@ public class CloudRecordsRepository(CloudAccountsDbContext Dbcontext,
                 manualDetail.OverallStatus = item.OverallStatus;
                 manualDetail.Remarks = item.ManualRemarks;
                 manualDetail.AttachmentPath = item.AttachmentPath;
-                manualDetail.LastUpdatedBy = item.LastUpdatedBy;
                 manualDetail.DateModified = now;
             }
         }
@@ -128,7 +127,6 @@ public class CloudRecordsRepository(CloudAccountsDbContext Dbcontext,
                 OverallStatus = item.OverallStatus,
                 Remarks = item.ManualRemarks,
                 AttachmentPath = item.AttachmentPath,
-                FirstUpdatedBy = item.FirstUpdatedBy,
                 DateCreated = now,
                 DateModified = now
             };
