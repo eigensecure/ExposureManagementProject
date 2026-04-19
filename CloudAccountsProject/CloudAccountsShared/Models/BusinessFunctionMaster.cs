@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text.Json.Serialization;
 
 namespace CloudAccountsShared.Models;
 
-public partial class BusinessFunction
+public partial class BusinessFunctionMaster
 {
     public int Id { get; set; }
 
-    public string? BusinessFunctionName { get; set; }
+    public string BusinessFunctionName { get; set; } = null!;
 
     public string? BusinessFunctionLtMember { get; set; }
 
@@ -26,7 +25,7 @@ public partial class BusinessFunction
 
     public DateTime DateModified { get; set; }
 
-    public virtual ICollection<CloudAccountManualDetail> CloudAccountManualDetails { get; set; } = new List<CloudAccountManualDetail>();
+    public virtual ICollection<CloudAccountsTransaction> CloudAccountsTransactions { get; set; } = new List<CloudAccountsTransaction>();
 
     public virtual ICollection<CrowdGroupMaster> CrowdGroupMasters { get; set; } = new List<CrowdGroupMaster>();
 }

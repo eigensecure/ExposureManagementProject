@@ -50,8 +50,7 @@ namespace CloudAccountsProject.Repositories
             existing.Remarks = group.Remarks;
             existing.AllAccountIds = group.AllAccountIds;
             existing.DateModified = DateTime.UtcNow;
-            existing.LastsuccessfulDateofapi = group.LastsuccessfulDateofapi;
-            existing.CommentsLogs = group.CommentsLogs;
+            existing.LastSuccessfulDateOfApi = group.LastSuccessfulDateOfApi;
 
             await _context.SaveChangesAsync();
 

@@ -9,27 +9,27 @@ public class BusinessFunctionRepository(CloudAccountsDbContext context) : IBusin
 {
     private readonly CloudAccountsDbContext _context = context;
 
-    public async Task<List<BusinessFunction>> GetAllAsync()
+    public async Task<List<BusinessFunctionMaster>> GetAllAsync()
     {
-        return await _context.BusinessFunctions
+        return await _context.BusinessFunctionMasters
             .OrderBy(x => x.BusinessFunctionName)
             .ToListAsync();
     }
 
-    public async Task<BusinessFunction?> GetByIdAsync(int id)
+    public async Task<BusinessFunctionMaster?> GetByIdAsync(int id)
     {
-        return await _context.BusinessFunctions
+        return await _context.BusinessFunctionMasters
             .FirstOrDefaultAsync(x => x.Id == id);
     }
 
-    public async Task CreateAsync(BusinessFunction item)
+    public async Task CreateAsync(BusinessFunctionMaster item)
     {
         var normalizedName = item.BusinessFunctionName
             .Trim()
             .Replace(" ", "")
             .ToLowerInvariant();
 
-        var exists = await _context.BusinessFunctions.AnyAsync(x =>
+        var exists = await _context.BusinessFunctionMasters.AnyAsync(x =>
             x.BusinessFunctionName
                 .ToLower()
                 .Replace(" ", "")
@@ -41,14 +41,14 @@ public class BusinessFunctionRepository(CloudAccountsDbContext context) : IBusin
         item.DateCreated = DateTime.UtcNow;
         item.DateModified = DateTime.UtcNow;
 
-        _context.BusinessFunctions.Add(item);
+        _context.BusinessFunctionMasters.Add(item);
 
         await _context.SaveChangesAsync();
     }
 
-    public async Task UpdateAsync(BusinessFunction item)
+    public async Task UpdateAsync(BusinessFunctionMaster item)
     {
-        var existing = await _context.BusinessFunctions
+        var existing = await _context.BusinessFunctionMasters
             .FirstOrDefaultAsync(x => x.Id == item.Id);
 
         if (existing == null)
@@ -59,7 +59,7 @@ public class BusinessFunctionRepository(CloudAccountsDbContext context) : IBusin
             .Replace(" ", "")
             .ToLowerInvariant();
 
-        var duplicate = await _context.BusinessFunctions.AnyAsync(x =>
+        var duplicate = await _context.BusinessFunctionMasters.AnyAsync(x =>
             x.Id != item.Id &&
             x.BusinessFunctionName
                 .ToLower()

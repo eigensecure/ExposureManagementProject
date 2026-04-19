@@ -24,6 +24,7 @@ public partial class CloudAccountDetailsDTO
     public string? IdentityProtectionStatus { get; set; }
     public string? DSPMStatus { get; set; }
     public string? VulnerabilityScanningStatus { get; set; }
+    public bool? IsActive { get; set; }
 
     // CloudAccountManualDetails
     public int? ManualDetailsId { get; set; }

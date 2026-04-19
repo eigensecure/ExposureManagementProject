@@ -22,6 +22,7 @@ public class CloudRecordsRepository(CloudAccountsDbContext Dbcontext,
         var cloudAccounts = await _DbSPcontext.CloudAccountDetailsDTOs
             .FromSqlRaw("EXEC dbo.GetCloudAccountDetails")
             .ToListAsync();
+        cloudAccounts = [.. cloudAccounts.Where(x => x.IsActive == true)];
 
         var filePath = Path.Combine(
             _environment.ContentRootPath,
@@ -49,65 +50,19 @@ public class CloudRecordsRepository(CloudAccountsDbContext Dbcontext,
     {
         var now = DateTime.UtcNow;
 
-        BusinessFunction? businessFunction = null;
+        // Only use the selected BusinessFunctionId from UI autocomplete.
+        // No add/update should happen in BusinessFunction table.
 
-        // ----------------------------
-        // BusinessFunction Add / Update
-        // ----------------------------
-        if (item.BusinessFunctionId.HasValue && item.BusinessFunctionId.Value > 0)
-        {
-            businessFunction = await _Dbcontext.BusinessFunctions
-                .FirstOrDefaultAsync(x => x.Id == item.BusinessFunctionId.Value);
-
-            if (businessFunction != null)
-            {
-                businessFunction.BusinessFunctionName = item.BusinessFunctionName;
-                businessFunction.BusinessFunctionLtMember = item.BusinessFunctionLtMember;
-                businessFunction.BusinessFunctionOwner = item.BusinessFunctionOwner;
-                businessFunction.BusinessFunctionSpoc = item.BusinessFunctionSpoc;
-                businessFunction.BusinessFunctionGroupDl = item.BusinessFunctionGroupDL;
-                businessFunction.Remarks = item.BusinessFunctionRemarks;
-                businessFunction.BusinessTagValue = item.BusinessTagValue;
-                businessFunction.DateModified = now;
-            }
-        }
-
-        // Create new BusinessFunction if not found / no id passed
-        if (businessFunction == null &&
-            (!string.IsNullOrWhiteSpace(item.BusinessFunctionName) ||
-             !string.IsNullOrWhiteSpace(item.BusinessFunctionOwner) ||
-             !string.IsNullOrWhiteSpace(item.BusinessTagValue)))
-        {
-            businessFunction = new BusinessFunction
-            {
-                BusinessFunctionName = item.BusinessFunctionName,
-                BusinessFunctionLtMember = item.BusinessFunctionLtMember,
-                BusinessFunctionOwner = item.BusinessFunctionOwner,
-                BusinessFunctionSpoc = item.BusinessFunctionSpoc,
-                BusinessFunctionGroupDl = item.BusinessFunctionGroupDL,
-                Remarks = item.BusinessFunctionRemarks,
-                BusinessTagValue = item.BusinessTagValue,
-                DateCreated = now,
-                DateModified = now
-            };
-
-            _Dbcontext.BusinessFunctions.Add(businessFunction);
-            await _Dbcontext.SaveChangesAsync();
-        }
-
-        // ---------------------------------------
-        // CloudAccountManualDetail Add / Update
-        // ---------------------------------------
-        CloudAccountManualDetail? manualDetail = null;
+        CloudAccountsTransaction? manualDetail = null;
 
         if (item.ManualDetailsId.HasValue && item.ManualDetailsId.Value > 0)
         {
-            manualDetail = await _Dbcontext.CloudAccountManualDetails
+            manualDetail = await _Dbcontext.CloudAccountsTransactions
                 .FirstOrDefaultAsync(x => x.Id == item.ManualDetailsId.Value);
 
             if (manualDetail != null)
             {
-                manualDetail.BusFuncRef = businessFunction?.Id;
+                manualDetail.BusFuncRef = item.BusinessFunctionId;
                 manualDetail.AccountType = item.AccountType;
                 manualDetail.OverallStatus = item.OverallStatus;
                 manualDetail.Remarks = item.ManualRemarks;
@@ -116,22 +71,37 @@ public class CloudRecordsRepository(CloudAccountsDbContext Dbcontext,
             }
         }
 
-        // Create new CloudAccountManualDetail if not found
+        // If no manual detail exists yet for this Cloud Account, create one
         if (manualDetail == null)
         {
-            manualDetail = new CloudAccountManualDetail
-            {
-                CloudAccRef = item.Id,
-                BusFuncRef = businessFunction?.Id,
-                AccountType = item.AccountType,
-                OverallStatus = item.OverallStatus,
-                Remarks = item.ManualRemarks,
-                AttachmentPath = item.AttachmentPath,
-                DateCreated = now,
-                DateModified = now
-            };
+            manualDetail = await _Dbcontext.CloudAccountsTransactions
+                .FirstOrDefaultAsync(x => x.CloudAccRef == item.Id);
 
-            _Dbcontext.CloudAccountManualDetails.Add(manualDetail);
+            if (manualDetail != null)
+            {
+                manualDetail.BusFuncRef = item.BusinessFunctionId;
+                manualDetail.AccountType = item.AccountType;
+                manualDetail.OverallStatus = item.OverallStatus;
+                manualDetail.Remarks = item.ManualRemarks;
+                manualDetail.AttachmentPath = item.AttachmentPath;
+                manualDetail.DateModified = now;
+            }
+            else
+            {
+                manualDetail = new CloudAccountsTransaction
+                {
+                    CloudAccRef = item.Id,
+                    BusFuncRef = item.BusinessFunctionId,
+                    AccountType = item.AccountType,
+                    OverallStatus = item.OverallStatus,
+                    Remarks = item.ManualRemarks,
+                    AttachmentPath = item.AttachmentPath,
+                    DateCreated = now,
+                    DateModified = now
+                };
+
+                _Dbcontext.CloudAccountsTransactions.Add(manualDetail);
+            }
         }
 
         await _Dbcontext.SaveChangesAsync();

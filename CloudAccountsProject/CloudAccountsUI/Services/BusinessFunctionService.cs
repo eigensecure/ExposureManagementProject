@@ -12,18 +12,18 @@ namespace CloudAccountsUI.Services
         private readonly JsonSerializerOptions _options =
             new() { PropertyNameCaseInsensitive = true };
 
-        public async Task<List<BusinessFunction>> GetAllAsync()
+        public async Task<List<BusinessFunctionMaster>> GetAllAsync()
         {
             var response = await _httpClient.GetAsync("api/BusinessFunction");
 
             if (!response.IsSuccessStatusCode)
                 throw new Exception(await response.Content.ReadAsStringAsync());
 
-            return await response.Content.ReadFromJsonAsync<List<BusinessFunction>>(_options)
+            return await response.Content.ReadFromJsonAsync<List<BusinessFunctionMaster>>(_options)
                    ?? new();
         }
 
-        public async Task CreateAsync(BusinessFunction item)
+        public async Task CreateAsync(BusinessFunctionMaster item)
         {
             var response = await _httpClient.PostAsJsonAsync("api/BusinessFunction", item);
 
@@ -31,7 +31,7 @@ namespace CloudAccountsUI.Services
                 throw new Exception(await response.Content.ReadAsStringAsync());
         }
 
-        public async Task UpdateAsync(BusinessFunction item)
+        public async Task UpdateAsync(BusinessFunctionMaster item)
         {
             var response = await _httpClient.PutAsJsonAsync(
                 $"api/BusinessFunction/{item.Id}",

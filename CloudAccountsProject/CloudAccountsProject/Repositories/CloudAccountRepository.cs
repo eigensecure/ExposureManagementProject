@@ -34,7 +34,7 @@ public class CloudAccountRepository(CloudAccountsDbContext context,
 
         foreach (var item in items.EnumerateArray())
         {
-            var account = new CloudAccount
+            var account = new CloudAccountsMaster
             {
                 Provider = provider.ToLower(),
                 RawJson = item.GetRawText(),
@@ -181,13 +181,13 @@ public class CloudAccountRepository(CloudAccountsDbContext context,
                     break;
             }
 
-            var exists = await _context.CloudAccounts.AnyAsync(x =>
+            var exists = await _context.CloudAccountsMasters.AnyAsync(x =>
                 x.Provider == account.Provider &&
                 x.CloudAccountId == account.CloudAccountId);
 
             if (!exists)
             {
-                _context.CloudAccounts.Add(account);
+                _context.CloudAccountsMasters.Add(account);
             }
         }
 

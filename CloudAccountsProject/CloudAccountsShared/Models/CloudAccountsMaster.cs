@@ -3,13 +3,13 @@ using System.Collections.Generic;
 
 namespace CloudAccountsShared.Models;
 
-public partial class CloudAccount
+public partial class CloudAccountsMaster
 {
     public int Id { get; set; }
 
     public string Provider { get; set; } = null!;
 
-    public string? CloudAccountId { get; set; }
+    public string CloudAccountId { get; set; } = null!;
 
     public string? CloudName { get; set; }
 
@@ -39,9 +39,11 @@ public partial class CloudAccount
 
     public string? RawJson { get; set; }
 
+    public bool? IsActive { get; set; }
+
     public DateTime DateCreated { get; set; }
 
     public DateTime DateModified { get; set; }
 
-    public virtual ICollection<CloudAccountManualDetail> CloudAccountManualDetails { get; set; } = new List<CloudAccountManualDetail>();
+    public virtual ICollection<CloudAccountsTransaction> CloudAccountsTransactions { get; set; } = new List<CloudAccountsTransaction>();
 }

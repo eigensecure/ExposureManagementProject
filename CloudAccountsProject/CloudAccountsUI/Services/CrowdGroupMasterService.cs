@@ -24,9 +24,13 @@ namespace CloudAccountsUI.Services
         public async Task<CrowdGroupMaster> CreateAsync(CrowdGroupMaster group)
         {
             var response = await _httpClient.PostAsJsonAsync(
-                "api/CrowdGroupMaster", group);
+                "api/CrowdGroupMaster/create", group);
 
-            response.EnsureSuccessStatusCode();
+            if (!response.IsSuccessStatusCode)
+            {
+                var error = await response.Content.ReadAsStringAsync();
+                throw new Exception(error);
+            }
 
             return await response.Content.ReadFromJsonAsync<CrowdGroupMaster>()
                    ?? throw new Exception("Failed to create crowd group");

@@ -4,11 +4,11 @@ namespace CloudAccountsUI.Services.Contracts
 {
     public interface IBusinessFunctionService
     {
-        Task<List<BusinessFunction>> GetAllAsync();
+        Task<List<BusinessFunctionMaster>> GetAllAsync();
 
-        Task CreateAsync(BusinessFunction item);
+        Task CreateAsync(BusinessFunctionMaster item);
 
-        Task UpdateAsync(BusinessFunction item);
+        Task UpdateAsync(BusinessFunctionMaster item);
 
         Task DeleteAsync(int id);
     }

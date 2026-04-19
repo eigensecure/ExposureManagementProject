@@ -15,35 +15,10 @@
        
         <div class="pushed-content">
            
-            <div class="header-toolbar">
-                <div class="title-section">
-                    <div class="cs-title">
-                        <MudIcon Icon="@Icons.Material.Filled.Business" Class="mr-2" Style="color: #00A3FF;" />
-                        Business Function Management
-                    </div>
-                    <div class="cs-subtitle">
-                        Manage business functions, owners, and SPOC information
-                    </div>
-                </div>
-                <div class="actions-section">
-                    <MudTooltip Text="Column Settings" Arrow="true" Placement="Placement.Top">
-                        <MudIconButton Icon="@Icons.Material.Filled.Settings"
-                                       Style="color: #5A6A85;"
-                                       Size="Size.Small"
-                                       OnClick="OpenColumnSelector" />
-                    </MudTooltip>
-                    <MudButton Variant="Variant.Filled"
-                               Style="background: #00A3FF; color: white; font-weight: 600; text-transform: none; letter-spacing: 0.3px; font-size: 13px;"
-                               StartIcon="@Icons.Material.Filled.Add"
-                               OnClick="OpenCreateDrawer">
-                        Add Business Function
-                    </MudButton>
-                </div>
-            </div>
 
            @* DataGrid *@
-            <div class="grid-container" style="padding: 20px;">
-                <MudDataGrid T="BusinessFunction"
+            <div class="grid-container pa-5">
+                <MudDataGrid T="BusinessFunctionMaster"
                              @ref="_dataGrid"
                              Items="@businessFunctions"
                              Dense="true"
@@ -53,141 +28,112 @@
                              Filterable="true"
                              FilterMode="DataGridFilterMode.ColumnFilterRow"
                              FilterCaseSensitivity="DataGridFilterCaseSensitivity.CaseInsensitive"
-                             ShowColumnOptions="false"
+                             ShowColumnOptions="true"
                              FixedHeader="true"
+                             FixedFooter="true"
                              @bind-PageSize="PageSize"
                              RowsPerPageOptions="@PageSizeOptions"
                              Height="100%"
                              Width="100%"
                              Loading="@isLoading"
-                             ColumnResizeMode="ResizeMode.Column"
+                             ColumnResizeMode="ResizeMode.Container"
                              DragDropColumnReordering="true"
                              ColumnsPanelReordering="true"
-                             ShowMenuIcon="false"
+                             ShowMenuIcon="true"
                              RowContextMenuClick="OpenContextMenu">
 
+                    <ToolBarContent>
+                        <div class="d-flex flex-column">
+                            <MudText Typo="Typo.h6" Class="d-flex align-center">
+                                <MudIcon Icon="@Icons.Material.Filled.Groups"
+                                         Class="mr-2"
+                                         Style="color: #00A3FF;" />
+                                Business Function Management
+                            </MudText>
+
+                            <MudText Typo="Typo.body2" Class="text-secondary">
+                                Manage business functions, owners, and SPOC information
+                            </MudText>
+                        </div>
+
+                        <MudSpacer />
+
+                        <MudButton Variant="Variant.Text"
+                                   Color="Color.Primary"
+                                   StartIcon="@Icons.Material.Filled.Add"
+                                   OnClick="OpenCreateDrawer">
+                            Add Business Function
+                        </MudButton>
+                    </ToolBarContent>
+
                     <Columns>
-                        @foreach (var column in GetOrderedColumns())
-                        {
-                            @* if (column.Title == "Actions")
-                            {
-                                 <TemplateColumn Title="Actions"
-                                                Resizable="false">
-                                    <CellTemplate Context="cell">
-                                        <MudIconButton Icon="@Icons.Material.Filled.Edit"
-                                                       Size="Size.Small"
-                                                       Color="Color.Primary"
-                                                       OnClick="@(() => OpenEditDrawer(cell.Item))" />
-                                    </CellTemplate>
-                                </TemplateColumn>
-                            } *@
-                            if (column.Title == "Business Function Name")
-                            {
-                                <PropertyColumn Property="x => x.BusinessFunctionName"
-                                                Title="Business Function Name"
-                                                Resizable="true">
-                                    <CellTemplate Context="cell">
-                                        <div class="cell-content">
-                                            <MudTooltip Text="@cell.Item.BusinessFunctionName" Placement="Placement.Top">
-                                                <span class="truncate-text">@cell.Item.BusinessFunctionName</span>
-                                            </MudTooltip>
-                                        </div>
-                                    </CellTemplate>
-                                </PropertyColumn>
-                            }
-                            else if (column.Title == "LT Member")
-                            {
-                                <PropertyColumn Property="x => x.BusinessFunctionLtMember"
-                                                Title="LT Member"
-                                                Resizable="true">
-                                    <CellTemplate Context="cell">
-                                        <div class="cell-content">
-                                            <MudTooltip Text="@cell.Item.BusinessFunctionLtMember" Placement="Placement.Top">
-                                                <span class="truncate-text">@cell.Item.BusinessFunctionLtMember</span>
-                                            </MudTooltip>
-                                        </div>
-                                    </CellTemplate>
-                                </PropertyColumn>
-                            }
-                            else if (column.Title == "Owner")
-                            {
-                                <PropertyColumn Property="x => x.BusinessFunctionOwner"
-                                                Title="Owner"
-                                                Resizable="true">
-                                    <CellTemplate Context="cell">
-                                        <div class="cell-content">
-                                            <MudTooltip Text="@cell.Item.BusinessFunctionOwner" Placement="Placement.Top">
-                                                <span class="truncate-text">@cell.Item.BusinessFunctionOwner</span>
-                                            </MudTooltip>
-                                        </div>
-                                    </CellTemplate>
-                                </PropertyColumn>
-                            }
-                            else if (column.Title == "SPOC")
-                            {
-                                <PropertyColumn Property="x => x.BusinessFunctionSpoc"
-                                                Title="SPOC"
-                                                Resizable="true">
-                                    <CellTemplate Context="cell">
-                                        <div class="cell-content">
-                                            <MudTooltip Text="@cell.Item.BusinessFunctionSpoc" Placement="Placement.Top">
-                                                <span class="truncate-text">@cell.Item.BusinessFunctionSpoc</span>
-                                            </MudTooltip>
-                                        </div>
-                                    </CellTemplate>
-                                </PropertyColumn>
-                            }
-                            else if (column.Title == "Group DL")
-                            {
-                                <PropertyColumn Property="x => x.BusinessFunctionGroupDl"
-                                                Title="Group DL"
-                                                Resizable="true">
-                                    <CellTemplate Context="cell">
-                                        <div class="cell-content">
-                                            <MudTooltip Text="@cell.Item.BusinessFunctionGroupDl" Placement="Placement.Top">
-                                                <span class="truncate-text">@cell.Item.BusinessFunctionGroupDl</span>
-                                            </MudTooltip>
-                                        </div>
-                                    </CellTemplate>
-                                </PropertyColumn>
-                            }
-                            else if (column.Title == "Business Tags")
-                            {
-                                <PropertyColumn Property="x => x.BusinessTagValue"
-                                                Title="Business Tags"
-                                                Resizable="true">
-                                    <CellTemplate Context="cell">
-                                        <div class="cell-content">
-                                            <MudTooltip Text="@cell.Item.BusinessTagValue" Placement="Placement.Top">
-                                                <span class="truncate-text">@cell.Item.BusinessTagValue</span>
-                                            </MudTooltip>
-                                        </div>
-                                    </CellTemplate>
-                                </PropertyColumn>
-                            }
-                            else if (column.Title == "Remarks")
-                            {
-                                <PropertyColumn Property="x => x.Remarks"
-                                                Title="Remarks"
-                                                Resizable="true">
-                                    <CellTemplate Context="cell">
-                                        <div class="cell-content">
-                                            <MudTooltip Text="@cell.Item.Remarks" Placement="Placement.Top">
-                                                <span class="truncate-text">@cell.Item.Remarks</span>
-                                            </MudTooltip>
-                                        </div>
-                                    </CellTemplate>
-                                </PropertyColumn>
-                            }
-                        }
+                        <PropertyColumn Property="x => x.BusinessFunctionName"
+                                        Title="Business Function Name"
+                                        Width="240px"
+                                        Resizable="true"
+                                        Hideable="true"
+                                        HeaderStyle="white-space: nowrap;"
+                                        CellStyle="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" />
+
+                        <PropertyColumn Property="x => x.BusinessFunctionLtMember"
+                                        Title="LT Member"
+                                        Width="180px"
+                                        Resizable="true"
+                                        Hideable="true"
+                                        HeaderStyle="white-space: nowrap;"
+                                        CellStyle="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" />
+
+                        <PropertyColumn Property="x => x.BusinessFunctionOwner"
+                                        Title="Owner"
+                                        Width="180px"
+                                        Resizable="true"
+                                        Hideable="true"
+                                        HeaderStyle="white-space: nowrap;"
+                                        CellStyle="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" />
+
+                        <PropertyColumn Property="x => x.BusinessFunctionSpoc"
+                                        Title="SPOC"
+                                        Width="220px"
+                                        Resizable="true"
+                                        Hideable="true"
+                                        HeaderStyle="white-space: nowrap;"
+                                        CellStyle="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" />
+
+                        <PropertyColumn Property="x => x.BusinessFunctionGroupDl"
+                                        Title="Group DL"
+                                        Width="240px"
+                                        Resizable="true"
+                                        Hideable="true"
+                                        HeaderStyle="white-space: nowrap;"
+                                        CellStyle="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" />
+
+                        <PropertyColumn Property="x => x.BusinessTagValue"
+                                        Title="Business Tags"
+                                        Width="260px"
+                                        Resizable="true"
+                                        Hideable="true"
+                                        HeaderStyle="white-space: nowrap;"
+                                        CellStyle="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" />
+
+                        <PropertyColumn Property="x => x.Remarks"
+                                        Title="Remarks"
+                                        Width="260px"
+                                        Resizable="true"
+                                        Hideable="true"
+                                        HeaderStyle="white-space: nowrap;"
+                                        CellStyle="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" />
                     </Columns>
 
                     <NoRecordsContent>
-                        <MudText Class="pa-4" Style="color: #5A6A85;">No matching records found</MudText>
+                        <MudText Class="pa-4" Style="color: #5A6A85;">
+                            No business Functions found
+                            Click "Add Business Function" to create your Business Function
+                        </MudText>
                     </NoRecordsContent>
 
                     <PagerContent>
-                        <MudDataGridPager T="BusinessFunction" PageSizeOptions="@PageSizeOptions" />
+                        <MudDataGridPager T="BusinessFunctionMaster"
+                                          PageSizeOptions="@PageSizeOptions" />
                     </PagerContent>
                 </MudDataGrid>
             </div>
@@ -444,105 +390,6 @@
     }
 
 
-    .header-toolbar {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 16px 20px;
-        border-bottom: 1px solid #E2E8F0;
-        flex-shrink: 0;
-        background: white;
-    }
-
-    .title-section {
-        flex: 1;
-    }
-
-    .cs-title {
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif;
-        font-size: 20px;
-        font-weight: 600;
-        color: #1A1D2E;
-        letter-spacing: -0.3px;
-    }
-
-    .cs-subtitle {
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif;
-        font-size: 13px;
-        color: #5A6A85;
-        margin-top: 4px;
-    }
-
-    .actions-section {
-        display: flex;
-        gap: 8px;
-        align-items: center;
-    }
-
-
-    .grid-container {
-        flex: 1;
-        min-width: 0;
-        display: flex;
-        flex-direction: column;
-        min-height: 0;
-    }
-
-
-    .mud-table-container {
-        max-height: calc(100vh - 280px) !important;
-        overflow: auto !important;
-        position: relative !important;
-    }
-
-    .mud-table {
-        width: 100%;
-    }
-
-        .mud-table table {
-            border-collapse: collapse;
-            width: 100%;
-        }
-
-    .mud-table-head {
-        position: sticky !important;
-        top: 0 !important;
-        z-index: 90 !important;
-        background: #F8F9FC !important;
-    }
-
-        .mud-table-head .mud-table-cell {
-            font-weight: 600 !important;
-            white-space: nowrap !important;
-            background: #F8F9FC !important;
-            color: #1A1D2E !important;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif;
-            font-size: 12px !important;
-            letter-spacing: 0.3px;
-            text-transform: uppercase;
-            border-bottom: 1px solid #E2E8F0 !important;
-        }
-
-    .mud-table-body .mud-table-cell {
-        color: #1A1D2E !important;
-        border-bottom: 1px solid #EDF2F7 !important;
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif;
-        font-size: 13px;
-    }
-
-    .mud-table-body .mud-table-row:hover {
-        background: #F8F9FC !important;
-    }
-
-    .mud-table-pagination {
-        display: flex !important;
-        justify-content: flex-end;
-        align-items: center;
-        width: 100%;
-        padding: 8px 16px;
-    }
-
-
     .drawer-container {
         width: 0;
         flex-shrink: 0;
@@ -759,50 +606,13 @@
             background: #94A3B8;
         }
 
-    .cell-content {
-        width: 100%;
-        white-space: normal;
-        word-break: break-word;
-        padding: 4px;
-    }
-
-    .truncate-text {
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        max-width: 100%;
-        display: block;
-    }
-
     .grid-container {
         flex: 1;
-        min-width: 0;
+        min-height: 0;
+        overflow: hidden;
         display: flex;
         flex-direction: column;
-        min-height: 0;
-        position: relative;
     }
-
-    .mud-table-container {
-        max-height: calc(100vh - 280px) !important;
-        overflow: auto !important;
-        position: relative !important;
-    }
-
-    .mud-table {
-        width: 100%;
-    }
-
-    .mud-table-pagination {
-        display: flex !important;
-        justify-content: flex-end !important;
-        align-items: center !important;
-        width: 100% !important;
-        padding: 8px 16px !important;
-        background: white !important;
-        border-top: 1px solid #E2E8F0 !important;
-    }
-
 </style>
 
 @code {
@@ -819,9 +629,9 @@
         public int Order { get; set; }
     }
 
-    private MudDataGrid<BusinessFunction> _dataGrid = null!;
+    private MudDataGrid<BusinessFunctionMaster> _dataGrid = null!;
     private MudMenu _contextMenu = null!;
-    private BusinessFunction? _contextRow;
+    private BusinessFunctionMaster? _contextRow;
     private bool isLoading = true;
     private int PageSize = 10;
     private int[] PageSizeOptions = new[] { 10, 25, 50, 100 };
@@ -829,8 +639,8 @@
     private bool showColumnDialog = false;
 
     // private const string ApiBase = "api/BusinessFunction";
-    private List<BusinessFunction> businessFunctions = new();
-    private BusinessFunction editingItem = new();
+    private List<BusinessFunctionMaster> businessFunctions = new();
+    private BusinessFunctionMaster editingItem = new();
     private bool drawerOpen;
     private bool isCreate;
     private List<string> SelectedSpocs = new();
@@ -932,7 +742,7 @@
         StateHasChanged();
     }
 
-    private async Task OpenContextMenu(DataGridRowClickEventArgs<BusinessFunction> args)
+    private async Task OpenContextMenu(DataGridRowClickEventArgs<BusinessFunctionMaster> args)
     {
         _contextRow = args.Item;
         await _contextMenu.OpenMenuAsync(args.MouseEventArgs);
@@ -1138,7 +948,7 @@
         await Task.Delay(50);
 
         isCreate = true;
-        editingItem = new BusinessFunction();
+        editingItem = new BusinessFunctionMaster();
         SelectedSpocs = new List<string>();
         BusinessTags = new List<BusinessTagItem>();
         BusinessTags.Add(new BusinessTagItem());
@@ -1147,14 +957,14 @@
         StateHasChanged();
     }
 
-    private async Task OpenEditDrawer(BusinessFunction item)
+    private async Task OpenEditDrawer(BusinessFunctionMaster item)
     {
         drawerFullscreen = false;
         drawerOpen = false;
         await Task.Delay(50);
 
         isCreate = false;
-        editingItem = new BusinessFunction
+        editingItem = new BusinessFunctionMaster
         {
             Id = item.Id,
             BusinessFunctionName = item.BusinessFunctionName,
@@ -1203,7 +1013,7 @@
     {
         drawerOpen = false;
         drawerFullscreen = false;
-        editingItem = new BusinessFunction();
+        editingItem = new BusinessFunctionMaster();
         SelectedSpocs = new List<string>();
         BusinessTags = new List<BusinessTagItem>();
         spocInput = string.Empty;

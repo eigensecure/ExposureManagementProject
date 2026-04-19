@@ -30,11 +30,18 @@ namespace CloudAccountsProject.Controllers
         }
 
         [Authorize]
-        [HttpPost]
+        [HttpPost("create")]
         public async Task<IActionResult> Create([FromBody] CrowdGroupMaster group)
         {
-            var result = await _repository.CreateAsync(group);
-            return Ok(result);
+            try
+            {
+                var result = await _repository.CreateAsync(group);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [Authorize]

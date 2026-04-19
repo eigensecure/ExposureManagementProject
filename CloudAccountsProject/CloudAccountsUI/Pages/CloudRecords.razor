@@ -1,5 +1,6 @@
 ﻿@page "/cloudrecords"
 @using System.Net.Http.Json
+@using CloudAccountsShared.Models
 @using CloudAccountsShared.Models.DTOs
 @using CloudAccountsUI.Dialog
 @using CloudAccountsUI.Services
@@ -10,6 +11,7 @@
 @inject IDialogService DialogService
 @inject NavigationManager NavManager
 @inject ISnackbar Snackbar
+@inject IBusinessFunctionService BusinessFunctionService
 
 <div class="full-page-container">
     <div class="main-wrapper @(drawerOpen && !drawerFullscreen ? "drawer-open" : "") @(drawerFullscreen ? "fullscreen-active" : "")">
@@ -252,41 +254,50 @@
 
                         <MudText Typo="Typo.subtitle2" Style="color: #1A1D2E; font-size: 13px; font-weight: 600;">Business Function</MudText>
 
-                        <MudTextField T="string"
-                                      Label="Business Function Name"
-                                      Variant="Variant.Outlined"
-                                      @bind-Value="editingAccount.BusinessFunctionName"
-                                      Dense="true" />
+                        <MudAutocomplete T="BusinessFunctionMaster"
+                                         Label="Business Function Name"
+                                         Variant="Variant.Outlined"
+                                         Dense="true"
+                                         Value="selectedBusinessFunction"
+                                         ValueChanged="OnBusinessFunctionChanged"
+                                         SearchFunc="SearchBusinessFunctions"
+                                         ToStringFunc="@(x => x?.BusinessFunctionName ?? string.Empty)"
+                                         Clearable="false" />
 
                         <MudTextField T="string"
                                       Label="Owner"
                                       Variant="Variant.Outlined"
-                                      @bind-Value="editingAccount.BusinessFunctionOwner"
-                                      Dense="true" />
+                                      Value="selectedBusinessFunction?.BusinessFunctionOwner"
+                                      Dense="true"
+                                      Disabled="true" />
 
                         <MudTextField T="string"
                                       Label="LT Member"
                                       Variant="Variant.Outlined"
-                                      @bind-Value="editingAccount.BusinessFunctionLtMember"
-                                      Dense="true" />
+                                      Value="selectedBusinessFunction?.BusinessFunctionLtMember"
+                                      Dense="true"
+                                      Disabled="true" />
 
                         <MudTextField T="string"
                                       Label="SPOC"
                                       Variant="Variant.Outlined"
-                                      @bind-Value="editingAccount.BusinessFunctionSpoc"
-                                      Dense="true" />
+                                      Value="selectedBusinessFunction?.BusinessFunctionSpoc"
+                                      Dense="true"
+                                      Disabled="true" />
 
                         <MudTextField T="string"
                                       Label="Business Tag Value"
                                       Variant="Variant.Outlined"
-                                      @bind-Value="editingAccount.BusinessTagValue"
-                                      Dense="true" />
+                                      Value="selectedBusinessFunction?.BusinessTagValue"
+                                      Dense="true"
+                                      Disabled="true" />
 
                         <MudTextField T="string"
                                       Label="Business Function Remarks"
                                       Variant="Variant.Outlined"
-                                      @bind-Value="editingAccount.BusinessFunctionRemarks"
-                                      Dense="true" />
+                                      Value="selectedBusinessFunction?.Remarks"
+                                      Dense="true"
+                                      Disabled="true" />
 
                         <MudDivider Class="my-3" />
 
@@ -773,6 +784,8 @@
 
     private List<CloudAccountDetailsDTO> cloudAccounts = new();
     private List<CloudAccountColumnMetadata> columnMetadata = new();
+    private List<BusinessFunctionMaster> businessFunctions = new();
+    private BusinessFunctionMaster? selectedBusinessFunction;
 
     private CloudAccountDetailsDTO? editingAccount;
 
@@ -894,6 +907,7 @@
             var result = await CloudRecordsService.GetCloudAccountDetailsAsync();
             cloudAccounts = result.CloudAccounts ?? new List<CloudAccountDetailsDTO>();
             columnMetadata = result.ColumnMetadata ?? new List<CloudAccountColumnMetadata>();
+            businessFunctions = await BusinessFunctionService.GetAllAsync();
         }
         catch (Exception ex)
         {
@@ -901,12 +915,35 @@
             Snackbar.Add($"Error loading data: {ex.Message}", Severity.Error);
             cloudAccounts = new List<CloudAccountDetailsDTO>();
             columnMetadata = new List<CloudAccountColumnMetadata>();
+            businessFunctions = new List<BusinessFunctionMaster>();
         }
         finally
         {
             isLoading = false;
             StateHasChanged();
         }
+    }
+
+    private Task<IEnumerable<BusinessFunctionMaster>> SearchBusinessFunctions(string value, CancellationToken token)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+            return Task.FromResult(businessFunctions.AsEnumerable());
+
+        return Task.FromResult(
+            businessFunctions.Where(x =>
+                !string.IsNullOrWhiteSpace(x.BusinessFunctionName) &&
+                x.BusinessFunctionName.Contains(value, StringComparison.OrdinalIgnoreCase))
+        );
+    }
+
+    private void OnBusinessFunctionChanged(BusinessFunctionMaster? value)
+    {
+        selectedBusinessFunction = value;
+
+        if (editingAccount is null || value is null)
+            return;
+
+        editingAccount.BusinessFunctionId = value.Id;
     }
 
     private string GetColumnTitle(string genericKey)
@@ -1166,6 +1203,9 @@
             AttachmentPath = account.AttachmentPath
         };
 
+        selectedBusinessFunction = businessFunctions
+            .FirstOrDefault(x => x.Id == editingAccount.BusinessFunctionId);
+
         drawerOpen = true;
         StateHasChanged();
     }
@@ -1175,6 +1215,7 @@
         drawerOpen = false;
         drawerFullscreen = false;
         editingAccount = null;
+        selectedBusinessFunction = null;
         StateHasChanged();
     }
 

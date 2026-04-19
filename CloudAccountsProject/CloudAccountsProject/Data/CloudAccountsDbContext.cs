@@ -19,11 +19,11 @@ public partial class CloudAccountsDbContext : DbContext
 
     public virtual DbSet<AuditTableTransaction> AuditTableTransactions { get; set; }
 
-    public virtual DbSet<BusinessFunction> BusinessFunctions { get; set; }
+    public virtual DbSet<BusinessFunctionMaster> BusinessFunctionMasters { get; set; }
 
-    public virtual DbSet<CloudAccount> CloudAccounts { get; set; }
+    public virtual DbSet<CloudAccountsMaster> CloudAccountsMasters { get; set; }
 
-    public virtual DbSet<CloudAccountManualDetail> CloudAccountManualDetails { get; set; }
+    public virtual DbSet<CloudAccountsTransaction> CloudAccountsTransactions { get; set; }
 
     public virtual DbSet<CrowdGroupMaster> CrowdGroupMasters { get; set; }
 
@@ -37,12 +37,12 @@ public partial class CloudAccountsDbContext : DbContext
 
             entity.ToTable("AuditTableMaster");
 
-            entity.Property(e => e.CloudAccountId).HasMaxLength(200);
-            entity.Property(e => e.ModifiedByUser).HasMaxLength(200);
+            entity.Property(e => e.CloudAccountId).HasMaxLength(300);
+            entity.Property(e => e.ModifiedByUser).HasMaxLength(250);
             entity.Property(e => e.NewValues).HasColumnType("json");
             entity.Property(e => e.OldValues).HasColumnType("json");
             entity.Property(e => e.PrimaryKey).HasColumnType("json");
-            entity.Property(e => e.TableName).HasMaxLength(200);
+            entity.Property(e => e.TableName).HasMaxLength(250);
             entity.Property(e => e.Type).HasMaxLength(200);
         });
 
@@ -52,94 +52,97 @@ public partial class CloudAccountsDbContext : DbContext
 
             entity.ToTable("AuditTableTransaction");
 
-            entity.Property(e => e.ModifiedByUser).HasMaxLength(200);
+            entity.Property(e => e.ModifiedByUser).HasMaxLength(250);
             entity.Property(e => e.NewValues).HasColumnType("json");
             entity.Property(e => e.OldValues).HasColumnType("json");
             entity.Property(e => e.PrimaryKey).HasColumnType("json");
-            entity.Property(e => e.TableName).HasMaxLength(200);
+            entity.Property(e => e.TableName).HasMaxLength(250);
             entity.Property(e => e.Type).HasMaxLength(200);
         });
 
-        modelBuilder.Entity<BusinessFunction>(entity =>
+        modelBuilder.Entity<BusinessFunctionMaster>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PK_Business_Function");
 
-            entity.ToTable("BusinessFunction");
+            entity.ToTable("BusinessFunctionMaster");
 
             entity.Property(e => e.BusinessFunctionGroupDl).HasColumnName("BusinessFunctionGroupDL");
             entity.Property(e => e.BusinessFunctionLtMember).HasMaxLength(255);
-            entity.Property(e => e.BusinessFunctionName).HasMaxLength(255);
+            entity.Property(e => e.BusinessFunctionName).HasMaxLength(300);
             entity.Property(e => e.BusinessFunctionOwner).HasMaxLength(255);
             entity.Property(e => e.BusinessTagValue).HasMaxLength(255);
         });
 
-        modelBuilder.Entity<CloudAccount>(entity =>
+        modelBuilder.Entity<CloudAccountsMaster>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PK_Cloud_Accounts");
 
-            entity.Property(e => e.CloudAccountId).HasMaxLength(250);
-            entity.Property(e => e.CloudName).HasMaxLength(250);
-            entity.Property(e => e.CloudOrgId).HasMaxLength(250);
+            entity.ToTable("CloudAccountsMaster");
+
+            entity.Property(e => e.CloudAccountId).HasMaxLength(350);
+            entity.Property(e => e.CloudName).HasMaxLength(350);
+            entity.Property(e => e.CloudOrgId).HasMaxLength(350);
             entity.Property(e => e.CloudRootAccountId)
-                .HasMaxLength(250)
+                .HasMaxLength(350)
                 .HasColumnName("CloudRootAccountID");
-            entity.Property(e => e.DeploymentMethod).HasMaxLength(150);
+            entity.Property(e => e.DeploymentMethod).HasMaxLength(250);
             entity.Property(e => e.Dspmstatus)
-                .HasMaxLength(100)
+                .HasMaxLength(250)
                 .HasColumnName("DSPMStatus");
-            entity.Property(e => e.IdentityProtectionStatus).HasMaxLength(100);
+            entity.Property(e => e.IdentityProtectionStatus).HasMaxLength(250);
             entity.Property(e => e.Iomstatus)
-                .HasMaxLength(100)
+                .HasMaxLength(250)
                 .HasColumnName("IOMStatus");
             entity.Property(e => e.LastUpdatedAtCrwd).HasColumnName("LastUpdatedAtCRWD");
-            entity.Property(e => e.OneClickSensorStatus).HasMaxLength(100);
-            entity.Property(e => e.Provider).HasMaxLength(50);
+            entity.Property(e => e.OneClickSensorStatus).HasMaxLength(250);
+            entity.Property(e => e.Provider).HasMaxLength(60);
             entity.Property(e => e.RawJson).HasColumnType("json");
-            entity.Property(e => e.RealTimeVisibilityAndDetectionStatus).HasMaxLength(100);
+            entity.Property(e => e.RealTimeVisibilityAndDetectionStatus).HasMaxLength(250);
             entity.Property(e => e.RegisteredAtCrwd).HasColumnName("RegisteredAtCRWD");
-            entity.Property(e => e.RegistrationType).HasMaxLength(150);
-            entity.Property(e => e.VulnerabilityScanningStatus).HasMaxLength(100);
+            entity.Property(e => e.RegistrationType).HasMaxLength(300);
+            entity.Property(e => e.VulnerabilityScanningStatus).HasMaxLength(250);
         });
 
-        modelBuilder.Entity<CloudAccountManualDetail>(entity =>
+        modelBuilder.Entity<CloudAccountsTransaction>(entity =>
         {
+            entity.HasKey(e => e.Id).HasName("PK_CloudAccountManualDetails");
+
+            entity.ToTable("CloudAccountsTransaction");
+
             entity.Property(e => e.AccountType).HasMaxLength(100);
             entity.Property(e => e.OverallStatus).HasMaxLength(100);
 
-            entity.HasOne(d => d.BusFuncRefNavigation).WithMany(p => p.CloudAccountManualDetails)
+            entity.HasOne(d => d.BusFuncRefNavigation).WithMany(p => p.CloudAccountsTransactions)
                 .HasForeignKey(d => d.BusFuncRef)
                 .HasConstraintName("FK_CloudAccountManualDetails_BusinessFunction");
 
-            entity.HasOne(d => d.CloudAccRefNavigation).WithMany(p => p.CloudAccountManualDetails)
+            entity.HasOne(d => d.CloudAccRefNavigation).WithMany(p => p.CloudAccountsTransactions)
                 .HasForeignKey(d => d.CloudAccRef)
+                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_CloudAccountManualDetails_CloudAccounts");
         });
 
         modelBuilder.Entity<CrowdGroupMaster>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK_CrowdGroupMaster_Id");
+            entity.HasKey(e => e.Id).HasName("PK_Crowd_Group_Master");
 
             entity.ToTable("CrowdGroupMaster");
 
-            entity.HasIndex(e => e.CrwdgroupName, "UQ_CrowdGroupMaster_CRWDGroupName").IsUnique();
-
             entity.Property(e => e.AllAccountIds).HasColumnName("AllAccountIDs");
             entity.Property(e => e.CrwdgroupName)
-                .HasMaxLength(255)
+                .HasMaxLength(300)
                 .HasColumnName("CRWDGroupName");
             entity.Property(e => e.FilterBy)
                 .HasMaxLength(500)
                 .HasColumnName("FilterBY");
             entity.Property(e => e.GroupId)
-                .HasMaxLength(255)
+                .HasMaxLength(200)
                 .HasColumnName("GroupID");
-            entity.Property(e => e.GroupType).HasMaxLength(50);
-            entity.Property(e => e.LastsuccessfulDateofapi).HasColumnName("LASTSuccessfulDATEOFAPI");
-            entity.Property(e => e.Provider).HasMaxLength(50);
+            entity.Property(e => e.GroupType).HasMaxLength(100);
+            entity.Property(e => e.Provider).HasMaxLength(60);
 
             entity.HasOne(d => d.BusinessFunction).WithMany(p => p.CrowdGroupMasters)
                 .HasForeignKey(d => d.BusinessFunctionId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_CrowdGroupMaster_BusinessFunction");
         });
 
@@ -172,7 +175,7 @@ public partial class CloudAccountsDbContext : DbContext
 
     private static readonly HashSet<Type> MasterTables = new()
     {
-        typeof(CloudAccount),
+        typeof(CloudAccountsMaster),
     };
     private string? GetReference(EntityEntry entry)
     {

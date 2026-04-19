@@ -36,7 +36,7 @@ public class BusinessFunctionController : BaseApiController
 
     [Authorize]
     [HttpPost]
-    public async Task<IActionResult> Create(BusinessFunction item)
+    public async Task<IActionResult> Create(BusinessFunctionMaster item)
     {
         try
         {
@@ -51,7 +51,7 @@ public class BusinessFunctionController : BaseApiController
 
     [Authorize]
     [HttpPut("{id}")]
-    public async Task<IActionResult> Update(int id, BusinessFunction item)
+    public async Task<IActionResult> Update(int id, BusinessFunctionMaster item)
     {
         if (id != item.Id)
             return BadRequest();

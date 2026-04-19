@@ -33,7 +33,7 @@ public class CloudHistoryRepository(CloudAccountsDbContext context) : ICloudHist
 
     public async Task<List<AuditHistoryDTO>> GetManAuditByRef(int Id)
     {
-        var manId = await _context.CloudAccountManualDetails
+        var manId = await _context.CloudAccountsTransactions
         .Where(x => x.CloudAccRef == Id)
         .Select(x => x.Id)
         .FirstOrDefaultAsync();

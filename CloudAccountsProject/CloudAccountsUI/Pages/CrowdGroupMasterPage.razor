@@ -4,32 +4,13 @@
 @using CloudAccountsUI.Services.Contracts
 @using System.Net.Http.Json
 @inject ICrowdGroupMasterService CrowdGroupService
+@inject IBusinessFunctionService BusinessFunctionService
 @inject ISnackbar Snackbar
 @inject IDialogService DialogService
-@inject HttpClient Http
 
 <div class="full-page-container">
     <div class="main-wrapper @(drawerOpen && !drawerFullscreen ? "drawer-open" : "") @(drawerFullscreen ? "fullscreen-active" : "")">
         <div class="pushed-content">
-            <div class="header-toolbar">
-                <div class="title-section">
-                    <div class="cs-title">
-                        <MudIcon Icon="@Icons.Material.Filled.Groups" Class="mr-2" Style="color: #00A3FF;" />
-                        Crowd Groups Master
-                    </div>
-                    <div class="cs-subtitle">
-                        Manage and monitor all your crowd groups across providers
-                    </div>
-                </div>
-                <div class="actions-section">
-                    <MudButton Variant="Variant.Filled"
-                               Color="Color.Primary"
-                               StartIcon="@Icons.Material.Filled.Add"
-                               OnClick="OpenAddDrawer">
-                        Add Group
-                    </MudButton>
-                </div>
-            </div>
 
             <div class="grid-container">
                 @if (isLoading)
@@ -38,61 +19,127 @@
                         <MudProgressCircular Indeterminate="true" Size="Size.Large" />
                     </div>
                 }
-                else if (groups.Count == 0)
+                else if (groups.Count != 0)
                 {
-                    <div style="display: flex; justify-content: center; align-items: center; height: 400px; flex-direction: column;">
-                        <MudIcon Icon="@Icons.Material.Filled.Groups" Size="Size.Large" Style="color: #CBD5E1; margin-bottom: 16px;" />
-                        <MudText Typo="Typo.h6" Style="color: #5A6A85;">No crowd groups found</MudText>
-                        <MudText Typo="Typo.body2" Style="color: #94A3B8; margin-top: 8px;">Click "Add Group" to create your first crowd group</MudText>
+                    <div class="data-grid-wrapper">
+                        <MudDataGrid T="CrowdGroupMaster"
+                                     @ref="_dataGrid"
+                                     Items="@groups"
+                                     Dense="true"
+                                     Hover="true"
+                                     Bordered="true"
+                                     Striped="true"
+                                     Filterable="true"
+                                     FilterMode="DataGridFilterMode.ColumnFilterRow"
+                                     FilterCaseSensitivity="DataGridFilterCaseSensitivity.CaseInsensitive"
+                                     FixedHeader="true"
+                                     FixedFooter="true"
+                                     @bind-PageSize="PageSize"
+                                     RowsPerPageOptions="@PageSizeOptions"
+                                     Height="calc(100vh - 170px)"
+                                     Width="100%"
+                                     RowContextMenuClick="OpenContextMenu"
+                                     DragDropColumnReordering="true"
+                                     ColumnsPanelReordering="true"
+                                     ColumnResizeMode="ResizeMode.Container"
+                                     ShowMenuIcon="true">
+
+                            <ToolBarContent>
+                                <div class="d-flex flex-column">
+                                    <MudText Typo="Typo.h6" Class="d-flex align-center">
+                                        <MudIcon Icon="@Icons.Material.Filled.Groups"
+                                                 Class="mr-2"
+                                                 Style="color: #00A3FF;" />
+                                        Crowd Groups Master
+                                    </MudText>
+
+                                    <MudText Typo="Typo.body2" Class="text-secondary">
+                                        Manage and monitor all your crowd groups across providers
+                                    </MudText>
+                                </div>
+
+                                <MudSpacer />
+
+                                <MudButton Variant="Variant.Text"
+                                           Color="Color.Primary"
+                                           StartIcon="@Icons.Material.Filled.Add"
+                                           OnClick="OpenAddDrawer">
+                                    Add Group
+                                </MudButton>
+                            </ToolBarContent>
+
+                            <Columns>
+                                <PropertyColumn Property="x => x.CrwdgroupName" Title="CRWD Group Name" Resizable="true" />
+                                <PropertyColumn Property="x => x.GroupType" Title="Group Type" Resizable="true" />
+                                <PropertyColumn Property="x => x.GroupId" Title="Group ID" Resizable="true" />
+                                <PropertyColumn Property="x => x.Provider" Title="Provider" Resizable="true" />
+                                <PropertyColumn Property="x => x.BusinessFunction.BusinessFunctionName" Title="Business Function" Resizable="true" />
+                                <PropertyColumn Property="x => x.AllAccountIds" Title="All Account IDs" Resizable="true" />
+                                <PropertyColumn Property="x => x.DateCreated" Title="Created Date" Resizable="true">
+                                    <CellTemplate Context="cell">
+                                        <span>@(cell.Item.DateCreated == default ? "-" : cell.Item.DateCreated.ToString("dd MMM yyyy, hh:mm tt"))</span>
+                                    </CellTemplate>
+                                </PropertyColumn>
+                                <PropertyColumn Property="x => x.DateModified" Title="Updated Date" Resizable="true">
+                                    <CellTemplate Context="cell">
+                                        <span>@(cell.Item.DateModified == default ? "-" : cell.Item.DateModified.ToString("dd MMM yyyy, hh:mm tt"))</span>
+                                    </CellTemplate>
+                                </PropertyColumn>
+                            </Columns>
+
+                             <NoRecordsContent>
+                                <MudText Class="pa-4" Style="color: #5A6A85;">No matching records found</MudText>
+                            </NoRecordsContent> 
+
+                            
+                            <PagerContent>
+                                <MudDataGridPager T="CrowdGroupMaster" />
+                            </PagerContent>
+                        </MudDataGrid>
                     </div>
                 }
                 else
                 {
-                    <MudDataGrid T="CrowdGroupMaster"
-                                 @ref="_dataGrid"
-                                 Items="@groups"
-                                 Dense="true"
-                                 Hover="true"
-                                 Bordered="true"
-                                 Striped="true"
-                                 Filterable="true"
-                                 FilterMode="DataGridFilterMode.ColumnFilterRow"
-                                 FilterCaseSensitivity="DataGridFilterCaseSensitivity.CaseInsensitive"
-                                 FixedHeader="true"
-                                 @bind-PageSize="PageSize"
-                                 RowsPerPageOptions="@PageSizeOptions"
-                                 Height="100%"
-                                 Width="100%"
-                                 RowContextMenuClick="OpenContextMenu">
+                    <div class="d-flex flex-column" style="height: calc(100vh - 170px); padding: 20px;">
 
-                        <Columns>
-                            <PropertyColumn Property="x => x.CrwdgroupName" Title="CRWD Group Name" Resizable="true" />
-                            <PropertyColumn Property="x => x.GroupType" Title="Group Type" Resizable="true" />
-                            <PropertyColumn Property="x => x.GroupId" Title="Group ID" Resizable="true" />
-                            <PropertyColumn Property="x => x.Provider" Title="Provider" Resizable="true" />
-                            <PropertyColumn Property="x => x.BusinessFunctionId" Title="Business Function ID" Resizable="true" />
-                            <PropertyColumn Property="x => x.AllAccountIds" Title="All Account IDs" Resizable="true" />
+                        <div class="d-flex align-center mb-4">
+                            <div class="d-flex flex-column">
+                                <MudText Typo="Typo.h6" Class="d-flex align-center">
+                                    <MudIcon Icon="@Icons.Material.Filled.Groups"
+                                             Class="mr-2"
+                                             Style="color: #00A3FF;" />
+                                    Crowd Groups Master
+                                </MudText>
 
-                            <PropertyColumn Property="x => x.DateCreated" Title="Created Date" Resizable="true">
-                                <CellTemplate Context="cell">
-                                    <span>@(cell.Item.DateCreated == default ? "-" : cell.Item.DateCreated.ToString("dd MMM yyyy, hh:mm tt"))</span>
-                                </CellTemplate>
-                            </PropertyColumn>
-                            <PropertyColumn Property="x => x.DateModified" Title="Updated Date" Resizable="true">
-                                <CellTemplate Context="cell">
-                                    <span>@(cell.Item.DateModified == default ? "-" : cell.Item.DateModified.ToString("dd MMM yyyy, hh:mm tt"))</span>
-                                </CellTemplate>
-                            </PropertyColumn>
-                        </Columns>
+                                <MudText Typo="Typo.body2" Class="text-secondary">
+                                    Manage and monitor all your crowd groups across providers
+                                </MudText>
+                            </div>
 
-                        <NoRecordsContent>
-                            <MudText Class="pa-4" Style="color: #5A6A85;">No matching records found</MudText>
-                        </NoRecordsContent>
+                            <MudSpacer />
 
-                        <PagerContent>
-                            <MudDataGridPager T="CrowdGroupMaster" PageSizeOptions="@PageSizeOptions" />
-                        </PagerContent>
-                    </MudDataGrid>
+                            <MudButton Variant="Variant.Text"
+                                       Color="Color.Primary"
+                                       StartIcon="@Icons.Material.Filled.Add"
+                                       OnClick="OpenAddDrawer">
+                                Add Group
+                            </MudButton>
+                        </div>
+
+                        <div class="d-flex flex-column align-center justify-center flex-grow-1">
+                            <MudIcon Icon="@Icons.Material.Filled.Groups"
+                                     Size="Size.Large"
+                                     Style="color: #CBD5E1; margin-bottom: 16px;" />
+
+                            <MudText Typo="Typo.h6" Style="color: #5A6A85;">
+                                No crowd groups found
+                            </MudText>
+
+                            <MudText Typo="Typo.body2" Style="color: #94A3B8; margin-top: 8px;">
+                                Click "Add Group" to create your first crowd group
+                            </MudText>
+                        </div>
+                    </div>
                 }
             </div>
         </div>
@@ -116,7 +163,7 @@
                 <div class="drawer-header">
                     <div class="drawer-title">@(isEdit ? "Edit Crowd Group" : "Add Crowd Group")</div>
                     <div class="drawer-buttons">
-                        <MudIconButton Icon="@(drawerFullscreen ? Icons.Material.Filled.FullscreenExit : Icons.Material.Filled.Fullscreen)"
+                        <MudIconButton Icon="@(drawerFullscreen? Icons.Material.Filled.FullscreenExit : Icons.Material.Filled.Fullscreen)"
                                        Size="Size.Medium"
                                        Color="Color.Default"
                                        OnClick="ToggleFullscreen" />
@@ -164,18 +211,17 @@
                             <MudSelectItem Value="@("GCP")">GCP</MudSelectItem>
                         </MudSelect>
 
-                        <!-- Business Function Dropdown -->
-                        <MudSelect T="int"
-                                   Label="Business Function"
-                                   Variant="Variant.Outlined"
-                                   @bind-Value="editingGroup.BusinessFunctionId"
-                                   Dense="true"
-                                   Required="true">
-                            @foreach (var bf in businessFunctions)
-                            {
-                                <MudSelectItem T="int" Value="@bf.Id">@bf.BusinessFunctionName</MudSelectItem>
-                            }
-                        </MudSelect>
+                        <!-- Business Function Autocomplete -->
+                        <MudAutocomplete T="BusinessFunctionMaster"
+                                         Label="Business Function"
+                                         Variant="Variant.Outlined"
+                                         Dense="true"
+                                         Required="true"
+                                         Value="selectedBusinessFunction"
+                                         ValueChanged="OnBusinessFunctionChanged"
+                                         SearchFunc="SearchBusinessFunctions"
+                                         ToStringFunc="@(x => x?.BusinessFunctionName ?? string.Empty)"
+                                         Clearable="false" />
 
                         <MudTextField T="string"
                                       Label="All Account IDs"
@@ -294,7 +340,7 @@
         align-items: center;
     }
 
-    .grid-container {
+    @* .grid-container {
         flex: 1;
         min-width: 0;
         display: flex;
@@ -303,6 +349,49 @@
         position: relative;
         padding: 20px;
     }
+
+    .data-grid-wrapper {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        position: relative;
+    } *@
+
+    @* /* Fix for header text wrapping */
+    ::deep .mud-table-head .mud-table-cell {
+        white-space: nowrap !important;
+        overflow: visible !important;
+    }
+
+        ::deep .mud-table-head .mud-table-cell .mud-table-cell-text {
+            white-space: nowrap !important;
+            display: inline-block !important;
+        }
+
+    /* Pagination styling */
+    .pagination-container {
+        background: white;
+        border-top: 1px solid #E2E8F0;
+        padding: 8px 0;
+    } *@
+
+    @* ::deep .mud-table-pagination {
+        display: flex !important;
+        justify-content: flex-end !important;
+        align-items: center !important;
+        padding: 8px 16px !important;
+        background: white !important;
+    }
+
+    ::deep .mud-table-pagination-actions {
+        display: flex;
+        gap: 4px;
+    }
+
+    ::deep .mud-table-container {
+        flex: 1;
+        overflow: auto !important;
+    } *@
 
     .drawer-container {
         width: 0;
@@ -318,14 +407,6 @@
         z-index: 1000;
         display: flex;
         flex-direction: column;
-    }
-
-    .drawer-content {
-        height: 100%;
-        display: flex;
-        flex-direction: column;
-        overflow: hidden;
-        padding: 20px;
     }
 
         .drawer-container.open {
@@ -420,7 +501,9 @@
     private CrowdGroupMaster? _contextRow;
 
     private List<CrowdGroupMaster> groups = new();
-    private List<BusinessFunction> businessFunctions = new();
+    private List<BusinessFunctionMaster> businessFunctions = new();
+    private BusinessFunctionMaster? selectedBusinessFunction;
+
     private bool isLoading = true;
     private bool isSaving = false;
     private bool drawerOpen = false;
@@ -472,18 +555,36 @@
     {
         try
         {
-            businessFunctions = await Http.GetFromJsonAsync<List<BusinessFunction>>("api/BusinessFunction") ?? new List<BusinessFunction>();
-
-            foreach (var bf in businessFunctions)
-            {
-                Console.WriteLine($"Business Function: Id={bf.Id}, Name={bf.BusinessFunctionName}");
-            }
+            businessFunctions = await BusinessFunctionService.GetAllAsync();
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error loading business functions: {ex.Message}");
-            businessFunctions = new List<BusinessFunction>();
+            Snackbar.Add($"Error loading business functions: {ex.Message}", Severity.Error);
+            businessFunctions = new List<BusinessFunctionMaster>();
         }
+    }
+
+    private Task<IEnumerable<BusinessFunctionMaster>> SearchBusinessFunctions(string value, CancellationToken token)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+            return Task.FromResult(businessFunctions.AsEnumerable());
+
+        return Task.FromResult(
+            businessFunctions.Where(x =>
+                !string.IsNullOrWhiteSpace(x.BusinessFunctionName) &&
+                x.BusinessFunctionName.Contains(value, StringComparison.OrdinalIgnoreCase))
+        );
+    }
+
+    private void OnBusinessFunctionChanged(BusinessFunctionMaster? value)
+    {
+        selectedBusinessFunction = value;
+
+        if (value is null)
+            return;
+
+        editingGroup.BusinessFunctionId = value.Id;
+        
     }
 
     private async Task OpenContextMenu(DataGridRowClickEventArgs<CrowdGroupMaster> args)
@@ -512,14 +613,13 @@
     {
         isEdit = false;
         drawerFullscreen = false;
+        selectedBusinessFunction = null;
+
         editingGroup = new CrowdGroupMaster
         {
             DateCreated = DateTime.UtcNow,
-            DateModified = DateTime.UtcNow,
-            BusinessFunctionId = businessFunctions.FirstOrDefault()?.Id ?? 0
+            DateModified = DateTime.UtcNow
         };
-
-        Console.WriteLine($"OpenAddDrawer - BusinessFunctionId: {editingGroup.BusinessFunctionId}");
 
         drawerOpen = true;
         StateHasChanged();
@@ -529,6 +629,7 @@
     {
         isEdit = true;
         drawerFullscreen = false;
+
         editingGroup = new CrowdGroupMaster
         {
             Id = group.Id,
@@ -539,11 +640,13 @@
             Remarks = group.Remarks,
             AllAccountIds = group.AllAccountIds,
             BusinessFunctionId = group.BusinessFunctionId,
+            
             DateCreated = group.DateCreated,
             DateModified = DateTime.UtcNow
         };
 
-        Console.WriteLine($"EditGroup - BusinessFunctionId: {editingGroup.BusinessFunctionId}");
+        selectedBusinessFunction = businessFunctions
+            .FirstOrDefault(x => x.Id == editingGroup.BusinessFunctionId);
 
         drawerOpen = true;
         StateHasChanged();
@@ -554,6 +657,7 @@
         drawerOpen = false;
         drawerFullscreen = false;
         editingGroup = new CrowdGroupMaster();
+        selectedBusinessFunction = null;
         StateHasChanged();
     }
 
@@ -589,19 +693,19 @@
             return;
         }
 
-        if (editingGroup.BusinessFunctionId == 0)
+        if (selectedBusinessFunction is null)
         {
             Snackbar.Add("Business Function is required", Severity.Warning);
             return;
         }
 
-        Console.WriteLine($"Saving Group - BusinessFunctionId: {editingGroup.BusinessFunctionId}");
-        Console.WriteLine($"Saving Group - GroupName: {editingGroup.CrwdgroupName}");
-
         try
         {
             isSaving = true;
             StateHasChanged();
+
+            // Assign the selected business function ID before saving
+            editingGroup.BusinessFunctionId = selectedBusinessFunction.Id;
 
             if (isEdit)
             {
@@ -619,11 +723,6 @@
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error saving group: {ex.Message}");
-            if (ex.InnerException != null)
-            {
-                Console.WriteLine($"Inner exception: {ex.InnerException.Message}");
-            }
             Snackbar.Add($"Error saving group: {ex.Message}", Severity.Error);
         }
         finally

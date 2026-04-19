@@ -9,27 +9,25 @@ public partial class CrowdGroupMaster
 
     public string CrwdgroupName { get; set; } = null!;
 
-    public string GroupType { get; set; } = null!;
+    public string? GroupType { get; set; }
 
-    public string? GroupId { get; set; }
+    public string GroupId { get; set; } = null!;
 
     public string? FilterBy { get; set; }
 
-    public int BusinessFunctionId { get; set; }
+    public int? BusinessFunctionId { get; set; }
 
-    public string Provider { get; set; } = null!;
+    public string? Provider { get; set; }
 
     public string? Remarks { get; set; }
 
-    public string AllAccountIds { get; set; } = null!;
+    public string? AllAccountIds { get; set; }
 
-    public DateTime? LastsuccessfulDateofapi { get; set; }
-
-    public string? CommentsLogs { get; set; }
+    public DateTime? LastSuccessfulDateOfApi { get; set; }
 
     public DateTime DateCreated { get; set; }
 
     public DateTime DateModified { get; set; }
 
-    public virtual BusinessFunction BusinessFunction { get; set; } = null!;
+    public virtual BusinessFunctionMaster? BusinessFunction { get; set; }
 }

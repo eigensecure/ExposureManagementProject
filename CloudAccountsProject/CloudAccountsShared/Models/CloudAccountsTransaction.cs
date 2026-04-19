@@ -1,10 +1,13 @@
-﻿namespace CloudAccountsShared.Models;
+﻿using System;
+using System.Collections.Generic;
 
-public partial class CloudAccountManualDetail
+namespace CloudAccountsShared.Models;
+
+public partial class CloudAccountsTransaction
 {
     public int Id { get; set; }
 
-    public int? CloudAccRef { get; set; }
+    public int CloudAccRef { get; set; }
 
     public int? BusFuncRef { get; set; }
 
@@ -20,7 +23,7 @@ public partial class CloudAccountManualDetail
 
     public DateTime DateModified { get; set; }
 
-    public virtual BusinessFunction? BusFuncRefNavigation { get; set; }
+    public virtual BusinessFunctionMaster? BusFuncRefNavigation { get; set; }
 
-    public virtual CloudAccount? CloudAccRefNavigation { get; set; }
+    public virtual CloudAccountsMaster CloudAccRefNavigation { get; set; } = null!;
 }
