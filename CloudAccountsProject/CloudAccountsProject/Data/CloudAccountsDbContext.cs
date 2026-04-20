@@ -21,6 +21,8 @@ public partial class CloudAccountsDbContext : DbContext
 
     public virtual DbSet<BusinessFunctionMaster> BusinessFunctionMasters { get; set; }
 
+    public virtual DbSet<BusinessTag> BusinessTags { get; set; }
+
     public virtual DbSet<CloudAccountsMaster> CloudAccountsMasters { get; set; }
 
     public virtual DbSet<CloudAccountsTransaction> CloudAccountsTransactions { get; set; }
@@ -71,6 +73,19 @@ public partial class CloudAccountsDbContext : DbContext
             entity.Property(e => e.BusinessFunctionName).HasMaxLength(300);
             entity.Property(e => e.BusinessFunctionOwner).HasMaxLength(255);
             entity.Property(e => e.BusinessTagValue).HasMaxLength(255);
+        });
+
+        modelBuilder.Entity<BusinessTag>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK_Business_Tags");
+
+            entity.Property(e => e.TagName).HasMaxLength(250);
+            entity.Property(e => e.TagValue).HasMaxLength(250);
+
+            entity.HasOne(d => d.BusinessFunction).WithMany(p => p.BusinessTags)
+                .HasForeignKey(d => d.BusinessFunctionId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Business_Function");
         });
 
         modelBuilder.Entity<CloudAccountsMaster>(entity =>

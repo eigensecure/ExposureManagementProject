@@ -1,0 +1,189 @@
+﻿@using System.Text.Json
+@using CloudAccountsShared.Configuration.Services
+@using CloudAccountsShared.Models
+@using CloudAccountsShared.Models.DTOs
+@using CloudAccountsUI.Services.Contracts
+@using MudBlazor
+
+<MudDialog>
+    <TitleContent>
+        <MudText Typo="Typo.h6" Color="Color.Primary">@Title</MudText>
+    </TitleContent>
+    <DialogContent>
+        @if (ValidAuditRecords == null || !ValidAuditRecords.Any())
+        {
+            <MudText>No meaningful history records found.</MudText>
+        }
+        else
+        {
+            <MudGrid>
+                <MudItem xs="12" Class="d-flex justify-space-between align-center">
+                    <MudIconButton Icon="@Icons.Material.Filled.ChevronLeft"
+                                   Color="Color.Primary"
+                                   Disabled="@(currentIndex == 0)"
+                                   OnClick="@(() => Navigate(-1))" />
+                    <MudText Typo="Typo.subtitle1" Color="Color.Success">
+                        Version @(currentIndex + 1) of @ValidAuditRecords.Count
+                        <MudText Typo="Typo.body2" Style="display: inline-block; margin-left: 16px;">
+                            @(currentRecord?.Type) by @(currentRecord?.ModifiedByUser) on @(currentRecord?.DateTime?.ToString("dd MMM yyyy, hh:mm tt"))
+                        </MudText>
+                    </MudText>
+                    <MudIconButton Icon="@Icons.Material.Filled.ChevronRight"
+                                   Color="Color.Primary"
+                                   Disabled="@(currentIndex == ValidAuditRecords.Count - 1)"
+                                   OnClick="@(() => Navigate(1))" />
+                </MudItem>
+                <MudItem xs="12">
+                    <MudTable Items="@changedFields" Dense="true" Hover="true" Bordered="true" Striped="true">
+                        <HeaderContent>
+                            <MudTh>Field</MudTh>
+                            <MudTh>Old Value</MudTh>
+                            <MudTh>New Value</MudTh>
+                        </HeaderContent>
+                        <RowTemplate>
+                            <MudTd DataLabel="Field">@context.Key</MudTd>
+                            <MudTd DataLabel="Old Value">@context.OldValue</MudTd>
+                            <MudTd DataLabel="New Value">@context.NewValue</MudTd>
+                        </RowTemplate>
+                        <NoRecordsContent>
+                            <MudText>No field changes detected.</MudText>
+                        </NoRecordsContent>
+                    </MudTable>
+                </MudItem>
+            </MudGrid>
+        }
+    </DialogContent>
+    <DialogActions>
+        <MudButton Variant="Variant.Text" Color="Color.Secondary" OnClick="Close">Close</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] private IMudDialogInstance MudDialog { get; set; } = default!;
+
+    [Parameter] public string Title { get; set; } = "Crowd Group Audit History";
+    [Parameter] public List<AuditHistoryDTO> AuditRecords { get; set; } = new();
+
+    [Inject] private TableConfigService tableConfigService { get; set; } = default!;
+
+    private int currentIndex = 0;
+    private AuditHistoryDTO? currentRecord => ValidAuditRecords?.ElementAtOrDefault(currentIndex);
+    private List<FieldChange> changedFields = new();
+    private List<AuditHistoryDTO> ValidAuditRecords = new();
+    private List<string> visibleAuditColumns = new();
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        
+        LoadAuditColumns();
+        
+        ValidAuditRecords = AuditRecords
+            .Where(record => HasValidChanges(record))
+            .ToList();
+
+        currentIndex = 0;
+        LoadCurrentVersion();
+    }
+
+    private void LoadAuditColumns()
+    {
+        try
+        {
+            visibleAuditColumns = tableConfigService.GetAuditColumns(nameof(CrowdGroupMaster)).ToList();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Failed to load audit columns: {ex.Message}");
+            visibleAuditColumns = new List<string>();
+        }
+    }
+
+    private void Navigate(int direction)
+    {
+        var newIndex = currentIndex + direction;
+
+        if (newIndex >= 0 && newIndex < ValidAuditRecords.Count)
+        {
+            currentIndex = newIndex;
+            LoadCurrentVersion();
+        }
+    }
+
+    private void LoadCurrentVersion()
+    {
+        changedFields.Clear();
+        if (currentRecord == null) return;
+
+        var oldDict = DeserializeJson(currentRecord.OldValues);
+        var newDict = DeserializeJson(currentRecord.NewValues);
+
+        var allKeys = new HashSet<string>(oldDict.Keys);
+        allKeys.UnionWith(newDict.Keys);
+
+        foreach (var key in allKeys)
+        {
+            // Skip fields that are not in the visible audit columns list
+            if (!visibleAuditColumns.Contains(key, StringComparer.OrdinalIgnoreCase))
+                continue;
+
+            oldDict.TryGetValue(key, out var oldVal);
+            newDict.TryGetValue(key, out var newVal);
+
+            var oldStr = oldVal?.ToString() ?? "NULL";
+            var newStr = newVal?.ToString() ?? "NULL";
+
+            if (oldStr != newStr)
+            {
+                changedFields.Add(new FieldChange(key, oldStr, newStr));
+            }
+        }
+    }
+
+    private bool HasValidChanges(AuditHistoryDTO record)
+    {
+        var oldDict = DeserializeJson(record.OldValues);
+        var newDict = DeserializeJson(record.NewValues);
+
+        var allKeys = new HashSet<string>(oldDict.Keys);
+        allKeys.UnionWith(newDict.Keys);
+
+        foreach (var key in allKeys)
+        {
+            // Skip fields that are not in the visible audit columns list
+            if (!visibleAuditColumns.Contains(key, StringComparer.OrdinalIgnoreCase))
+                continue;
+
+            oldDict.TryGetValue(key, out var oldVal);
+            newDict.TryGetValue(key, out var newVal);
+
+            var oldStr = oldVal?.ToString() ?? "NULL";
+            var newStr = newVal?.ToString() ?? "NULL";
+
+            if (oldStr != newStr)
+                return true;
+        }
+
+        return false;
+    }
+
+    private Dictionary<string, object> DeserializeJson(string? json)
+    {
+        if (string.IsNullOrWhiteSpace(json))
+            return new Dictionary<string, object>();
+
+        try
+        {
+            return JsonSerializer.Deserialize<Dictionary<string, object>>(json)
+                   ?? new Dictionary<string, object>();
+        }
+        catch
+        {
+            return new Dictionary<string, object>();
+        }
+    }
+
+    private void Close() => MudDialog.Close(DialogResult.Ok(true));
+
+    private record FieldChange(string Key, string OldValue, string NewValue);
+}

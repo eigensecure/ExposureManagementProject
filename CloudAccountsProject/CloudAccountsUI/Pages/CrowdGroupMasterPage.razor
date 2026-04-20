@@ -1,9 +1,10 @@
 ﻿@page "/crowdgroupmaster"
-
 @using CloudAccountsShared.Models
 @using CloudAccountsUI.Services.Contracts
+@using CloudAccountsUI.Dialogs.AuditDialogs
 @using System.Net.Http.Json
 @inject ICrowdGroupMasterService CrowdGroupService
+@inject ICloudHistoryService CloudHistoryService
 @inject IBusinessFunctionService BusinessFunctionService
 @inject ISnackbar Snackbar
 @inject IDialogService DialogService
@@ -152,6 +153,9 @@
         </MudMenuItem>
         <MudMenuItem Icon="@Icons.Material.Filled.Delete" OnClick="@(() => DeleteFromContext())">
             Delete @_contextRow?.CrwdgroupName
+        </MudMenuItem>
+        <MudMenuItem Icon="@Icons.Material.Filled.Info" OnClick="@(() => ShowAudits())">
+            View Audits @_contextRow?.CrwdgroupName
         </MudMenuItem>
     </MudMenu>
 
@@ -607,6 +611,27 @@
         {
             await DeleteGroup(_contextRow.Id);
         }
+    }
+
+    private async Task ShowAudits()
+    {
+        var auditResult = await CloudHistoryService.GetCrowdGroupAudit(_contextRow.Id);
+
+        var parameters = new DialogParameters
+        {
+            ["Title"] = $"Audit of Crowd Group: {_contextRow.CrwdgroupName}",
+            ["AuditRecords"] = auditResult
+        };
+
+        var options = new DialogOptions
+        {
+            CloseOnEscapeKey = true,
+            MaxWidth = MaxWidth.Medium,
+            FullWidth = true
+        };
+
+        var dialog = await DialogService.ShowAsync<CrowdGroupAuditDialog>("", parameters, options);
+        var result = await dialog.Result;
     }
 
     private void OpenAddDrawer()

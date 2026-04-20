@@ -1,4 +1,5 @@
-﻿using CloudAccountsUI.Services;
+﻿using CloudAccountsShared.Configuration.Services;
+using CloudAccountsUI.Services;
 using CloudAccountsUI.Services.Contracts;
 
 namespace CloudAccountsUI.ServiceConfig;
@@ -14,5 +15,7 @@ public static class ServicesConfig
         Services.AddScoped<ICloudRecordsService, CloudRecordsService>();
 
         Services.AddScoped<ICrowdGroupMasterService, CrowdGroupMasterService>();
+
+        Services.AddScoped<TableConfigService>();
     }
 }

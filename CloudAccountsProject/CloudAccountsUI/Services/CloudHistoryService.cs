@@ -75,4 +75,26 @@ public class CloudHistoryService(IHttpClientFactory httpClient) : ICloudHistoryS
             throw;
         }
     }
+
+    public async Task<List<AuditHistoryDTO>> GetCrowdGroupAudit(int Id)
+    {
+        try
+        {
+            var url = $"api/CloudHistory/auditCrowdGroup/{Id}";
+
+            var response = await _httpClient.GetAsync(url);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var message = await response.Content.ReadAsStringAsync();
+                throw new Exception($"HTTP {response.StatusCode}: {message}");
+            }
+
+            return await response.Content.ReadFromJsonAsync<List<AuditHistoryDTO>>(_options);
+        }
+        catch (Exception)
+        {
+            throw;
+        }
+    }
 }

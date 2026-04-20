@@ -36,4 +36,12 @@ public class CloudHistoryController : BaseApiController
         var result = await _historyRepository.GetBusAuditByRef(Id);
         return Ok(result);
     }
+
+    [Authorize]
+    [HttpGet("auditCrowdGroup/{Id}")]
+    public async Task<IActionResult> GetCrowdGroupAudit(int Id)
+    {
+        var result = await _historyRepository.GetCrowdGroupAudit(Id);
+        return Ok(result);
+    }
 }

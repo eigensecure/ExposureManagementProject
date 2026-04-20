@@ -1,5 +1,8 @@
 ﻿@using System.Text.Json
+@using CloudAccountsShared.Configuration.Services
+@using CloudAccountsShared.Models
 @using CloudAccountsShared.Models.DTOs
+@using CloudAccountsUI.Services.Contracts
 @using MudBlazor
 
 <MudDialog>
@@ -61,27 +64,39 @@
     [Parameter] public string Title { get; set; } = "Business Function Audit History";
     [Parameter] public List<AuditHistoryDTO> AuditRecords { get; set; } = new();
 
+    [Inject] private TableConfigService tableConfigService { get; set; } = default!;
+
     private int currentIndex = 0;
     private AuditHistoryDTO? currentRecord => ValidAuditRecords?.ElementAtOrDefault(currentIndex);
     private List<FieldChange> changedFields = new();
-
-    private static readonly HashSet<string> ExcludedFields = new(
-        Enum.GetNames(typeof(UnwantedField)),
-        StringComparer.OrdinalIgnoreCase
-    );
-
     private List<AuditHistoryDTO> ValidAuditRecords = new();
+    private List<string> visibleAuditColumns = new();
 
     protected override void OnInitialized()
     {
         base.OnInitialized();
-
+        
+        LoadAuditColumns();
+        
         ValidAuditRecords = AuditRecords
             .Where(record => HasValidChanges(record))
             .ToList();
 
         currentIndex = 0;
         LoadCurrentVersion();
+    }
+
+    private void LoadAuditColumns()
+    {
+        try
+        {
+            visibleAuditColumns = tableConfigService.GetAuditColumns(nameof(BusinessFunctionMaster)).ToList();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Failed to load audit columns: {ex.Message}");
+            visibleAuditColumns = new List<string>();
+        }
     }
 
     private void Navigate(int direction)
@@ -108,7 +123,8 @@
 
         foreach (var key in allKeys)
         {
-            if (ExcludedFields.Contains(key))
+            // Skip fields that are not in the visible audit columns list
+            if (!visibleAuditColumns.Contains(key, StringComparer.OrdinalIgnoreCase))
                 continue;
 
             oldDict.TryGetValue(key, out var oldVal);
@@ -134,7 +150,8 @@
 
         foreach (var key in allKeys)
         {
-            if (ExcludedFields.Contains(key))
+            // Skip fields that are not in the visible audit columns list
+            if (!visibleAuditColumns.Contains(key, StringComparer.OrdinalIgnoreCase))
                 continue;
 
             oldDict.TryGetValue(key, out var oldVal);

@@ -24,14 +24,3 @@ public partial class AuditHistoryDTO
 
     public string? AffectedColumns { get; set; }
 }
-
-public enum UnwantedField
-{
-    Id,
-    DateCreated,
-    DateModified,
-    CloudAccRef,
-    BusFuncRef,
-    LastUpdatedDate,
-    FirstUpdatedDate
-}

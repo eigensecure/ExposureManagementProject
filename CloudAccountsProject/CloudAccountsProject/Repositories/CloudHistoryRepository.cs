@@ -3,7 +3,6 @@ using CloudAccountsProjects.Data;
 using CloudAccountsShared.Models;
 using CloudAccountsShared.Models.DTOs;
 using Microsoft.EntityFrameworkCore;
-using System.Text;
 
 namespace CloudAccountsProject.Repositories;
 
@@ -44,7 +43,9 @@ public class CloudHistoryRepository(CloudAccountsDbContext context) : ICloudHist
             FROM AuditTableTransaction
             WHERE JSON_VALUE(PrimaryKey, '$.Id') = {0} 
               AND TableName = {1}
-            ORDER BY DateTime DESC", manId, "CloudAccountManualDetails")
+            ORDER BY DateTime DESC",
+            manId,
+            nameof(CloudAccountsTransaction))
         .ToListAsync();
 
         return [.. auditEntities.Select(x => new AuditHistoryDTO
@@ -69,7 +70,36 @@ public class CloudHistoryRepository(CloudAccountsDbContext context) : ICloudHist
             FROM AuditTableTransaction
             WHERE JSON_VALUE(PrimaryKey, '$.Id') = {0} 
               AND TableName = {1}
-            ORDER BY DateTime DESC", Id, "BusinessFunction")
+            ORDER BY DateTime DESC",
+            Id,
+            nameof(BusinessFunctionMaster))
+        .ToListAsync();
+
+        return [.. auditEntities.Select(x => new AuditHistoryDTO
+        {
+            Id = x.Id,
+            TableName = x.TableName,
+            PrimaryKey = x.PrimaryKey,
+            ModifiedByUser = x.ModifiedByUser,
+            Type = x.Type,
+            DateTime = x.DateTime,
+            OldValues = x.OldValues,
+            NewValues = x.NewValues,
+            AffectedColumns = x.AffectedColumns
+        })];
+    }
+
+    public async Task<List<AuditHistoryDTO>> GetCrowdGroupAudit(int Id)
+    {
+        var auditEntities = await _context.AuditTableTransactions
+        .FromSqlRaw(@"
+            SELECT * 
+            FROM AuditTableTransaction
+            WHERE JSON_VALUE(PrimaryKey, '$.Id') = {0} 
+              AND TableName = {1}
+            ORDER BY DateTime DESC",
+            Id,
+            nameof(CrowdGroupMaster))
         .ToListAsync();
 
         return [.. auditEntities.Select(x => new AuditHistoryDTO

@@ -1,8 +1,11 @@
 ﻿@using System.Text.Json
+@using CloudAccountsShared.Configuration.Services
+@using CloudAccountsShared.Models
 @using CloudAccountsShared.Models.DTOs
 @using CloudAccountsUI.Services.Contracts
 @using MudBlazor
 @inject ICloudHistoryService CloudHistoryService
+@inject TableConfigService tableConfigService
 @inject ISnackbar Snackbar
 
 <MudDialog>
@@ -82,12 +85,8 @@
     private bool isLoading = false;
     private int currentIndex = 0;
     private List<FieldChange> changedFields = new();
-    private int? extractedPrimaryKeyValue = null; 
-
-    private static readonly HashSet<string> ExcludedFields = new(
-        Enum.GetNames(typeof(UnwantedField)),
-        StringComparer.OrdinalIgnoreCase
-    );
+    private int? extractedPrimaryKeyValue = null;
+    private List<string>? visibleAuditColumns;
 
     private List<AuditHistoryDTO> ValidCurrentRecords
     {
@@ -107,8 +106,22 @@
         currentIndex = 0;
         
         ExtractPrimaryKeyValue();
-        
+        LoadAuditColumns();
         LoadCurrentVersion();
+    }
+
+    private void LoadAuditColumns()
+    {
+        try
+        {
+            var tableName = isMasterMode ? nameof(CloudAccountsMaster) : nameof(CloudAccountsTransaction);
+            visibleAuditColumns = tableConfigService.GetAuditColumns(tableName).ToList();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Failed to load audit columns: {ex.Message}");
+            visibleAuditColumns = new List<string>();
+        }
     }
 
     private void ExtractPrimaryKeyValue()
@@ -151,6 +164,8 @@
 
         isMasterMode = !isMasterMode;
         currentIndex = 0;
+        
+        LoadAuditColumns();
 
         if (!isMasterMode && transactionRecords == null)
         {
@@ -173,6 +188,7 @@
                 Snackbar.Add($"Failed to load transaction history: {ex.Message}", Severity.Error);
                 transactionRecords = new List<AuditHistoryDTO>();
                 isMasterMode = true;
+                LoadAuditColumns();
             }
             finally
             {
@@ -208,7 +224,8 @@
 
         foreach (var key in allKeys)
         {
-            if (ExcludedFields.Contains(key))
+            // Skip fields that are not in the visible audit columns list
+            if (visibleAuditColumns != null && !visibleAuditColumns.Contains(key, StringComparer.OrdinalIgnoreCase))
                 continue;
 
             oldDict.TryGetValue(key, out var oldVal);
@@ -234,7 +251,8 @@
 
         foreach (var key in allKeys)
         {
-            if (ExcludedFields.Contains(key))
+            // Skip fields that are not in the visible audit columns list
+            if (visibleAuditColumns != null && !visibleAuditColumns.Contains(key, StringComparer.OrdinalIgnoreCase))
                 continue;
 
             oldDict.TryGetValue(key, out var oldVal);

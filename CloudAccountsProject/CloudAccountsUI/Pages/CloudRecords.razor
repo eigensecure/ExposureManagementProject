@@ -2,7 +2,7 @@
 @using System.Net.Http.Json
 @using CloudAccountsShared.Models
 @using CloudAccountsShared.Models.DTOs
-@using CloudAccountsUI.Dialog
+@using CloudAccountsUI.Dialogs.AuditDialogs
 @using CloudAccountsUI.Services
 @using CloudAccountsUI.Services.Contracts
 @using MudBlazor
@@ -99,25 +99,58 @@
                             @* Dynamically generate columns based on metadata *@
                             @foreach (var columnConfig in GetVisibleColumns())
                             {
-                                <TemplateColumn Title="@columnConfig.Title" Resizable="true" StickyLeft="@columnConfig.IsStickyLeft">
-                                    <CellTemplate Context="cell">
-                                        @{
-                                            var value = GetPropertyValue(cell.Item, columnConfig.PropertyName);
-                                        }
-                                        <div class="cell-content">
-                                            @if (value != null)
-                                            {
-                                                <MudTooltip Text="@value.ToString()" Placement="Placement.Top">
-                                                    <span class="truncate-text">@value</span>
-                                                </MudTooltip>
-                                            }
-                                            else
-                                            {
-                                                <span>-</span>
-                                            }
-                                        </div>
-                                    </CellTemplate>
-                                </TemplateColumn>
+                                @* Special handling for Cloud Account ID column to add edit button *@
+                                if (columnConfig.GenericKey == "CloudAccountId")
+                                {
+                                    <TemplateColumn Title="@columnConfig.Title" Resizable="true" StickyLeft="@columnConfig.IsStickyLeft">
+                                        <CellTemplate Context="cell">
+                                            <div class="cloud-account-id-cell">
+                                                <MudIconButton Icon="@Icons.Material.Filled.Edit"
+                                                               Size="Size.Small"
+                                                               Class="edit-button-inline"
+                                                               OnClick="() => OpenDrawer(cell.Item)"
+                                                               Style="color: #00A3FF; margin-right: 8px;" />
+                                                <div class="cell-content">
+                                                    @{
+                                                        var value = GetPropertyValue(cell.Item, columnConfig.PropertyName);
+                                                    }
+                                                    @if (value != null)
+                                                    {
+                                                        <MudTooltip Text="@value.ToString()" Placement="Placement.Top">
+                                                            <span class="truncate-text">@value</span>
+                                                        </MudTooltip>
+                                                    }
+                                                    else
+                                                    {
+                                                        <span>-</span>
+                                                    }
+                                                </div>
+                                            </div>
+                                        </CellTemplate>
+                                    </TemplateColumn>
+                                }
+                                else
+                                {
+                                    <TemplateColumn Title="@columnConfig.Title" Resizable="true" StickyLeft="@columnConfig.IsStickyLeft">
+                                        <CellTemplate Context="cell">
+                                            <div class="cell-content">
+                                                @{
+                                                    var value = GetPropertyValue(cell.Item, columnConfig.PropertyName);
+                                                }
+                                                @if (value != null)
+                                                {
+                                                    <MudTooltip Text="@value.ToString()" Placement="Placement.Top">
+                                                        <span class="truncate-text">@value</span>
+                                                    </MudTooltip>
+                                                }
+                                                else
+                                                {
+                                                    <span>-</span>
+                                                }
+                                            </div>
+                                        </CellTemplate>
+                                    </TemplateColumn>
+                                }
                             }
                         </Columns>
 
@@ -142,7 +175,7 @@
                 <div class="drawer-header">
                     <div class="drawer-title">Edit Cloud Account</div>
                     <div class="drawer-buttons">
-                        <MudIconButton Icon="@(drawerFullscreen? Icons.Material.Filled.FullscreenExit : Icons.Material.Filled.Fullscreen)"
+                        <MudIconButton Icon="@(drawerFullscreen ? Icons.Material.Filled.FullscreenExit : Icons.Material.Filled.Fullscreen)"
                                        Size="Size.Medium"
                                        Color="Color.Default"
                                        OnClick="ToggleFullscreen" />
@@ -764,6 +797,30 @@
         text-overflow: ellipsis;
         max-width: 100%;
         display: block;
+    }
+
+    /* New styles for cloud account ID cell with edit button */
+    .cloud-account-id-cell {
+        display: flex;
+        align-items: center;
+        width: 100%;
+        gap: 8px;
+    }
+
+    .edit-button-inline {
+        flex-shrink: 0;
+        transition: all 0.2s ease;
+    }
+
+        .edit-button-inline:hover {
+            transform: scale(1.1);
+            background-color: rgba(0, 163, 255, 0.1) !important;
+        }
+
+    .cloud-account-id-cell .cell-content {
+        flex: 1;
+        min-width: 0;
+        padding: 0;
     }
 </style>
 

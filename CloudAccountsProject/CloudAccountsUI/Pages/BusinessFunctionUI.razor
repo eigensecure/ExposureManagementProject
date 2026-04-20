@@ -1,6 +1,6 @@
 ﻿@page "/businessfunction"
 @using CloudAccountsShared.Models
-@using CloudAccountsUI.Dialog
+@using CloudAccountsUI.Dialogs.AuditDialogs
 @using CloudAccountsUI.Services.Contracts
 @using MudBlazor
 @inject HttpClient Http
@@ -14,128 +14,148 @@
     <div class="main-wrapper @(drawerOpen && !drawerFullscreen ? "drawer-open" : "") @(drawerFullscreen ? "fullscreen-active" : "")">
        
         <div class="pushed-content">
-           
 
-           @* DataGrid *@
+            @* DataGrid *@
             <div class="grid-container pa-5">
-                <MudDataGrid T="BusinessFunctionMaster"
-                             @ref="_dataGrid"
-                             Items="@businessFunctions"
-                             Dense="true"
-                             Hover="true"
-                             Bordered="true"
-                             Striped="true"
-                             Filterable="true"
-                             FilterMode="DataGridFilterMode.ColumnFilterRow"
-                             FilterCaseSensitivity="DataGridFilterCaseSensitivity.CaseInsensitive"
-                             ShowColumnOptions="true"
-                             FixedHeader="true"
-                             FixedFooter="true"
-                             @bind-PageSize="PageSize"
-                             RowsPerPageOptions="@PageSizeOptions"
-                             Height="100%"
-                             Width="100%"
-                             Loading="@isLoading"
-                             ColumnResizeMode="ResizeMode.Container"
-                             DragDropColumnReordering="true"
-                             ColumnsPanelReordering="true"
-                             ShowMenuIcon="true"
-                             RowContextMenuClick="OpenContextMenu">
+                <div class="grid-container">
+                    <div class="data-grid-wrapper">
+                        <MudDataGrid T="BusinessFunctionMaster"
+                                     @ref="_dataGrid"
+                                     Items="@businessFunctions"
+                                     Dense="true"
+                                     Hover="true"
+                                     Bordered="true"
+                                     Striped="true"
+                                     Filterable="true"
+                                     FilterMode="DataGridFilterMode.ColumnFilterRow"
+                                     FilterCaseSensitivity="DataGridFilterCaseSensitivity.CaseInsensitive"
+                                     ShowColumnOptions="true"
+                                     FixedHeader="true"
+                                     FixedFooter="true"
+                                     @bind-PageSize="PageSize"
+                                     RowsPerPageOptions="@PageSizeOptions"
+                                     Height="calc(100vh - 260px)"
+                                     Width="100%"
+                                     Loading="@isLoading"
+                                     ColumnResizeMode="ResizeMode.Container"
+                                     DragDropColumnReordering="true"
+                                     ColumnsPanelReordering="true"
+                                     ShowMenuIcon="true"
+                                     RowContextMenuClick="OpenContextMenu">
 
-                    <ToolBarContent>
-                        <div class="d-flex flex-column">
-                            <MudText Typo="Typo.h6" Class="d-flex align-center">
-                                <MudIcon Icon="@Icons.Material.Filled.Groups"
-                                         Class="mr-2"
-                                         Style="color: #00A3FF;" />
-                                Business Function Management
-                            </MudText>
+                            <ToolBarContent>
+                                <div class="d-flex flex-column">
+                                    <MudText Typo="Typo.h6" Class="d-flex align-center">
+                                        <MudIcon Icon="@Icons.Material.Filled.Groups"
+                                                 Class="mr-2"
+                                                 Style="color: #00A3FF;" />
+                                        Business Function Management
+                                    </MudText>
 
-                            <MudText Typo="Typo.body2" Class="text-secondary">
-                                Manage business functions, owners, and SPOC information
-                            </MudText>
-                        </div>
+                                    <MudText Typo="Typo.body2" Class="text-secondary">
+                                        Manage business functions, owners, and SPOC information
+                                    </MudText>
+                                </div>
 
-                        <MudSpacer />
+                                <MudSpacer />
 
-                        <MudButton Variant="Variant.Text"
-                                   Color="Color.Primary"
-                                   StartIcon="@Icons.Material.Filled.Add"
-                                   OnClick="OpenCreateDrawer">
-                            Add Business Function
-                        </MudButton>
-                    </ToolBarContent>
+                                <MudButton Variant="Variant.Text"
+                                           Color="Color.Primary"
+                                           StartIcon="@Icons.Material.Filled.Add"
+                                           OnClick="OpenCreateDrawer">
+                                    Add Business Function
+                                </MudButton>
+                            </ToolBarContent>
 
-                    <Columns>
-                        <PropertyColumn Property="x => x.BusinessFunctionName"
-                                        Title="Business Function Name"
-                                        Width="240px"
-                                        Resizable="true"
-                                        Hideable="true"
-                                        HeaderStyle="white-space: nowrap;"
-                                        CellStyle="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" />
+                            <Columns>
+                                @* Custom Template Column for Business Function Name with Edit Button - FIXED/STICKY *@
+                                <PropertyColumn Property="x => x.BusinessFunctionName"
+                                                Title="Business Function Name"
+                                                Width="240px"
+                                                Resizable="true"
+                                                Hideable="true"
+                                                StickyLeft="true"
+                                                HeaderStyle="white-space: nowrap; position: sticky; left: 0; background: #F8F9FC; z-index: 10;"
+                                                CellStyle="position: sticky; left: 0; background: white; z-index: 5;">
 
-                        <PropertyColumn Property="x => x.BusinessFunctionLtMember"
-                                        Title="LT Member"
-                                        Width="180px"
-                                        Resizable="true"
-                                        Hideable="true"
-                                        HeaderStyle="white-space: nowrap;"
-                                        CellStyle="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" />
+                                    <CellTemplate Context="context">
+                                        <div class="business-function-name-cell">
+                                            <MudIconButton Icon="@Icons.Material.Filled.Edit"
+                                                           Size="Size.Small"
+                                                           Class="edit-button-inline"
+                                                           OnClick="() => OpenEditDrawer(context.Item)"
+                                                           Style="color: #00A3FF; margin-right: 8px;" />
 
-                        <PropertyColumn Property="x => x.BusinessFunctionOwner"
-                                        Title="Owner"
-                                        Width="180px"
-                                        Resizable="true"
-                                        Hideable="true"
-                                        HeaderStyle="white-space: nowrap;"
-                                        CellStyle="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" />
+                                            <MudTooltip Text="@context.Item.BusinessFunctionName" Placement="Placement.Top">
+                                                <span class="truncate-text">@context.Item.BusinessFunctionName</span>
+                                            </MudTooltip>
+                                        </div>
+                                    </CellTemplate>
+                                </PropertyColumn>
 
-                        <PropertyColumn Property="x => x.BusinessFunctionSpoc"
-                                        Title="SPOC"
-                                        Width="220px"
-                                        Resizable="true"
-                                        Hideable="true"
-                                        HeaderStyle="white-space: nowrap;"
-                                        CellStyle="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" />
+                                <PropertyColumn Property="x => x.BusinessFunctionLtMember"
+                                                Title="LT Member"
+                                                Width="180px"
+                                                Resizable="true"
+                                                Hideable="true"
+                                                HeaderStyle="white-space: nowrap;"
+                                                CellStyle="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" />
 
-                        <PropertyColumn Property="x => x.BusinessFunctionGroupDl"
-                                        Title="Group DL"
-                                        Width="240px"
-                                        Resizable="true"
-                                        Hideable="true"
-                                        HeaderStyle="white-space: nowrap;"
-                                        CellStyle="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" />
+                                <PropertyColumn Property="x => x.BusinessFunctionOwner"
+                                                Title="Owner"
+                                                Width="180px"
+                                                Resizable="true"
+                                                Hideable="true"
+                                                HeaderStyle="white-space: nowrap;"
+                                                CellStyle="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" />
 
-                        <PropertyColumn Property="x => x.BusinessTagValue"
-                                        Title="Business Tags"
-                                        Width="260px"
-                                        Resizable="true"
-                                        Hideable="true"
-                                        HeaderStyle="white-space: nowrap;"
-                                        CellStyle="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" />
+                                <PropertyColumn Property="x => x.BusinessFunctionSpoc"
+                                                Title="SPOC"
+                                                Width="220px"
+                                                Resizable="true"
+                                                Hideable="true"
+                                                HeaderStyle="white-space: nowrap;"
+                                                CellStyle="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" />
 
-                        <PropertyColumn Property="x => x.Remarks"
-                                        Title="Remarks"
-                                        Width="260px"
-                                        Resizable="true"
-                                        Hideable="true"
-                                        HeaderStyle="white-space: nowrap;"
-                                        CellStyle="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" />
-                    </Columns>
+                                <PropertyColumn Property="x => x.BusinessFunctionGroupDl"
+                                                Title="Group DL"
+                                                Width="240px"
+                                                Resizable="true"
+                                                Hideable="true"
+                                                HeaderStyle="white-space: nowrap;"
+                                                CellStyle="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" />
 
-                    <NoRecordsContent>
-                        <MudText Class="pa-4" Style="color: #5A6A85;">
-                            No business Functions found
-                            Click "Add Business Function" to create your Business Function
-                        </MudText>
-                    </NoRecordsContent>
+                                <PropertyColumn Property="x => x.BusinessTagValue"
+                                                Title="Business Tags"
+                                                Width="260px"
+                                                Resizable="true"
+                                                Hideable="true"
+                                                HeaderStyle="white-space: nowrap;"
+                                                CellStyle="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" />
 
-                    <PagerContent>
-                        <MudDataGridPager T="BusinessFunctionMaster"
-                                          PageSizeOptions="@PageSizeOptions" />
-                    </PagerContent>
-                </MudDataGrid>
+                                <PropertyColumn Property="x => x.Remarks"
+                                                Title="Remarks"
+                                                Width="260px"
+                                                Resizable="true"
+                                                Hideable="true"
+                                                HeaderStyle="white-space: nowrap;"
+                                                CellStyle="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" />
+                            </Columns>
+
+                            <NoRecordsContent>
+                                <MudText Class="pa-4" Style="color: #5A6A85;">
+                                    No business Functions found
+                                    Click "Add Business Function" to create your Business Function
+                                </MudText>
+                            </NoRecordsContent>
+
+                            <PagerContent>
+                                <MudDataGridPager T="BusinessFunctionMaster"
+                                                  PageSizeOptions="@PageSizeOptions" />
+                            </PagerContent>
+                        </MudDataGrid>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -148,7 +168,7 @@
                 <div class="drawer-header">
                     <div class="drawer-title">@(isCreate ? "Add Business Function" : "Edit Business Function")</div>
                     <div class="drawer-buttons">
-                        <MudIconButton Icon="@(drawerFullscreen? Icons.Material.Filled.FullscreenExit : Icons.Material.Filled.Fullscreen)"
+                        <MudIconButton Icon="@(drawerFullscreen ? Icons.Material.Filled.FullscreenExit : Icons.Material.Filled.Fullscreen)"
                                        Size="Size.Medium"
                                        Color="Color.Default"
                                        OnClick="ToggleFullscreen" />
@@ -613,6 +633,83 @@
         display: flex;
         flex-direction: column;
     }
+
+    .grid-container {
+        flex: 1;
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        min-height: 0;
+        padding: 20px;
+    }
+
+    .data-grid-wrapper {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        position: relative;
+    }
+
+    /* Styles for fixed/sticky business function name column with edit button */
+    .business-function-name-cell {
+        display: flex;
+        align-items: center;
+        width: 100%;
+        gap: 8px;
+        min-width: 200px;
+    }
+
+    .edit-button-inline {
+        flex-shrink: 0;
+        transition: all 0.2s ease;
+    }
+
+        .edit-button-inline:hover {
+            transform: scale(1.1);
+            background-color: rgba(0, 163, 255, 0.1) !important;
+        }
+
+    .business-function-name-cell .cell-content {
+        flex: 1;
+        min-width: 0;
+        padding: 0;
+    }
+
+    .truncate-text {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 100%;
+        display: block;
+    }
+
+    /* Ensure the sticky header and cells work properly */
+    ::deep .mud-table-container {
+        overflow-x: auto !important;
+    }
+
+    ::deep .mud-table-head .mud-table-cell:first-child {
+        position: sticky !important;
+        left: 0 !important;
+        z-index: 15 !important;
+        background: #F8F9FC !important;
+    }
+
+    ::deep .mud-table-body .mud-table-row .mud-table-cell:first-child {
+        position: sticky !important;
+        left: 0 !important;
+        z-index: 10 !important;
+        background: white !important;
+    }
+
+    /* Filter row sticky positioning */
+    ::deep .mud-table-filter-row .mud-table-cell:first-child {
+        position: sticky !important;
+        left: 0 !important;
+        z-index: 20 !important;
+        background: #F8F9FC !important;
+        overflow: visible !important;
+    }
 </style>
 
 @code {
@@ -704,22 +801,6 @@
         await LoadData();
     }
 
-    // private async Task LoadData()
-    // {
-    //     try
-    //     {
-    //         isLoading = true;
-    //         StateHasChanged();
-
-    //         businessFunctions = await Http.GetFromJsonAsync<List<BusinessFunction>>(ApiBase) ?? new();
-    //     }
-    //     finally
-    //     {
-    //         isLoading = false;
-    //         StateHasChanged();
-    //     }
-    // }
-
     private async Task LoadData()
     {
         try
@@ -758,6 +839,8 @@
 
     private async Task ShowAudits()
     {
+        if (_contextRow is null) return;
+        
         var auditResult = await cloudhistoryservice.GetBusAuditByRef(_contextRow.Id);
 
         var parameters = new DialogParameters
@@ -797,24 +880,6 @@
             await DeleteBusinessFunction();
         }
     }
-
-    // private async Task DeleteBusinessFunction()
-    // {
-    //     if (_contextRow is null) return;
-
-    //     var response = await Http.DeleteAsync($"{ApiBase}/{_contextRow.Id}");
-
-    //     if (response.IsSuccessStatusCode)
-    //     {
-    //         await LoadData();
-    //         Snackbar.Add($"Business function '{_contextRow.BusinessFunctionName}' deleted successfully", Severity.Success);
-    //     }
-    //     else
-    //     {
-    //         var error = await response.Content.ReadAsStringAsync();
-    //         Snackbar.Add($"Delete failed: {error}", Severity.Error);
-    //     }
-    // }
 
     private async Task DeleteBusinessFunction()
     {
@@ -985,18 +1050,16 @@
         BusinessTags = new List<BusinessTagItem>();
         if (!string.IsNullOrWhiteSpace(editingItem.BusinessTagValue))
         {
-            BusinessTags = editingItem.BusinessTagValue
-                .Split(';', StringSplitOptions.RemoveEmptyEntries)
-                .Select(x =>
+            var tagPairs = editingItem.BusinessTagValue.Split(';', StringSplitOptions.RemoveEmptyEntries);
+            foreach (var tagPair in tagPairs)
+            {
+                var parts = tagPair.Split('=', 2);
+                BusinessTags.Add(new BusinessTagItem
                 {
-                    var parts = x.Split('-', 2);
-                    return new BusinessTagItem
-                    {
-                        Name = parts[0],
-                        Value = parts.Length > 1 ? parts[1] : ""
-                    };
-                })
-                .ToList();
+                    Name = parts[0].Trim(),
+                    Value = parts.Length > 1 ? parts[1].Trim() : ""
+                });
+            }
         }
 
         if (!BusinessTags.Any())
@@ -1020,43 +1083,12 @@
         StateHasChanged();
     }
 
-    // private async Task Save()
-    // {
-    //     editingItem.BusinessTagValue = string.Join(";",
-    //         BusinessTags
-    //             .Where(x => !string.IsNullOrWhiteSpace(x.Name))
-    //             .Select(x => $"{x.Name}={x.Value}"));
-
-    //     HttpResponseMessage response;
-
-    //     if (isCreate)
-    //     {
-    //         response = await Http.PostAsJsonAsync(ApiBase, editingItem);
-    //     }
-    //     else
-    //     {
-    //         response = await Http.PutAsJsonAsync($"{ApiBase}/{editingItem.Id}", editingItem);
-    //     }
-
-    //     if (response.IsSuccessStatusCode)
-    //     {
-    //         await LoadData();
-    //         CloseDrawer();
-    //         Snackbar.Add(isCreate ? "Business function added successfully" : "Business function updated successfully", Severity.Success);
-    //     }
-    //     else
-    //     {
-    //         var error = await response.Content.ReadAsStringAsync();
-    //         Snackbar.Add($"Save failed: {error}", Severity.Error);
-    //     }
-    // }
-
     private async Task Save()
     {
         editingItem.BusinessTagValue = string.Join(";",
             BusinessTags
                 .Where(x => !string.IsNullOrWhiteSpace(x.Name))
-                .Select(x => $"{x.Name}={x.Value}"));
+                .Select(x => $"{x.Name.Trim()}={x.Value?.Trim() ?? ""}"));
 
         try
         {

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace CloudAccountsShared.Models.DTOs;
 public partial class CloudAccountDetailsDTO
 {
-    // CloudAccounts
+    // CloudAccountsMaster
     public int Id { get; set; }
     public string? Provider { get; set; }
     public string? CloudAccountId { get; set; }
@@ -26,7 +26,7 @@ public partial class CloudAccountDetailsDTO
     public string? VulnerabilityScanningStatus { get; set; }
     public bool? IsActive { get; set; }
 
-    // CloudAccountManualDetails
+    // CloudAccountsTransaction
     public int? ManualDetailsId { get; set; }
     public string? AccountType { get; set; }
     public string? OverallStatus { get; set; }
