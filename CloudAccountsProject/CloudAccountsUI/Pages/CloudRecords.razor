@@ -5,6 +5,7 @@
 @using CloudAccountsUI.Dialogs.AuditDialogs
 @using CloudAccountsUI.Services
 @using CloudAccountsUI.Services.Contracts
+@using Microsoft.AspNetCore.Components.Forms
 @using MudBlazor
 @inject ICloudRecordsService CloudRecordsService
 @inject ICloudHistoryService CloudHistoryService
@@ -16,45 +17,8 @@
 <div class="full-page-container">
     <div class="main-wrapper @(drawerOpen && !drawerFullscreen ? "drawer-open" : "") @(drawerFullscreen ? "fullscreen-active" : "")">
         <div class="pushed-content">
-            <div class="header-toolbar">
-                <div class="title-section">
-                    <div class="cs-title">
-                        <MudIcon Icon="@Icons.Material.Filled.Cloud" Class="mr-2" Style="color: #00A3FF;" />
-                        Cloud Accounts Management
-                    </div>
-                    <div class="cs-subtitle">
-                        Manage and monitor all your cloud accounts across providers
-                    </div>
-                </div>
-                <div class="actions-section">
-                    <MudTooltip Text="Export To CSV" Arrow="true" Placement="Placement.Top">
-                        <MudIconButton Icon="@Icons.Material.Filled.Download"
-                                       Style="color: #5A6A85;"
-                                       Size="Size.Small"
-                                       OnClick="ExportCsv" />
-                    </MudTooltip>
-                    <MudTooltip Text="Column Settings" Arrow="true" Placement="Placement.Top">
-                        <MudIconButton Icon="@Icons.Material.Filled.Settings"
-                                       Style="color: #5A6A85;"
-                                       Size="Size.Small"
-                                       OnClick="OpenColumnSelector" />
-                    </MudTooltip>
-                </div>
-            </div>
 
-            <div class="tabs-container">
-                <MudTabs Rounded="true"
-                         Elevation="0"
-                         Class="crowdstrike-tabs"
-                         ActivePanelIndexChanged="OnTabChanged">
-
-                    <MudTabPanel Text="@AllTabText" Class="crowdstrike-tab" />
-                    <MudTabPanel Text="@AwsTabText" Class="crowdstrike-tab" />
-                    <MudTabPanel Text="@AzureTabText" Class="crowdstrike-tab" />
-                    <MudTabPanel Text="@GcpTabText" Class="crowdstrike-tab" />
-                </MudTabs>
-            </div>
-
+            <!-- Data Grid -->
             <div class="grid-container">
                 @if (isLoading)
                 {
@@ -82,7 +46,7 @@
                                  Filterable="true"
                                  FilterMode="DataGridFilterMode.ColumnFilterRow"
                                  FilterCaseSensitivity="DataGridFilterCaseSensitivity.CaseInsensitive"
-                                 ShowColumnOptions="false"
+                                 ShowColumnOptions="true"
                                  FixedHeader="true"
                                  @bind-PageSize="PageSize"
                                  RowsPerPageOptions="@PageSizeOptions"
@@ -92,28 +56,84 @@
                                  ColumnResizeMode="ResizeMode.Column"
                                  DragDropColumnReordering="true"
                                  ColumnsPanelReordering="true"
-                                 ShowMenuIcon="false"
+                                 ShowMenuIcon="true"
                                  RowContextMenuClick="OpenContextMenu">
 
+                        <ToolBarContent>
+                            <div class="toolbar-container">
+                                <div class="title-tabs-section">
+                                    <div class="title-section">
+                                        <MudIcon Icon="@Icons.Material.Filled.Cloud" Class="mr-2" Style="color: #00A3FF;" />
+                                        <div>
+                                            <div class="cs-title">Cloud Accounts Management</div>
+                                            <div class="cs-subtitle">Manage and monitor all your cloud accounts across providers</div>
+                                        </div>
+                                    </div>
+
+                                    <div class="tabs-section">
+                                        <MudTabs Rounded="true"
+                                                 Elevation="0"
+                                                 Class="crowdstrike-tabs"
+                                                 ActivePanelIndexChanged="OnTabChanged">
+
+                                            <MudTabPanel Text="@AllTabText" Class="crowdstrike-tab" />
+                                            <MudTabPanel Text="@AwsTabText" Class="crowdstrike-tab" />
+                                            <MudTabPanel Text="@AzureTabText" Class="crowdstrike-tab" />
+                                            <MudTabPanel Text="@GcpTabText" Class="crowdstrike-tab" />
+                                        </MudTabs>
+                                    </div>
+                                </div>
+
+                                <div class="export-section">
+                                    <MudTooltip Text="Export To CSV" Arrow="true" Placement="Placement.Top">
+                                        <MudIconButton Icon="@Icons.Material.Filled.Download"
+                                                       Style="color: #5A6A85;"
+                                                       Size="Size.Small"
+                                                       OnClick="ExportCsv" />
+                                    </MudTooltip>
+                                </div>
+                            </div>
+                        </ToolBarContent>
+
                         <Columns>
-                            @* Dynamically generate columns based on metadata *@
+                            
                             @foreach (var columnConfig in GetVisibleColumns())
                             {
-                                @* Special handling for Cloud Account ID column to add edit button *@
+                               
                                 if (columnConfig.GenericKey == "CloudAccountId")
                                 {
-                                    <TemplateColumn Title="@columnConfig.Title" Resizable="true" StickyLeft="@columnConfig.IsStickyLeft">
-                                        <CellTemplate Context="cell">
-                                            <div class="cloud-account-id-cell">
-                                                <MudIconButton Icon="@Icons.Material.Filled.Edit"
-                                                               Size="Size.Small"
-                                                               Class="edit-button-inline"
-                                                               OnClick="() => OpenDrawer(cell.Item)"
-                                                               Style="color: #00A3FF; margin-right: 8px;" />
-                                                <div class="cell-content">
+                                    <TemplateColumn Title="@columnConfig.Title"
+                                                    Resizable="true"
+                                                    Hideable="true"
+                                                    StickyLeft="@columnConfig.IsStickyLeft">
+
+                                        <FilterTemplate Context="context">
+                                            <MudTextField T="string"
+                                                Value="@(context.FilterDefinition?.Value?.ToString() ?? string.Empty)"
+                                                ValueChanged="@(v =>
+                                                {
+                                                    if (context.FilterDefinition is not null)
+                                                        context.FilterDefinition.Value = v;
+                                                })"
+                                              Placeholder="Filter..."
+                                              Margin="Margin.Dense"
+                                              Immediate="true"
+                                              Adornment="Adornment.End"
+                                              AdornmentIcon="@Icons.Material.Filled.Search" />
+                            </FilterTemplate>
+
+                                    <CellTemplate Context="cell">
+                                        <div class="cloud-account-id-cell">
+                                            <MudIconButton Icon="@Icons.Material.Filled.Edit"
+                                                            Size="Size.Small"
+                                                            Class="edit-button-inline"
+                                                            OnClick="() => OpenDrawer(cell.Item)"
+                                                            Style="color: #00A3FF; margin-right: 8px;" />
+                                        <div class="cell-content">
                                                     @{
                                                         var value = GetPropertyValue(cell.Item, columnConfig.PropertyName);
                                                     }
+
                                                     @if (value != null)
                                                     {
                                                         <MudTooltip Text="@value.ToString()" Placement="Placement.Top">
@@ -131,25 +151,11 @@
                                 }
                                 else
                                 {
-                                    <TemplateColumn Title="@columnConfig.Title" Resizable="true" StickyLeft="@columnConfig.IsStickyLeft">
-                                        <CellTemplate Context="cell">
-                                            <div class="cell-content">
-                                                @{
-                                                    var value = GetPropertyValue(cell.Item, columnConfig.PropertyName);
-                                                }
-                                                @if (value != null)
-                                                {
-                                                    <MudTooltip Text="@value.ToString()" Placement="Placement.Top">
-                                                        <span class="truncate-text">@value</span>
-                                                    </MudTooltip>
-                                                }
-                                                else
-                                                {
-                                                    <span>-</span>
-                                                }
-                                            </div>
-                                        </CellTemplate>
-                                    </TemplateColumn>
+                                    <PropertyColumn Property="@(GetPropertyExpression(columnConfig.PropertyName))"
+                                                    Title="@columnConfig.Title"
+                                                    Resizable="true"
+                                                    StickyLeft="@columnConfig.IsStickyLeft"
+                                                    Hideable="true"/>
                                 }
                             }
                         </Columns>
@@ -167,7 +173,6 @@
         </div>
     </div>
 
-    <!-- Drawer HTML -->
     <div class="drawer-container @(drawerOpen ? "open" : "") @(drawerFullscreen ? "fullscreen" : "")">
         @if (drawerOpen && editingAccount is not null)
         {
@@ -175,7 +180,7 @@
                 <div class="drawer-header">
                     <div class="drawer-title">Edit Cloud Account</div>
                     <div class="drawer-buttons">
-                        <MudIconButton Icon="@(drawerFullscreen ? Icons.Material.Filled.FullscreenExit : Icons.Material.Filled.Fullscreen)"
+                        <MudIconButton Icon="@(drawerFullscreen? Icons.Material.Filled.FullscreenExit : Icons.Material.Filled.Fullscreen)"
                                        Size="Size.Medium"
                                        Color="Color.Default"
                                        OnClick="ToggleFullscreen" />
@@ -366,11 +371,27 @@
                                       Lines="3"
                                       @bind-Value="editingAccount.ManualRemarks" />
 
-                        <MudTextField T="string"
+                        @* <MudTextField T="string"
                                       Label="Attachment Path"
                                       Variant="Variant.Outlined"
                                       @bind-Value="editingAccount.AttachmentPath"
-                                      Dense="true" />
+                                      Dense="true" /> *@
+                            <MudStack Row="true" Spacing="2" AlignItems="AlignItems.Center">
+                                <InputFile OnChange="UploadAttachment" />
+
+                                @if (!string.IsNullOrWhiteSpace(editingAccount.AttachmentPath))
+                                {
+                                    <MudText Typo="Typo.body2">
+                                        @Path.GetFileName(editingAccount.AttachmentPath)
+                                    </MudText>
+
+                                    <MudIconButton Icon="@Icons.Material.Filled.Delete"
+                                                   Color="Color.Error"
+                                                   Size="Size.Small"
+                                                   OnClick="RemoveAttachment" />
+                                }
+                            </MudStack>
+
                     </MudStack>
                 </div>
 
@@ -400,58 +421,6 @@
         }
     </div>
 </div>
-
-@if (showColumnDialog)
-{
-    <div class="overlay" @onclick="CloseColumnSelector"></div>
-    <div class="column-selector-dialog" style="width: 400px; max-width: 90%;">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-            <MudText Typo="Typo.h6" Style="color: #1A1D2E; font-weight: 600;">
-                Select & Reorder Columns - @(selectedProvider == "All" ? "All Providers" : selectedProvider)
-            </MudText>
-            <MudIconButton Icon="@Icons.Material.Filled.Close" Size="Size.Small" OnClick="CloseColumnSelector" Style="color: #5A6A85;" />
-        </div>
-        <MudText Typo="Typo.body2" Style="color: #5A6A85; margin-bottom: 12px; font-size: 12px;">
-            Use ↑ ↓ buttons to reorder columns
-        </MudText>
-        <MudDivider Class="mb-3" />
-        <div style="max-height: 400px; overflow-y: auto;">
-            @if (tempColumnSelectorItems != null && tempColumnSelectorItems.Any())
-            {
-                @for (int i = 0; i < tempColumnSelectorItems.Count; i++)
-                {
-                    var column = tempColumnSelectorItems[i];
-                    var currentIndex = i;
-                    <div class="column-item" style="display: flex; align-items: center; padding: 8px; margin-bottom: 4px; background: #F8F9FC; border-radius: 6px;">
-                        <div style="display: flex; flex-direction: column; margin-right: 8px;">
-                            <MudIconButton Icon="@Icons.Material.Filled.ArrowUpward"
-                                           Size="Size.Small"
-                                           OnClick="() => MoveColumnUp(currentIndex)"
-                                           Disabled="@(currentIndex == 0)"
-                                           Style="padding: 2px;" />
-                            <MudIconButton Icon="@Icons.Material.Filled.ArrowDownward"
-                                           Size="Size.Small"
-                                           OnClick="() => MoveColumnDown(currentIndex)"
-                                           Disabled="@(currentIndex == tempColumnSelectorItems.Count - 1)"
-                                           Style="padding: 2px; margin-top: 2px;" />
-                        </div>
-                        <input type="checkbox"
-                               id="@column.GenericKey"
-                               @bind="column.IsVisible"
-                               style="margin-right: 8px; cursor: pointer; width: 16px; height: 16px; accent-color: #00A3FF;"
-                               @onclick:stopPropagation="true" />
-                        <label for="@column.GenericKey" style="flex: 1; font-size: 14px; color: #1A1D2E; cursor: pointer; margin: 0;">@column.DisplayTitle</label>
-                    </div>
-                }
-            }
-        </div>
-        <MudDivider Class="mt-3 mb-3" />
-        <div style="display: flex; justify-content: flex-end; gap: 8px;">
-            <MudButton Variant="Variant.Text" Size="Size.Small" OnClick="ResetColumns">Reset</MudButton>
-            <MudButton Variant="Variant.Filled" Color="Color.Primary" Size="Size.Small" OnClick="ApplyColumnVisibility">Apply</MudButton>
-        </div>
-    </div>
-}
 
 <MudMenu PositionAtCursor="true" @ref="_contextMenu" id="_contextMenu">
     <MudMenuItem Icon="@Icons.Material.Filled.Edit" OnClick="@(() => EditFromContext())">
@@ -500,18 +469,37 @@
         transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
-    .header-toolbar {
+    .grid-container {
+        flex: 1;
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        min-height: 0;
+        position: relative;
+        padding: 20px;
+    }
+
+    /* Toolbar styles */
+    .toolbar-container {
+        width: 100%;
         display: flex;
         justify-content: space-between;
         align-items: center;
-        padding: 16px 20px;
-        border-bottom: 1px solid #E2E8F0;
-        flex-shrink: 0;
-        background: white;
+        flex-wrap: wrap;
+        gap: 16px;
+    }
+
+    .title-tabs-section {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        gap: 40px;
     }
 
     .title-section {
-        flex: 1;
+        display: flex;
+        align-items: center;
+        gap: 12px;
     }
 
     .cs-title {
@@ -524,21 +512,13 @@
 
     .cs-subtitle {
         font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif;
-        font-size: 13px;
+        font-size: 12px;
         color: #5A6A85;
-        margin-top: 4px;
+        margin-top: 2px;
     }
 
-    .actions-section {
-        display: flex;
-        gap: 8px;
-        align-items: center;
-    }
-
-    .tabs-container {
-        flex-shrink: 0;
-        padding: 0 20px;
-        margin-bottom: 0;
+    .tabs-section {
+        flex: 1;
     }
 
     .crowdstrike-tabs {
@@ -551,13 +531,14 @@
         }
 
     .crowdstrike-tab {
-        padding: 8px 20px !important;
+        padding: 6px 16px !important;
         font-weight: 500 !important;
-        font-size: 0.9rem !important;
+        font-size: 0.85rem !important;
         color: #4a5568 !important;
         text-transform: none !important;
         border-radius: 8px !important;
         transition: all 0.2s ease !important;
+        min-height: -10px !important;
     }
 
         .crowdstrike-tab:hover {
@@ -575,14 +556,10 @@
         display: none !important;
     }
 
-    .grid-container {
-        flex: 1;
-        min-width: 0;
+    .export-section {
         display: flex;
-        flex-direction: column;
-        min-height: 0;
-        position: relative;
-        padding: 20px;
+        gap: 8px;
+        align-items: center;
     }
 
     .mud-table-container {
@@ -721,51 +698,6 @@
         flex-shrink: 0;
     }
 
-    .column-selector-dialog {
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        background: white;
-        border-radius: 12px;
-        box-shadow: 0 10px 40px rgba(0,0,0,0.15);
-        z-index: 2000;
-        width: 350px;
-        max-width: 90%;
-        padding: 20px;
-        border: 1px solid #E2E8F0;
-    }
-
-    .overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: rgba(0,0,0,0.5);
-        z-index: 1999;
-    }
-
-    .mud-switch {
-        --mud-switch-checked-color: #00A3FF !important;
-    }
-
-        .mud-switch .mud-switch-track {
-            background-color: #E2E8F0 !important;
-        }
-
-        .mud-switch .mud-switch-thumb {
-            background-color: white !important;
-        }
-
-        .mud-switch.mud-switch-checked .mud-switch-track {
-            background-color: #00A3FF !important;
-        }
-
-        .mud-switch.mud-switch-checked .mud-switch-thumb {
-            background-color: white !important;
-        }
-
     ::-webkit-scrollbar {
         width: 8px;
         height: 8px;
@@ -799,7 +731,7 @@
         display: block;
     }
 
-    /* New styles for cloud account ID cell with edit button */
+    /* Styles for cloud account ID cell with edit button */
     .cloud-account-id-cell {
         display: flex;
         align-items: center;
@@ -837,8 +769,6 @@
     private bool drawerOpen;
     private bool drawerFullscreen = false;
 
-    private bool showColumnDialog = false;
-
     private List<CloudAccountDetailsDTO> cloudAccounts = new();
     private List<CloudAccountColumnMetadata> columnMetadata = new();
     private List<BusinessFunctionMaster> businessFunctions = new();
@@ -847,9 +777,6 @@
     private CloudAccountDetailsDTO? editingAccount;
 
     private string selectedProvider = "All";
-
-    // Temporary list for column selector binding
-    private List<ColumnSelectorItem> tempColumnSelectorItems = new();
 
     private int AllCount => cloudAccounts?.Count ?? 0;
     private int AwsCount => cloudAccounts?.Count(x =>
@@ -891,48 +818,6 @@
         new() { Title = "Last Updated At", IsVisible = true, GenericKey = "LastUpdatedAtCRWD", PropertyName = "LastUpdatedAtCRWD", IsStickyLeft = false }
     };
 
-    private void MoveColumnUp(int index)
-    {
-        if (index <= 0) return;
-
-        // Swap in tempColumnSelectorItems
-        var item = tempColumnSelectorItems[index];
-        tempColumnSelectorItems.RemoveAt(index);
-        tempColumnSelectorItems.Insert(index - 1, item);
-
-        // Also update AvailableColumns to maintain consistency
-        var originalItem = AvailableColumns.FirstOrDefault(x => x.GenericKey == item.GenericKey);
-        if (originalItem != null)
-        {
-            var originalIndex = AvailableColumns.FindIndex(x => x.GenericKey == item.GenericKey);
-            AvailableColumns.RemoveAt(originalIndex);
-            AvailableColumns.Insert(originalIndex - 1, originalItem);
-        }
-
-        StateHasChanged();
-    }
-
-    private void MoveColumnDown(int index)
-    {
-        if (index >= tempColumnSelectorItems.Count - 1) return;
-
-        // Swap in tempColumnSelectorItems
-        var item = tempColumnSelectorItems[index];
-        tempColumnSelectorItems.RemoveAt(index);
-        tempColumnSelectorItems.Insert(index + 1, item);
-
-        // Also update AvailableColumns to maintain consistency
-        var originalItem = AvailableColumns.FirstOrDefault(x => x.GenericKey == item.GenericKey);
-        if (originalItem != null)
-        {
-            var originalIndex = AvailableColumns.FindIndex(x => x.GenericKey == item.GenericKey);
-            AvailableColumns.RemoveAt(originalIndex);
-            AvailableColumns.Insert(originalIndex + 1, originalItem);
-        }
-
-        StateHasChanged();
-    }
-
     public class ColumnDefinition
     {
         public string Title { get; set; } = string.Empty;
@@ -942,11 +827,13 @@
         public bool IsStickyLeft { get; set; } = false;
     }
 
-    public class ColumnSelectorItem
+    // Helper method to get property expression for PropertyColumn
+    private System.Linq.Expressions.Expression<Func<CloudAccountDetailsDTO, object>> GetPropertyExpression(string propertyName)
     {
-        public string GenericKey { get; set; } = string.Empty;
-        public string DisplayTitle { get; set; } = string.Empty;
-        public bool IsVisible { get; set; } = true;
+        var parameter = System.Linq.Expressions.Expression.Parameter(typeof(CloudAccountDetailsDTO), "x");
+        var property = System.Linq.Expressions.Expression.Property(parameter, propertyName);
+        var conversion = System.Linq.Expressions.Expression.Convert(property, typeof(object));
+        return System.Linq.Expressions.Expression.Lambda<Func<CloudAccountDetailsDTO, object>>(conversion, parameter);
     }
 
     protected override async Task OnInitializedAsync()
@@ -1025,28 +912,6 @@
         };
     }
 
-    private string GetColumnDisplayTitleForProvider(string genericKey, string provider)
-    {
-        if (columnMetadata == null || !columnMetadata.Any())
-            return genericKey;
-
-        var metadata = columnMetadata.FirstOrDefault(x => x.GenericColumn == genericKey);
-
-        if (metadata == null)
-            return genericKey;
-
-        return provider switch
-        {
-            "AWS" => !string.IsNullOrWhiteSpace(metadata.AwsColumn) ? metadata.AwsColumn :
-                     !string.IsNullOrWhiteSpace(metadata.AllColumn) ? metadata.AllColumn : genericKey,
-            "Azure" => !string.IsNullOrWhiteSpace(metadata.AzureColumn) ? metadata.AzureColumn :
-                       !string.IsNullOrWhiteSpace(metadata.AllColumn) ? metadata.AllColumn : genericKey,
-            "GCP" => !string.IsNullOrWhiteSpace(metadata.GcpColumn) ? metadata.GcpColumn :
-                     !string.IsNullOrWhiteSpace(metadata.AllColumn) ? metadata.AllColumn : genericKey,
-            _ => !string.IsNullOrWhiteSpace(metadata.AllColumn) ? metadata.AllColumn : genericKey
-        };
-    }
-
     private bool ShouldHideColumn(string genericKey)
     {
         if (selectedProvider == "All")
@@ -1063,28 +928,6 @@
             "GCP" => string.IsNullOrWhiteSpace(metadata.GcpColumn),
             _ => false
         };
-    }
-
-    private void RefreshColumnSelectorItems()
-    {
-        tempColumnSelectorItems.Clear();
-
-        foreach (var column in AvailableColumns)
-        {
-            // Skip if the column should be hidden for the current provider
-            if (ShouldHideColumn(column.GenericKey))
-                continue;
-
-            // Get the display title based on the current selected provider
-            var displayTitle = GetColumnDisplayTitleForProvider(column.GenericKey, selectedProvider);
-
-            tempColumnSelectorItems.Add(new ColumnSelectorItem
-            {
-                GenericKey = column.GenericKey,
-                DisplayTitle = displayTitle,
-                IsVisible = column.IsVisible
-            });
-        }
     }
 
     private List<ColumnDefinition> GetVisibleColumns()
@@ -1118,48 +961,6 @@
         }
 
         return value;
-    }
-
-    private void OpenColumnSelector()
-    {
-        RefreshColumnSelectorItems();
-        showColumnDialog = true;
-        StateHasChanged();
-    }
-
-    private void CloseColumnSelector()
-    {
-        showColumnDialog = false;
-        StateHasChanged();
-    }
-
-    private void ResetColumns()
-    {
-        // Reset all columns to visible in AvailableColumns
-        foreach (var column in AvailableColumns)
-        {
-            column.IsVisible = true;
-        }
-
-        // Refresh the temporary items to reflect the reset
-        RefreshColumnSelectorItems();
-        StateHasChanged();
-    }
-
-    private void ApplyColumnVisibility()
-    {
-        // Apply the visibility from temp items back to AvailableColumns
-        foreach (var tempItem in tempColumnSelectorItems)
-        {
-            var column = AvailableColumns.FirstOrDefault(x => x.GenericKey == tempItem.GenericKey);
-            if (column != null)
-            {
-                column.IsVisible = tempItem.IsVisible;
-            }
-        }
-
-        showColumnDialog = false;
-        StateHasChanged();
     }
 
     private void OnTabChanged(int index)
@@ -1265,6 +1066,36 @@
 
         drawerOpen = true;
         StateHasChanged();
+    }
+
+    private async Task UploadAttachment(InputFileChangeEventArgs e)
+    {
+        try
+        {
+            var file = e.File;
+
+            if (file is null)
+                return;
+
+            var cloudAccountId = editingAccount.CloudAccountId ?? editingAccount.Id.ToString();
+
+            var uploadedPath = await CloudRecordsService.UploadAttachmentAsync(
+                file,
+                cloudAccountId);
+
+            editingAccount.AttachmentPath = uploadedPath;
+
+            Snackbar.Add("File uploaded successfully", Severity.Success);
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Upload failed: {ex.Message}", Severity.Error);
+        }
+    }
+
+    private void RemoveAttachment()
+    {
+        editingAccount.AttachmentPath = null;
     }
 
     private void CloseDrawer()

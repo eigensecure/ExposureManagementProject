@@ -68,7 +68,6 @@
                             </ToolBarContent>
 
                             <Columns>
-                                @* Custom Template Column for Business Function Name with Edit Button - FIXED/STICKY *@
                                 <PropertyColumn Property="x => x.BusinessFunctionName"
                                                 Title="Business Function Name"
                                                 Width="240px"
@@ -125,13 +124,16 @@
                                                 HeaderStyle="white-space: nowrap;"
                                                 CellStyle="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" />
 
-                                <PropertyColumn Property="x => x.BusinessTagValue"
+                                <TemplateColumn T="BusinessFunctionMaster"
                                                 Title="Business Tags"
                                                 Width="260px"
                                                 Resizable="true"
-                                                Hideable="true"
-                                                HeaderStyle="white-space: nowrap;"
-                                                CellStyle="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" />
+                                                Hideable="true">
+                                    <CellTemplate Context="context">
+                                        @string.Join(", ",
+                                        context.Item.BusinessTags.Select(x => $"{x.TagName}-{x.TagValue}"))
+                                    </CellTemplate>
+                                </TemplateColumn>
 
                                 <PropertyColumn Property="x => x.Remarks"
                                                 Title="Remarks"
@@ -234,7 +236,8 @@
                                          CoerceText="false"
                                          CoerceValue="true"
                                          ResetValueOnEmptyText="false"
-                                         OnBlur="AddCurrentSpoc" />
+                                         OnBlur="AddCurrentSpoc"
+                                         OnKeyDown="HandleSpocKeyDown" />
 
                         <MudChipSet T="string" Class="mb-3">
                             @foreach (var spoc in SelectedSpocs)
@@ -268,25 +271,37 @@
                             {
                                 <MudGrid Class="mb-2" @key="tag">
                                     <MudItem xs="5">
-                                        <MudTextField T="string"
-                                                      @key="@($"name-{BusinessTags.IndexOf(tag)}")"
-                                                      Label="Name"
-                                                      Variant="Variant.Outlined"
-                                                      Dense="true"
-                                                      @bind-Value="tag.Name"
-                                                      Placeholder="e.g., Environment"
-                                                      Class="compact-input" />
+                                        <MudAutocomplete T="string"
+                                                         @key="@($"name-{BusinessTags.IndexOf(tag)}")"
+                                                         Label="Name"
+                                                         Variant="Variant.Outlined"
+                                                         Dense="true"
+                                                         @bind-Value="tag.Name"
+                                                         Placeholder="e.g., Environment"
+                                                         SearchFunc="SearchTagNames"
+                                                         Clearable="true"
+                                                         ResetValueOnEmptyText="false"
+                                                         Strict="false"
+                                                         CoerceText="false"
+                                                         CoerceValue="true"
+                                                         Class="compact-input" />
                                     </MudItem>
 
                                     <MudItem xs="5">
-                                        <MudTextField T="string"
-                                                      @key="@($"value-{BusinessTags.IndexOf(tag)}")"
-                                                      Label="Value"
-                                                      Variant="Variant.Outlined"
-                                                      Dense="true"
-                                                      @bind-Value="tag.Value"
-                                                      Placeholder="e.g., Production"
-                                                      Class="compact-input" />
+                                        <MudAutocomplete T="string"
+                                                         @key="@($"value-{BusinessTags.IndexOf(tag)}")"
+                                                         Label="Value"
+                                                         Variant="Variant.Outlined"
+                                                         Dense="true"
+                                                         @bind-Value="tag.Value"
+                                                         Placeholder="e.g., Production"
+                                                         SearchFunc="@( (value, token) => SearchTagValues(tag.Name, value, token) )"
+                                                         Clearable="true"
+                                                         ResetValueOnEmptyText="false"
+                                                         Strict="false"
+                                                         CoerceText="false"
+                                                         CoerceValue="true"
+                                                         Class="compact-input" />
                                     </MudItem>
 
                                     <MudItem xs="2" Class="d-flex align-center">
@@ -809,6 +824,11 @@
             StateHasChanged();
 
             businessFunctions = await BusinessFunctionService.GetAllAsync();
+
+            foreach (var item in businessFunctions)
+            {
+                item.BusinessTags ??= new List<BusinessTag>();
+            }
         }
         finally
         {
@@ -959,6 +979,14 @@
         return Task.FromResult(allSpocs);
     }
 
+    private void HandleSpocKeyDown(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter")
+        {
+            AddCurrentSpoc(new FocusEventArgs());
+        }
+    }
+
     private Task<IEnumerable<string>> SearchGroupDl(string value, CancellationToken token)
     {
         IEnumerable<string> result = businessFunctions
@@ -1006,6 +1034,43 @@
         BusinessTags.Remove(tag);
     }
 
+    private Task<IEnumerable<string>> SearchTagNames(string value, CancellationToken token)
+    {
+        IEnumerable<string> result = businessFunctions
+            .SelectMany(x => x.BusinessTags ?? Enumerable.Empty<BusinessTag>())
+            .Where(x => !string.IsNullOrWhiteSpace(x.TagName))
+            .Select(x => x.TagName!)
+            .Distinct();
+
+        if (!string.IsNullOrWhiteSpace(value))
+        {
+            result = result.Where(x =>
+                x.Contains(value, StringComparison.OrdinalIgnoreCase));
+        }
+
+        return Task.FromResult(result);
+    }
+
+    private Task<IEnumerable<string>> SearchTagValues(string? tagName, string value, CancellationToken token)
+    {
+        IEnumerable<string> result = businessFunctions
+            .SelectMany(x => x.BusinessTags ?? Enumerable.Empty<BusinessTag>())
+            .Where(x =>
+                !string.IsNullOrWhiteSpace(x.TagValue) &&
+                (string.IsNullOrWhiteSpace(tagName) ||
+                 string.Equals(x.TagName, tagName, StringComparison.OrdinalIgnoreCase)))
+            .Select(x => x.TagValue!)
+            .Distinct();
+
+        if (!string.IsNullOrWhiteSpace(value))
+        {
+            result = result.Where(x =>
+                x.Contains(value, StringComparison.OrdinalIgnoreCase));
+        }
+
+        return Task.FromResult(result);
+    }
+
     private async Task OpenCreateDrawer()
     {
         drawerFullscreen = false;
@@ -1037,7 +1102,7 @@
             BusinessFunctionOwner = item.BusinessFunctionOwner,
             BusinessFunctionSpoc = item.BusinessFunctionSpoc,
             BusinessFunctionGroupDl = item.BusinessFunctionGroupDl,
-            BusinessTagValue = item.BusinessTagValue,
+            BusinessTags = item.BusinessTags?.ToList() ?? new List<BusinessTag>(),
             Remarks = item.Remarks
         };
 
@@ -1047,20 +1112,14 @@
                 .Split(';', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
                 .ToList();
 
-        BusinessTags = new List<BusinessTagItem>();
-        if (!string.IsNullOrWhiteSpace(editingItem.BusinessTagValue))
-        {
-            var tagPairs = editingItem.BusinessTagValue.Split(';', StringSplitOptions.RemoveEmptyEntries);
-            foreach (var tagPair in tagPairs)
-            {
-                var parts = tagPair.Split('=', 2);
-                BusinessTags.Add(new BusinessTagItem
-                {
-                    Name = parts[0].Trim(),
-                    Value = parts.Length > 1 ? parts[1].Trim() : ""
-                });
-            }
-        }
+        BusinessTags = editingItem.BusinessTags?
+    .Select(x => new BusinessTagItem
+    {
+        Name = x.TagName,
+        Value = x.TagValue
+    })
+    .ToList()
+    ?? new List<BusinessTagItem>();
 
         if (!BusinessTags.Any())
         {
@@ -1085,10 +1144,18 @@
 
     private async Task Save()
     {
-        editingItem.BusinessTagValue = string.Join(";",
-            BusinessTags
-                .Where(x => !string.IsNullOrWhiteSpace(x.Name))
-                .Select(x => $"{x.Name.Trim()}={x.Value?.Trim() ?? ""}"));
+        editingItem.BusinessTags = BusinessTags
+            .Where(x => !string.IsNullOrWhiteSpace(x.Name))
+            .Select(x => new BusinessTag
+            {
+                Id = 0,
+                BusinessFunctionId = editingItem.Id,
+                TagName = x.Name?.Trim(),
+                TagValue = x.Value?.Trim(),
+                DateCreated = DateTime.UtcNow,
+                DateModified = DateTime.UtcNow
+            })
+            .ToList();
 
         try
         {

@@ -40,6 +40,8 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
+builder.Services.AddScoped<IBlobStorageRepository, BlobStorageRepository>();
+
 builder.Services.AddAuthorization();
 
 builder.Services.AddHttpContextAccessor();

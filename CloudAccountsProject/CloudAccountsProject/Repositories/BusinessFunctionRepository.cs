@@ -12,6 +12,7 @@ public class BusinessFunctionRepository(CloudAccountsDbContext context) : IBusin
     public async Task<List<BusinessFunctionMaster>> GetAllAsync()
     {
         return await _context.BusinessFunctionMasters
+            .Include(x => x.BusinessTags)
             .OrderBy(x => x.BusinessFunctionName)
             .ToListAsync();
     }
@@ -41,6 +42,12 @@ public class BusinessFunctionRepository(CloudAccountsDbContext context) : IBusin
         item.DateCreated = DateTime.UtcNow;
         item.DateModified = DateTime.UtcNow;
 
+        foreach (var tag in item.BusinessTags)
+        {
+            tag.DateCreated = DateTime.UtcNow;
+            tag.DateModified = DateTime.UtcNow;
+        }
+
         _context.BusinessFunctionMasters.Add(item);
 
         await _context.SaveChangesAsync();
@@ -49,6 +56,7 @@ public class BusinessFunctionRepository(CloudAccountsDbContext context) : IBusin
     public async Task UpdateAsync(BusinessFunctionMaster item)
     {
         var existing = await _context.BusinessFunctionMasters
+            .Include(x => x.BusinessTags)
             .FirstOrDefaultAsync(x => x.Id == item.Id);
 
         if (existing == null)
@@ -75,8 +83,17 @@ public class BusinessFunctionRepository(CloudAccountsDbContext context) : IBusin
         existing.BusinessFunctionSpoc = item.BusinessFunctionSpoc;
         existing.BusinessFunctionGroupDl = item.BusinessFunctionGroupDl;
         existing.Remarks = item.Remarks;
-        existing.BusinessTagValue = item.BusinessTagValue;
         existing.DateModified = DateTime.UtcNow;
+
+        _context.BusinessTags.RemoveRange(existing.BusinessTags);
+
+        existing.BusinessTags = item.BusinessTags.Select(x => new BusinessTag
+        {
+            TagName = x.TagName,
+            TagValue = x.TagValue,
+            DateCreated = DateTime.UtcNow,
+            DateModified = DateTime.UtcNow
+        }).ToList();
 
         await _context.SaveChangesAsync();
     }

@@ -70,29 +70,52 @@
                             </ToolBarContent>
 
                             <Columns>
-                                <PropertyColumn Property="x => x.CrwdgroupName" Title="CRWD Group Name" Resizable="true" />
-                                <PropertyColumn Property="x => x.GroupType" Title="Group Type" Resizable="true" />
-                                <PropertyColumn Property="x => x.GroupId" Title="Group ID" Resizable="true" />
-                                <PropertyColumn Property="x => x.Provider" Title="Provider" Resizable="true" />
-                                <PropertyColumn Property="x => x.BusinessFunction.BusinessFunctionName" Title="Business Function" Resizable="true" />
-                                <PropertyColumn Property="x => x.AllAccountIds" Title="All Account IDs" Resizable="true" />
-                                <PropertyColumn Property="x => x.DateCreated" Title="Created Date" Resizable="true">
+                                <!-- CRWD Group Name with Edit Button - FIXED/STICKY -->
+                                <PropertyColumn Property="x => x.CrwdgroupName"
+                                                Title="CRWD Group Name"
+                                                Width="240px"
+                                                Resizable="true"
+                                                Hideable="true"
+                                                StickyLeft="true"
+                                                HeaderStyle="white-space: nowrap; position: sticky; left: 0; background: #F8F9FC; z-index: 10;"
+                                                CellStyle="position: sticky; left: 0; background: white; z-index: 5;">
+                                    <CellTemplate Context="context">
+                                        <div class="crowd-group-name-cell">
+                                            <MudIconButton Icon="@Icons.Material.Filled.Edit"
+                                                           Size="Size.Small"
+                                                           Class="edit-button-inline"
+                                                           OnClick="() => EditGroup(context.Item)"
+                                                           Style="color: #00A3FF; margin-right: 8px;" />
+
+                                            <MudTooltip Text="@context.Item.CrwdgroupName" Placement="Placement.Top">
+                                                <span class="truncate-text">@context.Item.CrwdgroupName</span>
+                                            </MudTooltip>
+                                        </div>
+                                    </CellTemplate>
+                                </PropertyColumn>
+
+                                <PropertyColumn Property="x => x.GroupType" Title="Group Type" Resizable="true" Hideable="true"/>
+                                <PropertyColumn Property="x => x.GroupId" Title="Group ID" Resizable="true" Hideable="true" />
+                                <PropertyColumn Property="x => x.Provider" Title="Provider" Resizable="true" Hideable="true" />
+                                <PropertyColumn Property="x => x.BusinessFunction.BusinessFunctionName" Title="Business Function" Resizable="true" Hideable="true" />
+                                <PropertyColumn Property="x => x.AllAccountIds" Title="All Account IDs" Resizable="true" Hideable="true" />
+                                <PropertyColumn Property="x => x.DateCreated" Title="Created Date" Resizable="true" Hideable="true">
                                     <CellTemplate Context="cell">
                                         <span>@(cell.Item.DateCreated == default ? "-" : cell.Item.DateCreated.ToString("dd MMM yyyy, hh:mm tt"))</span>
                                     </CellTemplate>
                                 </PropertyColumn>
-                                <PropertyColumn Property="x => x.DateModified" Title="Updated Date" Resizable="true">
+                                <PropertyColumn Property="x => x.DateModified" Title="Updated Date" Resizable="true" Hideable="true">
                                     <CellTemplate Context="cell">
                                         <span>@(cell.Item.DateModified == default ? "-" : cell.Item.DateModified.ToString("dd MMM yyyy, hh:mm tt"))</span>
                                     </CellTemplate>
                                 </PropertyColumn>
                             </Columns>
 
-                             <NoRecordsContent>
+                            <NoRecordsContent>
                                 <MudText Class="pa-4" Style="color: #5A6A85;">No matching records found</MudText>
-                            </NoRecordsContent> 
+                            </NoRecordsContent>
 
-                            
+
                             <PagerContent>
                                 <MudDataGridPager T="CrowdGroupMaster" />
                             </PagerContent>
@@ -309,42 +332,7 @@
         transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
-    .header-toolbar {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 16px 20px;
-        border-bottom: 1px solid #E2E8F0;
-        flex-shrink: 0;
-        background: white;
-    }
-
-    .title-section {
-        flex: 1;
-    }
-
-    .cs-title {
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif;
-        font-size: 20px;
-        font-weight: 600;
-        color: #1A1D2E;
-        letter-spacing: -0.3px;
-    }
-
-    .cs-subtitle {
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif;
-        font-size: 13px;
-        color: #5A6A85;
-        margin-top: 4px;
-    }
-
-    .actions-section {
-        display: flex;
-        gap: 8px;
-        align-items: center;
-    }
-
-    @* .grid-container {
+    .grid-container {
         flex: 1;
         min-width: 0;
         display: flex;
@@ -359,43 +347,7 @@
         display: flex;
         flex-direction: column;
         position: relative;
-    } *@
-
-    @* /* Fix for header text wrapping */
-    ::deep .mud-table-head .mud-table-cell {
-        white-space: nowrap !important;
-        overflow: visible !important;
     }
-
-        ::deep .mud-table-head .mud-table-cell .mud-table-cell-text {
-            white-space: nowrap !important;
-            display: inline-block !important;
-        }
-
-    /* Pagination styling */
-    .pagination-container {
-        background: white;
-        border-top: 1px solid #E2E8F0;
-        padding: 8px 0;
-    } *@
-
-    @* ::deep .mud-table-pagination {
-        display: flex !important;
-        justify-content: flex-end !important;
-        align-items: center !important;
-        padding: 8px 16px !important;
-        background: white !important;
-    }
-
-    ::deep .mud-table-pagination-actions {
-        display: flex;
-        gap: 4px;
-    }
-
-    ::deep .mud-table-container {
-        flex: 1;
-        overflow: auto !important;
-    } *@
 
     .drawer-container {
         width: 0;
@@ -478,6 +430,62 @@
         border-top: 1px solid #E2E8F0;
         background: white;
         flex-shrink: 0;
+    }
+
+    /* Styles for fixed/sticky crowd group name column with edit button */
+    .crowd-group-name-cell {
+        display: flex;
+        align-items: center;
+        width: 100%;
+        gap: 8px;
+        min-width: 200px;
+    }
+
+    .edit-button-inline {
+        flex-shrink: 0;
+        transition: all 0.2s ease;
+    }
+
+        .edit-button-inline:hover {
+            transform: scale(1.1);
+            background-color: rgba(0, 163, 255, 0.1) !important;
+        }
+
+    .truncate-text {
+        flex: 1;
+        min-width: 0;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: block;
+    }
+
+    /* Ensure the sticky header and cells work properly */
+    ::deep .mud-table-container {
+        overflow-x: auto !important;
+    }
+
+    ::deep .mud-table-head .mud-table-cell:first-child {
+        position: sticky !important;
+        left: 0 !important;
+        z-index: 15 !important;
+        background: #F8F9FC !important;
+    }
+
+    ::deep .mud-table-body .mud-table-row .mud-table-cell:first-child {
+        position: sticky !important;
+        left: 0 !important;
+        z-index: 10 !important;
+        background: white !important;
+    }
+
+    /* Filter row sticky positioning */
+    ::deep .mud-table-filter-row .mud-table-cell:first-child {
+        position: sticky !important;
+        left: 0 !important;
+        z-index: 20 !important;
+        background: #F8F9FC !important;
+        overflow: visible !important;
     }
 
     ::-webkit-scrollbar {
@@ -588,7 +596,7 @@
             return;
 
         editingGroup.BusinessFunctionId = value.Id;
-        
+
     }
 
     private async Task OpenContextMenu(DataGridRowClickEventArgs<CrowdGroupMaster> args)
@@ -615,6 +623,8 @@
 
     private async Task ShowAudits()
     {
+        if (_contextRow is null) return;
+
         var auditResult = await CloudHistoryService.GetCrowdGroupAudit(_contextRow.Id);
 
         var parameters = new DialogParameters
@@ -665,7 +675,7 @@
             Remarks = group.Remarks,
             AllAccountIds = group.AllAccountIds,
             BusinessFunctionId = group.BusinessFunctionId,
-            
+
             DateCreated = group.DateCreated,
             DateModified = DateTime.UtcNow
         };

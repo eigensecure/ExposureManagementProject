@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace CloudAccountsShared.Models;
 
@@ -17,5 +18,6 @@ public partial class BusinessTag
 
     public DateTime DateModified { get; set; }
 
-    public virtual BusinessFunctionMaster BusinessFunction { get; set; } = null!;
+    [JsonIgnore]
+    public virtual BusinessFunctionMaster? BusinessFunction { get; set; }
 }

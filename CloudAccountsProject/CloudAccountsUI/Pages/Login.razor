@@ -1,42 +1,157 @@
 ﻿@page "/login"
 @using Blazored.LocalStorage
+@using MudBlazor
 @inject IHttpClientFactory HttpFactory
 @inject ILocalStorageService localStorage
 @inject NavigationManager nav
+@inject ISnackbar Snackbar
 
-<h3>Login</h3>
+<div class="login-page">
+    <MudPaper Class="login-card pa-8" Elevation="6">
 
-<input @bind="username" placeholder="Username" />
-<input @bind="password" type="password" placeholder="Password" />
+        <div class="d-flex flex-column align-center mb-6">
+            <MudIcon Icon="@Icons.Material.Filled.Lock"
+                     Size="Size.Large"
+                     Style="color:#00A3FF;" />
 
-<button @onclick="login">Login</button>
+            <MudText Typo="Typo.h5" Class="mt-3">
+                Sign In
+            </MudText>
+
+            <MudText Typo="Typo.body2" Color="Color.Secondary">
+                Login to continue to Cloud Accounts
+            </MudText>
+        </div>
+
+        <MudTextField T="string"
+                      Label="Username"
+                      Variant="Variant.Outlined"
+                      @bind-Value="username"
+                      Immediate="true"
+                      Margin="Margin.Dense"
+                      Adornment="Adornment.Start"
+                      AdornmentIcon="@Icons.Material.Filled.Person"
+                      Disabled="@isLoading"
+                      Class="mb-4" />
+
+        <MudTextField T="string"
+                      Label="Password"
+                      Variant="Variant.Outlined"
+                      @bind-Value="password"
+                      InputType="@(showPassword ? InputType.Text : InputType.Password)"
+                      Immediate="true"
+                      Margin="Margin.Dense"
+                      Adornment="Adornment.Start"
+                      AdornmentIcon="@Icons.Material.Filled.Lock"
+                      Disabled="@isLoading"
+                      Class="mb-6"
+                      AdornmentEndIcon="@(showPassword? Icons.Material.Filled.VisibilityOff : Icons.Material.Filled.Visibility)"
+                      OnAdornmentClick="@TogglePasswordVisibility" />
+
+        <MudButton Variant="Variant.Filled"
+                   Color="Color.Primary"
+                   FullWidth="true"
+                   Size="Size.Large"
+                   Disabled="@isLoading"
+                   OnClick="login">
+
+            @if (isLoading)
+            {
+                <MudProgressCircular Size="Size.Small"
+                                     Indeterminate="true"
+                                     Class="mr-2"
+                                     Color="Color.Inherit" />
+                <span>Signing In...</span>
+            }
+            else
+            {
+                <span>Login</span>
+            }
+        </MudButton>
+
+    </MudPaper>
+</div>
+
+<style>
+    .login-page {
+        min-height: 50vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background: linear-gradient(135deg, #F8FAFC 0%, #E2E8F0 100%);
+        padding: 24px;
+    }
+
+    .login-card {
+        width: 100%;
+        max-width: 420px;
+        border-radius: 20px;
+        background: white;
+    }
+
+    ::deep .mud-input-control {
+        width: 100%;
+    }
+</style>
 
 @code {
-    private string username;
-    private string password;
+    private string username = string.Empty;
+    private string password = string.Empty;
+    private bool isLoading = false;
+    private bool showPassword = false;
+
+    private void TogglePasswordVisibility()
+    {
+        showPassword = !showPassword;
+    }
 
     private async Task login()
     {
-        var client = HttpFactory.CreateClient("ApiClient");
-
-        var response = await client.PostAsJsonAsync("api/Login", new
+        if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password))
         {
-            username = username,
-            pass = password
-        });
+            Snackbar.Add("Please enter username and password", Severity.Warning);
+            return;
+        }
 
-        if (response.IsSuccessStatusCode)
+        try
         {
-            var result = await response.Content.ReadFromJsonAsync<TokenResponse>();
+            isLoading = true;
 
-            await localStorage.SetItemAsync("authToken", result.token);
+            var client = HttpFactory.CreateClient("ApiClient");
 
-            nav.NavigateTo("/");
+            var response = await client.PostAsJsonAsync("api/Login", new
+            {
+                username = username,
+                pass = password
+            });
+
+            if (response.IsSuccessStatusCode)
+            {
+                var result = await response.Content.ReadFromJsonAsync<TokenResponse>();
+
+                await localStorage.SetItemAsync("authToken", result?.token);
+
+                Snackbar.Add("Login successful", Severity.Success);
+
+                nav.NavigateTo("/");
+            }
+            else
+            {
+                Snackbar.Add("Invalid username or password", Severity.Error);
+            }
+        }
+        catch (Exception)
+        {
+            Snackbar.Add("Unable to login. Please try again.", Severity.Error);
+        }
+        finally
+        {
+            isLoading = false;
         }
     }
 
     public class TokenResponse
     {
-        public string token { get; set; }
+        public string token { get; set; } = string.Empty;
     }
 }

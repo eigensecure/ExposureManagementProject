@@ -1,5 +1,7 @@
 ﻿using CloudAccountsShared.Models.DTOs;
 using CloudAccountsUI.Services.Contracts;
+using Microsoft.AspNetCore.Components.Forms;
+using System.Net.Http.Headers;
 using System.Net.Http.Json;
 
 namespace CloudAccountsUI.Services;
@@ -46,6 +48,31 @@ public class CloudRecordsService(IHttpClientFactory httpClient) : ICloudRecordsS
             item);
 
         response.EnsureSuccessStatusCode();
+    }
+
+    public async Task<string> UploadAttachmentAsync(IBrowserFile file, string cloudAccountId)
+    {
+        using var content = new MultipartFormDataContent();
+
+        var streamContent = new StreamContent(file.OpenReadStream(long.MaxValue));
+
+        streamContent.Headers.ContentType =
+            new MediaTypeHeaderValue(file.ContentType);
+
+        content.Add(streamContent, "file", file.Name);
+        content.Add(new StringContent(cloudAccountId), "cloudAccountId");
+
+        var response = await _httpClient.PostAsync(
+            "api/CloudRecords/uploadattachment",
+            content);
+
+        if (!response.IsSuccessStatusCode)
+        {
+            var error = await response.Content.ReadAsStringAsync();
+            throw new Exception(error);
+        }
+
+        return (await response.Content.ReadAsStringAsync()).Trim('"');
     }
 }
 
