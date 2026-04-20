@@ -1,11 +1,12 @@
 ﻿@using System.Text.Json
 @using CloudAccountsShared.Configuration.Services
+@using CloudAccountsShared.Configuration.Services.Contracts
 @using CloudAccountsShared.Models
 @using CloudAccountsShared.Models.DTOs
 @using CloudAccountsUI.Services.Contracts
 @using MudBlazor
 @inject ICloudHistoryService CloudHistoryService
-@inject TableConfigService tableConfigService
+@inject ITableConfigService tableConfigService
 @inject ISnackbar Snackbar
 
 <MudDialog>

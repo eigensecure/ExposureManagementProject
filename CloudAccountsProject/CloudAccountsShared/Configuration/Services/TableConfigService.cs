@@ -1,9 +1,10 @@
 ﻿using CloudAccountsShared.Configuration.Registry;
 using CloudAccountsShared.Configuration.Schemas;
+using CloudAccountsShared.Configuration.Services.Contracts;
 
 namespace CloudAccountsShared.Configuration.Services;
 
-public class TableConfigService
+public class TableConfigService : ITableConfigService
 {
     public TableConfig GetTable(string tableName)
     {

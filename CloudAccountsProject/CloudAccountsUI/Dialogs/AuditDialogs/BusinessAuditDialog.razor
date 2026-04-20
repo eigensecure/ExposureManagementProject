@@ -1,5 +1,6 @@
 ﻿@using System.Text.Json
 @using CloudAccountsShared.Configuration.Services
+@using CloudAccountsShared.Configuration.Services.Contracts
 @using CloudAccountsShared.Models
 @using CloudAccountsShared.Models.DTOs
 @using CloudAccountsUI.Services.Contracts
@@ -64,7 +65,7 @@
     [Parameter] public string Title { get; set; } = "Business Function Audit History";
     [Parameter] public List<AuditHistoryDTO> AuditRecords { get; set; } = new();
 
-    [Inject] private TableConfigService tableConfigService { get; set; } = default!;
+    [Inject] private ITableConfigService tableConfigService { get; set; } = default!;
 
     private int currentIndex = 0;
     private AuditHistoryDTO? currentRecord => ValidAuditRecords?.ElementAtOrDefault(currentIndex);

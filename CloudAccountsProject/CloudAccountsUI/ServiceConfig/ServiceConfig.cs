@@ -1,4 +1,5 @@
 ﻿using CloudAccountsShared.Configuration.Services;
+using CloudAccountsShared.Configuration.Services.Contracts;
 using CloudAccountsUI.Services;
 using CloudAccountsUI.Services.Contracts;
 
@@ -16,6 +17,6 @@ public static class ServicesConfig
 
         Services.AddScoped<ICrowdGroupMasterService, CrowdGroupMasterService>();
 
-        Services.AddScoped<TableConfigService>();
+        Services.AddScoped<ITableConfigService, TableConfigService>();
     }
 }
