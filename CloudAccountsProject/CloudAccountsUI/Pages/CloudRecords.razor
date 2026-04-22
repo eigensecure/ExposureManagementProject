@@ -6,6 +6,7 @@
 @using CloudAccountsUI.Services
 @using CloudAccountsUI.Services.Contracts
 @using Microsoft.AspNetCore.Components.Forms
+@using CloudAccountsShared.Configuration.Services.Contracts
 @using MudBlazor
 @inject ICloudRecordsService CloudRecordsService
 @inject ICloudHistoryService CloudHistoryService
@@ -13,6 +14,7 @@
 @inject NavigationManager NavManager
 @inject ISnackbar Snackbar
 @inject IBusinessFunctionService BusinessFunctionService
+@inject ITableConfigService TableConfigService
 
 <div class="full-page-container">
     <div class="main-wrapper @(drawerOpen && !drawerFullscreen ? "drawer-open" : "") @(drawerFullscreen ? "fullscreen-active" : "")">
@@ -96,68 +98,156 @@
                         </ToolBarContent>
 
                         <Columns>
-                            
-                            @foreach (var columnConfig in GetVisibleColumns())
+
+                            @if (!ShouldHideColumn("CloudAccountId"))
                             {
-                               
-                                if (columnConfig.GenericKey == "CloudAccountId")
-                                {
-                                    <TemplateColumn Title="@columnConfig.Title"
-                                                    Resizable="true"
-                                                    Hideable="true"
-                                                    StickyLeft="@columnConfig.IsStickyLeft">
-
-                                        <FilterTemplate Context="context">
-                                            <MudTextField T="string"
-                                                Value="@(context.FilterDefinition?.Value?.ToString() ?? string.Empty)"
-                                                ValueChanged="@(v =>
-                                                {
-                                                    if (context.FilterDefinition is not null)
-                                                        context.FilterDefinition.Value = v;
-                                                })"
-                                              Placeholder="Filter..."
-                                              Margin="Margin.Dense"
-                                              Immediate="true"
-                                              Adornment="Adornment.End"
-                                              AdornmentIcon="@Icons.Material.Filled.Search" />
-                            </FilterTemplate>
-
-                                    <CellTemplate Context="cell">
+                                <PropertyColumn Property="x => x.CloudAccountId"
+                                                Title="@GetColumnTitle("CloudAccountId")"
+                                                Width="240px"
+                                                Resizable="true"
+                                                Hideable="true"
+                                                StickyLeft="true">
+                                    <CellTemplate Context="context">
                                         <div class="cloud-account-id-cell">
                                             <MudIconButton Icon="@Icons.Material.Filled.Edit"
-                                                            Size="Size.Small"
-                                                            Class="edit-button-inline"
-                                                            OnClick="() => OpenDrawer(cell.Item)"
-                                                            Style="color: #00A3FF; margin-right: 8px;" />
-                                        <div class="cell-content">
-                                                    @{
-                                                        var value = GetPropertyValue(cell.Item, columnConfig.PropertyName);
-                                                    }
+                                                           Size="Size.Small"
+                                                           OnClick="() => OpenDrawer(context.Item)"
+                                                           Style="color:#00A3FF;" />
 
-                                                    @if (value != null)
-                                                    {
-                                                        <MudTooltip Text="@value.ToString()" Placement="Placement.Top">
-                                                            <span class="truncate-text">@value</span>
-                                                        </MudTooltip>
-                                                    }
-                                                    else
-                                                    {
-                                                        <span>-</span>
-                                                    }
-                                                </div>
-                                            </div>
-                                        </CellTemplate>
-                                    </TemplateColumn>
-                                }
-                                else
-                                {
-                                    <PropertyColumn Property="@(GetPropertyExpression(columnConfig.PropertyName))"
-                                                    Title="@columnConfig.Title"
-                                                    Resizable="true"
-                                                    StickyLeft="@columnConfig.IsStickyLeft"
-                                                    Hideable="true"/>
-                                }
+                                            <MudTooltip Text="@context.Item.CloudAccountId">
+                                                <span class="truncate-text">@context.Item.CloudAccountId</span>
+                                            </MudTooltip>
+                                        </div>
+                                    </CellTemplate>
+                                </PropertyColumn>
                             }
+
+                            @if (!ShouldHideColumn("Provider"))
+                            {
+                                <PropertyColumn Property="x => x.Provider"
+                                                Title="@GetColumnTitle("Provider")"
+                                                Width="140px"
+                                                Resizable="true"
+                                                Hideable="true" />
+                            }
+
+                            @if (!ShouldHideColumn("CloudName"))
+                            {
+                                <PropertyColumn Property="x => x.CloudName"
+                                                Title="@GetColumnTitle("CloudName")"
+                                                Width="220px"
+                                                Resizable="true"
+                                                Hideable="true" />
+                            }
+
+                            @if (!ShouldHideColumn("CloudOrgId"))
+                            {
+                                <PropertyColumn Property="x => x.CloudOrgId"
+                                                Title="@GetColumnTitle("CloudOrgId")"
+                                                Width="220px"
+                                                Resizable="true"
+                                                Hideable="true" />
+                            }
+
+                            @if (!ShouldHideColumn("CloudRootAccountID"))
+                            {
+                                <PropertyColumn Property="x => x.CloudRootAccountID"
+                                                Title="@GetColumnTitle("CloudRootAccountID")"
+                                                Width="220px"
+                                                Resizable="true"
+                                                Hideable="true" />
+                            }
+
+                            @if (!ShouldHideColumn("RegistrationType"))
+                            {
+                                <PropertyColumn Property="x => x.RegistrationType"
+                                                Title="@GetColumnTitle("RegistrationType")"
+                                                Width="180px"
+                                                Resizable="true"
+                                                Hideable="true" />
+                            }
+
+                            @if (!ShouldHideColumn("DeploymentMethod"))
+                            {
+                                <PropertyColumn Property="x => x.DeploymentMethod"
+                                                Title="@GetColumnTitle("DeploymentMethod")"
+                                                Width="180px"
+                                                Resizable="true"
+                                                Hideable="true" />
+                            }
+
+                            @if (!ShouldHideColumn("RegisteredAtCRWD"))
+                            {
+                                <PropertyColumn Property="x => x.RegisteredAtCRWD"
+                                                Title="@GetColumnTitle("RegisteredAtCRWD")"
+                                                Width="180px"
+                                                Resizable="true"
+                                                Hideable="true" />
+                            }
+
+                            @if (!ShouldHideColumn("LastUpdatedAtCRWD"))
+                            {
+                                <PropertyColumn Property="x => x.LastUpdatedAtCRWD"
+                                                Title="@GetColumnTitle("LastUpdatedAtCRWD")"
+                                                Width="180px"
+                                                Resizable="true"
+                                                Hideable="true" />
+                            }
+
+                            @if (!ShouldHideColumn("IOMStatus"))
+                            {
+                                <PropertyColumn Property="x => x.IOMStatus"
+                                                Title="@GetColumnTitle("IOMStatus")"
+                                                Width="160px"
+                                                Resizable="true"
+                                                Hideable="true" />
+                            }
+
+                            @if (!ShouldHideColumn("RealTimeVisibilityAndDetectionStatus"))
+                            {
+                                <PropertyColumn Property="x => x.RealTimeVisibilityAndDetectionStatus"
+                                                Title="@GetColumnTitle("RealTimeVisibilityAndDetectionStatus")"
+                                                Width="220px"
+                                                Resizable="true"
+                                                Hideable="true" />
+                            }
+
+                            @if (!ShouldHideColumn("OneClickSensorStatus"))
+                            {
+                                <PropertyColumn Property="x => x.OneClickSensorStatus"
+                                                Title="@GetColumnTitle("OneClickSensorStatus")"
+                                                Width="220px"
+                                                Resizable="true"
+                                                Hideable="true" />
+                            }
+
+                            @if (!ShouldHideColumn("IdentityProtectionStatus"))
+                            {
+                                <PropertyColumn Property="x => x.IdentityProtectionStatus"
+                                                Title="@GetColumnTitle("IdentityProtectionStatus")"
+                                                Width="220px"
+                                                Resizable="true"
+                                                Hideable="true" />
+                            }
+
+                            @if (!ShouldHideColumn("DSPMStatus"))
+                            {
+                                <PropertyColumn Property="x => x.DSPMStatus"
+                                                Title="@GetColumnTitle("DSPMStatus")"
+                                                Width="160px"
+                                                Resizable="true"
+                                                Hideable="true" />
+                            }
+
+                            @if (!ShouldHideColumn("VulnerabilityScanningStatus"))
+                            {
+                                <PropertyColumn Property="x => x.VulnerabilityScanningStatus"
+                                                Title="@GetColumnTitle("VulnerabilityScanningStatus")"
+                                                Width="240px"
+                                                Resizable="true"
+                                                Hideable="true" />
+                            }
+
                         </Columns>
 
                         <NoRecordsContent>
@@ -180,7 +270,7 @@
                 <div class="drawer-header">
                     <div class="drawer-title">Edit Cloud Account</div>
                     <div class="drawer-buttons">
-                        <MudIconButton Icon="@(drawerFullscreen? Icons.Material.Filled.FullscreenExit : Icons.Material.Filled.Fullscreen)"
+                        <MudIconButton Icon="@(drawerFullscreen ? Icons.Material.Filled.FullscreenExit : Icons.Material.Filled.Fullscreen)"
                                        Size="Size.Medium"
                                        Color="Color.Default"
                                        OnClick="ToggleFullscreen" />
@@ -195,98 +285,170 @@
                     <MudStack Spacing="2">
                         <MudText Typo="Typo.subtitle2" Style="color: #1A1D2E; font-size: 13px; font-weight: 600;">Cloud Details</MudText>
 
-                        <MudTextField T="string"
-                                      Label="Provider"
-                                      Variant="Variant.Outlined"
-                                      @bind-Value="editingAccount.Provider"
-                                      Disabled="true"
-                                      Dense="true" />
+                        @if (viewableCloudColumns.Contains(nameof(CloudAccountsMaster.Provider))
+                            || editableCloudColumns.Contains(nameof(CloudAccountsMaster.Provider)))
+                        {
+                            <MudTextField T="string"
+                                          Label="Provider"
+                                          Value="editingAccount.Provider"
+                                          Variant="Variant.Outlined"
+                                          Dense="true"
+                                          Disabled="@(!IsCloudColumnEditable(nameof(CloudAccountsMaster.Provider)))" />
+                        }
 
-                        <MudTextField T="string"
-                                      Label="Cloud Account ID"
-                                      Variant="Variant.Outlined"
-                                      @bind-Value="editingAccount.CloudAccountId"
-                                      Dense="true" />
+                        @if (viewableCloudColumns.Contains(nameof(CloudAccountsMaster.CloudAccountId))
+                            || editableCloudColumns.Contains(nameof(CloudAccountsMaster.CloudAccountId)))
+                        {
+                            <MudTextField T="string"
+                                          Label="Cloud Account ID"
+                                          Value="editingAccount.CloudAccountId"
+                                          Variant="Variant.Outlined"
+                                          Dense="true"
+                                          Disabled="@(!IsCloudColumnEditable(nameof(CloudAccountsMaster.CloudAccountId)))" />
+                        }
 
-                        <MudTextField T="string"
-                                      Label="Cloud Name"
-                                      Variant="Variant.Outlined"
-                                      @bind-Value="editingAccount.CloudName"
-                                      Dense="true" />
+                        @if (viewableCloudColumns.Contains(nameof(CloudAccountsMaster.CloudName))
+                           || editableCloudColumns.Contains(nameof(CloudAccountsMaster.CloudName)))
+                        {
+                            <MudTextField T="string"
+                                          Label="Cloud Name"
+                                          Value="editingAccount.CloudName"
+                                          Variant="Variant.Outlined"
+                                          Dense="true"
+                                          Disabled="@(!IsCloudColumnEditable(nameof(CloudAccountsMaster.CloudName)))" />
+                        }
 
-                        <MudTextField T="string"
-                                      Label="Cloud Org ID"
-                                      Variant="Variant.Outlined"
-                                      @bind-Value="editingAccount.CloudOrgId"
-                                      Dense="true" />
+                        @if (viewableCloudColumns.Contains(nameof(CloudAccountsMaster.CloudOrgId))
+                            || editableCloudColumns.Contains(nameof(CloudAccountsMaster.CloudOrgId)))
+                        {
+                            <MudTextField T="string"
+                                          Label="Cloud Org ID"
+                                          Value="editingAccount.CloudOrgId"
+                                          Variant="Variant.Outlined"
+                                          Dense="true"
+                                          Disabled="@(!IsCloudColumnEditable(nameof(CloudAccountsMaster.CloudOrgId)))" />
+                        }
 
-                        <MudTextField T="string"
-                                      Label="Cloud Root Account ID"
-                                      Variant="Variant.Outlined"
-                                      @bind-Value="editingAccount.CloudRootAccountID"
-                                      Dense="true" />
+                        @if (viewableCloudColumns.Contains(nameof(CloudAccountsMaster.CloudRootAccountId))
+                        || editableCloudColumns.Contains(nameof(CloudAccountsMaster.CloudRootAccountId)))
+                        {
+                            <MudTextField T="string"
+                                          Label="Cloud Root Account ID"
+                                          Value="editingAccount.CloudRootAccountID"
+                                          Variant="Variant.Outlined"
+                                          Dense="true"
+                                          Disabled="@(!IsCloudColumnEditable(nameof(CloudAccountsMaster.CloudRootAccountId)))" />
+                        }
 
-                        <MudTextField T="string"
-                                      Label="Registration Type"
-                                      Variant="Variant.Outlined"
-                                      @bind-Value="editingAccount.RegistrationType"
-                                      Dense="true" />
+                        @if (viewableCloudColumns.Contains(nameof(CloudAccountsMaster.RegistrationType))
+                        || editableCloudColumns.Contains(nameof(CloudAccountsMaster.RegistrationType)))
+                        {
+                            <MudTextField T="string"
+                                          Label="Registration Type"
+                                          Value="editingAccount.RegistrationType"
+                                          Variant="Variant.Outlined"
+                                          Dense="true"
+                                          Disabled="@(!IsCloudColumnEditable(nameof(CloudAccountsMaster.RegistrationType)))" />
+                        }
 
-                        <MudTextField T="string"
-                                      Label="Deployment Method"
-                                      Variant="Variant.Outlined"
-                                      @bind-Value="editingAccount.DeploymentMethod"
-                                      Dense="true" />
+                        @if (viewableCloudColumns.Contains(nameof(CloudAccountsMaster.DeploymentMethod))
+                        || editableCloudColumns.Contains(nameof(CloudAccountsMaster.DeploymentMethod)))
+                        {
+                            <MudTextField T="string"
+                                          Label="Deployment Method"
+                                          Value="editingAccount.DeploymentMethod"
+                                          Variant="Variant.Outlined"
+                                          Dense="true"
+                                          Disabled="@(!IsCloudColumnEditable(nameof(CloudAccountsMaster.DeploymentMethod)))" />
+                        }
 
-                        <MudTextField T="string"
-                                      Label="Registered At CRWD"
-                                      Variant="Variant.Outlined"
-                                      Value="@(editingAccount.RegisteredAtCRWD?.ToString("yyyy-MM-dd HH:mm") ?? "-")"
-                                      Disabled="true"
-                                      Dense="true" />
+                        @if (viewableCloudColumns.Contains(nameof(CloudAccountsMaster.RegisteredAtCrwd))
+                        || editableCloudColumns.Contains(nameof(CloudAccountsMaster.RegisteredAtCrwd)))
+                        {
+                            <MudTextField T="string"
+                                          Label="Registered At CRWD"
+                                          Value="@(editingAccount.RegisteredAtCRWD?.ToString("yyyy-MM-dd HH:mm") ?? "-")"
+                                          Variant="Variant.Outlined"
+                                          Dense="true"
+                                          Disabled="true" />
+                        }
 
-                        <MudTextField T="string"
-                                      Label="Last Updated At CRWD"
-                                      Variant="Variant.Outlined"
-                                      Value="@(editingAccount.LastUpdatedAtCRWD?.ToString("yyyy-MM-dd HH:mm") ?? "-")"
-                                      Disabled="true"
-                                      Dense="true" />
+                        @if (viewableCloudColumns.Contains(nameof(CloudAccountsMaster.LastUpdatedAtCrwd))
+                        || editableCloudColumns.Contains(nameof(CloudAccountsMaster.LastUpdatedAtCrwd)))
+                        {
+                            <MudTextField T="string"
+                                          Label="Last Updated At CRWD"
+                                          Value="@(editingAccount.LastUpdatedAtCRWD?.ToString("yyyy-MM-dd HH:mm") ?? "-")"
+                                          Variant="Variant.Outlined"
+                                          Dense="true"
+                                          Disabled="true" />
+                        }
 
-                        <MudTextField T="string"
-                                      Label="IOM Status"
-                                      Variant="Variant.Outlined"
-                                      @bind-Value="editingAccount.IOMStatus"
-                                      Dense="true" />
+                        @if (viewableCloudColumns.Contains(nameof(CloudAccountsMaster.Iomstatus))
+                        || editableCloudColumns.Contains(nameof(CloudAccountsMaster.Iomstatus)))
+                        {
+                            <MudTextField T="string"
+                                          Label="IOM Status"
+                                          Value="editingAccount.IOMStatus"
+                                          Variant="Variant.Outlined"
+                                          Dense="true"
+                                          Disabled="@(!IsCloudColumnEditable(nameof(CloudAccountsMaster.Iomstatus)))" />
+                        }
 
-                        <MudTextField T="string"
-                                      Label="RTVD Status"
-                                      Variant="Variant.Outlined"
-                                      @bind-Value="editingAccount.RealTimeVisibilityAndDetectionStatus"
-                                      Dense="true" />
+                        @if (viewableCloudColumns.Contains(nameof(CloudAccountsMaster.RealTimeVisibilityAndDetectionStatus))
+                        || editableCloudColumns.Contains(nameof(CloudAccountsMaster.RealTimeVisibilityAndDetectionStatus)))
+                        {
+                            <MudTextField T="string"
+                                          Label="RTVD Status"
+                                          Value="editingAccount.RealTimeVisibilityAndDetectionStatus"
+                                          Variant="Variant.Outlined"
+                                          Dense="true"
+                                          Disabled="@(!IsCloudColumnEditable(nameof(CloudAccountsMaster.RealTimeVisibilityAndDetectionStatus)))" />
+                        }
 
-                        <MudTextField T="string"
-                                      Label="1-Click Sensor Status"
-                                      Variant="Variant.Outlined"
-                                      @bind-Value="editingAccount.OneClickSensorStatus"
-                                      Dense="true" />
+                        @if (viewableCloudColumns.Contains(nameof(CloudAccountsMaster.OneClickSensorStatus))
+                        || editableCloudColumns.Contains(nameof(CloudAccountsMaster.OneClickSensorStatus)))
+                        {
+                            <MudTextField T="string"
+                                          Label="1-Click Sensor Status"
+                                          Value="editingAccount.OneClickSensorStatus"
+                                          Variant="Variant.Outlined"
+                                          Dense="true"
+                                          Disabled="@(!IsCloudColumnEditable(nameof(CloudAccountsMaster.OneClickSensorStatus)))" />
+                        }
 
-                        <MudTextField T="string"
-                                      Label="Identity Protection Status"
-                                      Variant="Variant.Outlined"
-                                      @bind-Value="editingAccount.IdentityProtectionStatus"
-                                      Dense="true" />
+                        @if (viewableCloudColumns.Contains(nameof(CloudAccountsMaster.IdentityProtectionStatus))
+                        || editableCloudColumns.Contains(nameof(CloudAccountsMaster.IdentityProtectionStatus)))
+                        {
+                            <MudTextField T="string"
+                                          Label="Identity Protection Status"
+                                          Value="editingAccount.IdentityProtectionStatus"
+                                          Variant="Variant.Outlined"
+                                          Dense="true"
+                                          Disabled="@(!IsCloudColumnEditable(nameof(CloudAccountsMaster.IdentityProtectionStatus)))" />
+                        }
 
-                        <MudTextField T="string"
-                                      Label="DSPM Status"
-                                      Variant="Variant.Outlined"
-                                      @bind-Value="editingAccount.DSPMStatus"
-                                      Dense="true" />
+                        @if (viewableCloudColumns.Contains(nameof(CloudAccountsMaster.Dspmstatus))
+                        || editableCloudColumns.Contains(nameof(CloudAccountsMaster.Dspmstatus)))
+                        {
+                            <MudTextField T="string"
+                                          Label="DSPM Status"
+                                          Value="editingAccount.DSPMStatus"
+                                          Variant="Variant.Outlined"
+                                          Dense="true"
+                                          Disabled="@(!IsCloudColumnEditable(nameof(CloudAccountsMaster.Dspmstatus)))" />
+                        }
 
-                        <MudTextField T="string"
-                                      Label="Vulnerability Scanning Status"
-                                      Variant="Variant.Outlined"
-                                      @bind-Value="editingAccount.VulnerabilityScanningStatus"
-                                      Dense="true" />
+                        @if (viewableCloudColumns.Contains(nameof(CloudAccountsMaster.VulnerabilityScanningStatus))
+                        || editableCloudColumns.Contains(nameof(CloudAccountsMaster.VulnerabilityScanningStatus)))
+                        {
+                            <MudTextField T="string"
+                                          Label="Vulnerability Scanning Status"
+                                          Value="editingAccount.VulnerabilityScanningStatus"
+                                          Variant="Variant.Outlined"
+                                          Dense="true"
+                                          Disabled="@(!IsCloudColumnEditable(nameof(CloudAccountsMaster.VulnerabilityScanningStatus)))" />
+                        }
 
                         <MudDivider Class="my-3" />
 
@@ -341,56 +503,109 @@
 
                         <MudText Typo="Typo.subtitle2" Style="color: #1A1D2E; font-size: 13px; font-weight: 600;">Manual Details</MudText>
 
-                        <MudSelect T="string"
-                                   Label="Account Type"
-                                   Variant="Variant.Outlined"
-                                   @bind-Value="editingAccount.AccountType"
-                                   Dense="true">
+                        @if (viewableTransactionColumns.Contains(nameof(CloudAccountsTransaction.AccountType))
+                            || editableTransactionColumns.Contains(nameof(CloudAccountsTransaction.AccountType)))
+                        {
+                            <MudSelect T="string"
+                                       Label="Account Type"
+                                       Variant="Variant.Outlined"
+                                       @bind-Value="editingAccount.AccountType"
+                                       Dense="true"
+                                       Disabled="@(!IsTransactionColumnEditable(nameof(CloudAccountsTransaction.AccountType)))">
 
-                            <MudSelectItem Value='"Hybrid"'>Hybrid</MudSelectItem>
-                            <MudSelectItem Value='"Managed"'>Managed</MudSelectItem>
-                            <MudSelectItem Value='"Self - Managed"'>Self-Managed</MudSelectItem>
-                            <MudSelectItem Value='"Sandbox"'>Sandbox</MudSelectItem>
-                            <MudSelectItem Value='"SingleAccount"'>SingleAccount</MudSelectItem>
-                        </MudSelect>
+                                <MudSelectItem Value='"Hybrid"'>Hybrid</MudSelectItem>
+                                <MudSelectItem Value='"Managed"'>Managed</MudSelectItem>
+                                <MudSelectItem Value='"Self - Managed"'>Self-Managed</MudSelectItem>
+                                <MudSelectItem Value='"Sandbox"'>Sandbox</MudSelectItem>
+                                <MudSelectItem Value='"SingleAccount"'>SingleAccount</MudSelectItem>
+                            </MudSelect>
+                        }
 
-                        <MudSelect T="string"
-                                   Label="Overall Status"
-                                   Variant="Variant.Outlined"
-                                   @bind-Value="editingAccount.OverallStatus"
-                                   Dense="true">
+                        @if (viewableTransactionColumns.Contains(nameof(CloudAccountsTransaction.OverallStatus))
+                        || editableTransactionColumns.Contains(nameof(CloudAccountsTransaction.OverallStatus)))
+                        {
+                            <MudSelect T="string"
+                                       Label="Overall Status"
+                                       Variant="Variant.Outlined"
+                                       @bind-Value="editingAccount.OverallStatus"
+                                       Dense="true"
+                                       Disabled="@(!IsTransactionColumnEditable(nameof(CloudAccountsTransaction.OverallStatus)))">
 
-                            <MudSelectItem Value='"Active"'>Active</MudSelectItem>
-                            <MudSelectItem Value='"Deleted"'>Deleted</MudSelectItem>
-                            <MudSelectItem Value='"Disabled"'>Disabled</MudSelectItem>
-                        </MudSelect>
+                                <MudSelectItem Value='"Active"'>Active</MudSelectItem>
+                                <MudSelectItem Value='"Deleted"'>Deleted</MudSelectItem>
+                                <MudSelectItem Value='"Disabled"'>Disabled</MudSelectItem>
+                            </MudSelect>
+                        }
 
-                        <MudTextField T="string"
-                                      Label="Manual Remarks"
-                                      Variant="Variant.Outlined"
-                                      Lines="3"
-                                      @bind-Value="editingAccount.ManualRemarks" />
+                        @if (viewableTransactionColumns.Contains(nameof(CloudAccountsTransaction.Remarks))
+                        || editableTransactionColumns.Contains(nameof(CloudAccountsTransaction.Remarks)))
+                        {
+                            <MudTextField T="string"
+                                          Label="Manual Remarks"
+                                          Variant="Variant.Outlined"
+                                          Lines="3"
+                                          Disabled="@(!IsTransactionColumnEditable(nameof(CloudAccountsTransaction.Remarks)))"
+                                          @bind-Value="editingAccount.ManualRemarks" />
+                        }
 
                         @* <MudTextField T="string"
                                       Label="Attachment Path"
                                       Variant="Variant.Outlined"
                                       @bind-Value="editingAccount.AttachmentPath"
                                       Dense="true" /> *@
-                            <MudStack Row="true" Spacing="2" AlignItems="AlignItems.Center">
-                                <InputFile OnChange="UploadAttachment" />
+                        @if (viewableTransactionColumns.Contains(nameof(CloudAccountsTransaction.AttachmentPath))
+                                            || editableTransactionColumns.Contains(nameof(CloudAccountsTransaction.AttachmentPath)))
+                        {
+                            <MudStack Spacing="1">
 
-                                @if (!string.IsNullOrWhiteSpace(editingAccount.AttachmentPath))
+                                <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+                                    <InputFile OnChange="UploadAttachment"
+                                               multiple />
+
+                                    @if (isUploadingAttachment)
+                                    {
+                                        <MudText Typo="Typo.body2" Style="color:#5A6A85;">
+                                            Uploading @uploadingFileName...
+                                        </MudText>
+                                    }
+                                </MudStack>
+
+                                @if (isUploadingAttachment)
                                 {
-                                    <MudText Typo="Typo.body2">
-                                        @Path.GetFileName(editingAccount.AttachmentPath)
-                                    </MudText>
+                                    <MudProgressLinear Indeterminate="true"
+                                                       Color="Color.Primary"
+                                                       Rounded="true"
+                                                       Class="mb-2" />
+                                }
 
-                                    <MudIconButton Icon="@Icons.Material.Filled.Delete"
-                                                   Color="Color.Error"
-                                                   Size="Size.Small"
-                                                   OnClick="RemoveAttachment" />
+                                @if (uploadedAttachments.Any())
+                                {
+                                    <MudPaper Class="attachment-list pa-2" Elevation="0">
+                                        @foreach (var attachment in uploadedAttachments)
+                                        {
+                                            <div class="attachment-item">
+                                                <div class="attachment-info">
+                                                    <MudIcon Icon="@Icons.Material.Filled.AttachFile"
+                                                             Size="Size.Small"
+                                                             Style="color:#00A3FF;" />
+
+                                                    <MudTooltip Text="@attachment">
+                                                        <MudText Typo="Typo.body2" Class="attachment-name">
+                                                            @Path.GetFileName(attachment)
+                                                        </MudText>
+                                                    </MudTooltip>
+                                                </div>
+
+                                                <MudIconButton Icon="@Icons.Material.Filled.Delete"
+                                                               Color="Color.Error"
+                                                               Size="Size.Small"
+                                                               OnClick="@(() => RemoveAttachment(attachment))" />
+                                            </div>
+                                        }
+                                    </MudPaper>
                                 }
                             </MudStack>
+                        }
 
                     </MudStack>
                 </div>
@@ -731,7 +946,6 @@
         display: block;
     }
 
-    /* Styles for cloud account ID cell with edit button */
     .cloud-account-id-cell {
         display: flex;
         align-items: center;
@@ -746,13 +960,51 @@
 
         .edit-button-inline:hover {
             transform: scale(1.1);
-            background-color: rgba(0, 163, 255, 0.1) !important;
+            background-color: rgba(0, 163, 255, 0.1);
         }
 
     .cloud-account-id-cell .cell-content {
         flex: 1;
         min-width: 0;
         padding: 0;
+    }
+
+    /* Attachments */
+    .attachment-list {
+        border: 1px solid #E2E8F0;
+        border-radius: 8px;
+        background: #F8FAFC;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        max-height: 180px;
+        overflow-y: auto;
+    }
+
+    .attachment-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 8px 10px;
+        border-radius: 6px;
+        background: white;
+        border: 1px solid #E2E8F0;
+    }
+
+    .attachment-info {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        min-width: 0;
+        flex: 1;
+    }
+
+    .attachment-name {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 100%;
     }
 </style>
 
@@ -768,11 +1020,28 @@
 
     private bool drawerOpen;
     private bool drawerFullscreen = false;
+    private bool isUploadingAttachment = false;
 
     private List<CloudAccountDetailsDTO> cloudAccounts = new();
     private List<CloudAccountColumnMetadata> columnMetadata = new();
     private List<BusinessFunctionMaster> businessFunctions = new();
     private BusinessFunctionMaster? selectedBusinessFunction;
+    private List<string> viewableCloudColumns = new();
+    private List<string> editableTransactionColumns = new();
+    private List<string> editableCloudColumns = new();
+    private List<string> viewableTransactionColumns = new();
+    private string? uploadingFileName;
+    private List<string> uploadedAttachments = new();
+
+    private bool IsCloudColumnEditable(string columnName)
+    {
+        return editableCloudColumns.Contains(columnName);
+    }
+
+    private bool IsTransactionColumnEditable(string columnName)
+    {
+        return editableTransactionColumns.Contains(columnName);
+    }
 
     private CloudAccountDetailsDTO? editingAccount;
 
@@ -838,6 +1107,22 @@
 
     protected override async Task OnInitializedAsync()
     {
+        viewableCloudColumns = TableConfigService
+            .GetViewableColumns(nameof(CloudAccountsMaster))
+            .ToList();
+
+        editableCloudColumns = TableConfigService
+            .GetEditableColumns(nameof(CloudAccountsMaster))
+            .ToList();
+
+        editableTransactionColumns = TableConfigService
+            .GetEditableColumns(nameof(CloudAccountsTransaction))
+            .ToList();
+
+        viewableTransactionColumns = TableConfigService
+            .GetViewableColumns(nameof(CloudAccountsTransaction))
+            .ToList();
+
         await LoadData();
     }
 
@@ -933,7 +1218,10 @@
     private List<ColumnDefinition> GetVisibleColumns()
     {
         return AvailableColumns
-            .Where(x => x.IsVisible && !ShouldHideColumn(x.GenericKey))
+            .Where(x =>
+                x.IsVisible &&
+                viewableCloudColumns.Contains(x.PropertyName) &&
+                !ShouldHideColumn(x.GenericKey))
             .Select(x => new ColumnDefinition
             {
                 Title = GetColumnTitle(x.GenericKey),
@@ -1061,6 +1349,12 @@
             AttachmentPath = account.AttachmentPath
         };
 
+        uploadedAttachments = string.IsNullOrWhiteSpace(editingAccount.AttachmentPath)
+            ? new List<string>()
+            : editingAccount.AttachmentPath
+                .Split(';', StringSplitOptions.RemoveEmptyEntries)
+                .ToList();
+
         selectedBusinessFunction = businessFunctions
             .FirstOrDefault(x => x.Id == editingAccount.BusinessFunctionId);
 
@@ -1072,30 +1366,56 @@
     {
         try
         {
-            var file = e.File;
+            isUploadingAttachment = true;
 
-            if (file is null)
-                return;
+            foreach (var file in e.GetMultipleFiles())
+            {
+                uploadingFileName = file.Name;
+                StateHasChanged();
 
-            var cloudAccountId = editingAccount.CloudAccountId ?? editingAccount.Id.ToString();
+                var cloudAccountId = editingAccount?.CloudAccountId
+                                     ?? editingAccount?.Id.ToString()
+                                     ?? Guid.NewGuid().ToString();
 
-            var uploadedPath = await CloudRecordsService.UploadAttachmentAsync(
-                file,
-                cloudAccountId);
+                var uploadedPath = await CloudRecordsService.UploadAttachmentAsync(
+                    file,
+                    cloudAccountId);
 
-            editingAccount.AttachmentPath = uploadedPath;
+                if (!string.IsNullOrWhiteSpace(uploadedPath))
+                {
+                    uploadedAttachments.Add(uploadedPath);
+                }
+            }
 
-            Snackbar.Add("File uploaded successfully", Severity.Success);
+            if (editingAccount is not null)
+            {
+                editingAccount.AttachmentPath = string.Join(";", uploadedAttachments);
+            }
+
+            Snackbar.Add("Attachments uploaded successfully", Severity.Success);
         }
         catch (Exception ex)
         {
             Snackbar.Add($"Upload failed: {ex.Message}", Severity.Error);
         }
+        finally
+        {
+            isUploadingAttachment = false;
+            uploadingFileName = null;
+            StateHasChanged();
+        }
     }
 
-    private void RemoveAttachment()
+    private void RemoveAttachment(string attachment)
     {
-        editingAccount.AttachmentPath = null;
+        uploadedAttachments.Remove(attachment);
+
+        if (editingAccount is not null)
+        {
+            editingAccount.AttachmentPath = uploadedAttachments.Any()
+                ? string.Join(";", uploadedAttachments)
+                : null;
+        }
     }
 
     private void CloseDrawer()
@@ -1104,6 +1424,9 @@
         drawerFullscreen = false;
         editingAccount = null;
         selectedBusinessFunction = null;
+        uploadedAttachments.Clear();
+        isUploadingAttachment = false;
+        uploadingFileName = null;
         StateHasChanged();
     }
 

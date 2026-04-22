@@ -16,5 +16,7 @@ public static class RepoConfig
         Services.AddScoped<ICloudRecordsRepository, CloudRecordsRepository>();
 
         Services.AddScoped<ICrowdGroupMasterRepository, CrowdGroupMasterRepository>();
+
+        Services.AddScoped<ICurrentUserService, CurrentUserService>();
     }
 }

@@ -27,19 +27,12 @@ public class LoginController(CloudAccountsDbContext Dbcontext) : BaseApiControll
         if (user == null || !VerifyPassword(model.Pass, user.Pass))
             return Unauthorized();
 
-        var claims = new[]
-        {
-        new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-        new Claim(ClaimTypes.Name, user.Username)
-    };
-
         var key = new SymmetricSecurityKey(
             Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
 
         var token = new JwtSecurityToken(
             issuer: _config["Jwt:Issuer"],
             audience: _config["Jwt:Audience"],
-            claims: claims,
             expires: DateTime.UtcNow.AddHours(2),
             signingCredentials: new SigningCredentials(key, SecurityAlgorithms.HmacSha256)
         );
@@ -55,5 +48,3 @@ public class LoginController(CloudAccountsDbContext Dbcontext) : BaseApiControll
         return inputPassword == storedPassword;
     }
 }
-
-

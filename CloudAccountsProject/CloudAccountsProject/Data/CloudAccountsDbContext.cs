@@ -1,4 +1,5 @@
 ﻿using CloudAccountsProject.AuditModel;
+using CloudAccountsProject.Repositories.Contracts;
 using CloudAccountsShared.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
@@ -7,12 +8,12 @@ namespace CloudAccountsProjects.Data;
 
 public partial class CloudAccountsDbContext : DbContext
 {
-    private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly ICurrentUserService _currentUser;
 
-    public CloudAccountsDbContext(DbContextOptions<CloudAccountsDbContext> options, IHttpContextAccessor httpContextAccessor)
+    public CloudAccountsDbContext(DbContextOptions<CloudAccountsDbContext> options, ICurrentUserService currentUser)
         : base(options)
     {
-        _httpContextAccessor = httpContextAccessor;
+        _currentUser = currentUser;
     }
 
     public virtual DbSet<AuditTableMaster> AuditTableMasters { get; set; }
@@ -93,6 +94,8 @@ public partial class CloudAccountsDbContext : DbContext
             entity.HasKey(e => e.Id).HasName("PK_Cloud_Accounts");
 
             entity.ToTable("CloudAccountsMaster");
+
+            entity.HasIndex(e => e.CloudAccountId, "UQ_CloudAccountId").IsUnique();
 
             entity.Property(e => e.CloudAccountId).HasMaxLength(350);
             entity.Property(e => e.CloudName).HasMaxLength(350);
@@ -204,6 +207,7 @@ public partial class CloudAccountsDbContext : DbContext
 
     private List<AuditEntry> OnBeforeSaveChanges()
     {
+        var username = _currentUser.Username;
         var auditEntries = new List<AuditEntry>();
         foreach (var entry in ChangeTracker.Entries())
         {
@@ -215,20 +219,10 @@ public partial class CloudAccountsDbContext : DbContext
             }
 
             var auditEntry = new AuditEntry(entry);
-            var context = _httpContextAccessor.HttpContext;
-            //Console.WriteLine(context);
-            //var isAuth = _httpContextAccessor.HttpContext?.User?.Identity?.IsAuthenticated;
-            //Console.WriteLine(isAuth);
-            //var claims = _httpContextAccessor.HttpContext?.User?.Claims;
-
-            //foreach (var claim in claims)
-            //{
-            //    Console.WriteLine($"{claim.Type} : {claim.Value}");
-            //}
             auditEntry.TableName = entry.Metadata.GetTableName();
             auditEntry.IsMaster = MasterTables.Any(t => t.IsAssignableFrom(entry.Entity.GetType()));
             auditEntry.Reference = GetReference(entry);
-            auditEntry.ModifiedBy = _httpContextAccessor.HttpContext?.User?.Identity?.Name;
+            auditEntry.ModifiedBy = username;
 
             auditEntries.Add(auditEntry);
             foreach (var property in entry.Properties)

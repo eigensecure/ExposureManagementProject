@@ -25,7 +25,7 @@ public static class CrowdGroupMasterConfig
             },
             new() {
                 Name = nameof(CrowdGroupMaster.CrwdgroupName),
-                Permissions = [ColumnPermission.View]
+                Permissions = [ColumnPermission.View, ColumnPermission.Edit]
             },
             new() {
                 Name = nameof(CrowdGroupMaster.GroupType),
@@ -58,7 +58,7 @@ public static class CrowdGroupMasterConfig
             },
             new() {
                 Name = nameof(CrowdGroupMaster.AllAccountIds),
-                Permissions = [ColumnPermission.View, ColumnPermission.Edit]
+                Permissions = [ColumnPermission.View]
             },
             new() {
                 Name = nameof(CrowdGroupMaster.LastSuccessfulDateOfApi),

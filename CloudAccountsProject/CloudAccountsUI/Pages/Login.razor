@@ -130,6 +130,7 @@
                 var result = await response.Content.ReadFromJsonAsync<TokenResponse>();
 
                 await localStorage.SetItemAsync("authToken", result?.token);
+                await localStorage.SetItemAsync("username", username);
 
                 Snackbar.Add("Login successful", Severity.Success);
 

@@ -3,11 +3,13 @@
 @using CloudAccountsUI.Dialogs.AuditDialogs
 @using CloudAccountsUI.Services.Contracts
 @using MudBlazor
+@using CloudAccountsShared.Configuration.Services.Contracts
 @inject HttpClient Http
 @inject ISnackbar Snackbar
 @inject IDialogService DialogService
 @inject ICloudHistoryService cloudhistoryservice
 @inject IBusinessFunctionService BusinessFunctionService
+@inject ITableConfigService TableConfigService
 
 <div class="full-page-container">
     
@@ -17,57 +19,57 @@
 
             @* DataGrid *@
             <div class="grid-container pa-5">
-                <div class="grid-container">
-                    <div class="data-grid-wrapper">
-                        <MudDataGrid T="BusinessFunctionMaster"
-                                     @ref="_dataGrid"
-                                     Items="@businessFunctions"
-                                     Dense="true"
-                                     Hover="true"
-                                     Bordered="true"
-                                     Striped="true"
-                                     Filterable="true"
-                                     FilterMode="DataGridFilterMode.ColumnFilterRow"
-                                     FilterCaseSensitivity="DataGridFilterCaseSensitivity.CaseInsensitive"
-                                     ShowColumnOptions="true"
-                                     FixedHeader="true"
-                                     FixedFooter="true"
-                                     @bind-PageSize="PageSize"
-                                     RowsPerPageOptions="@PageSizeOptions"
-                                     Height="calc(100vh - 260px)"
-                                     Width="100%"
-                                     Loading="@isLoading"
-                                     ColumnResizeMode="ResizeMode.Container"
-                                     DragDropColumnReordering="true"
-                                     ColumnsPanelReordering="true"
-                                     ShowMenuIcon="true"
-                                     RowContextMenuClick="OpenContextMenu">
+                <div class="data-grid-wrapper">
+                    <MudDataGrid T="BusinessFunctionMaster"
+                                 @ref="_dataGrid"
+                                 Items="@businessFunctions"
+                                 Dense="true"
+                                 Hover="true"
+                                 Bordered="true"
+                                 Striped="true"
+                                 Filterable="true"
+                                 FilterMode="DataGridFilterMode.ColumnFilterRow"
+                                 FilterCaseSensitivity="DataGridFilterCaseSensitivity.CaseInsensitive"
+                                 ShowColumnOptions="true"
+                                 FixedHeader="true"
+                                 FixedFooter="true"
+                                 @bind-PageSize="PageSize"
+                                 RowsPerPageOptions="@PageSizeOptions"
+                                 Width="100%"
+                                 Loading="@isLoading"
+                                 ColumnResizeMode="ResizeMode.Container"
+                                 DragDropColumnReordering="true"
+                                 ColumnsPanelReordering="true"
+                                 ShowMenuIcon="true"
+                                 RowContextMenuClick="OpenContextMenu">
 
-                            <ToolBarContent>
-                                <div class="d-flex flex-column">
-                                    <MudText Typo="Typo.h6" Class="d-flex align-center">
-                                        <MudIcon Icon="@Icons.Material.Filled.Groups"
-                                                 Class="mr-2"
-                                                 Style="color: #00A3FF;" />
-                                        Business Function Management
-                                    </MudText>
+                        <ToolBarContent>
+                            <div class="d-flex flex-column">
+                                <MudText Typo="Typo.h6" Class="d-flex align-center">
+                                    <MudIcon Icon="@Icons.Material.Filled.Groups"
+                                             Class="mr-2"
+                                             Style="color: #00A3FF;" />
+                                    Business Function Management
+                                </MudText>
 
-                                    <MudText Typo="Typo.body2" Class="text-secondary">
-                                        Manage business functions, owners, and SPOC information
-                                    </MudText>
-                                </div>
+                                <MudText Typo="Typo.body2" Class="text-secondary">
+                                    Manage business functions, owners, and SPOC information
+                                </MudText>
+                            </div>
 
-                                <MudSpacer />
+                            <MudSpacer />
 
-                                <MudButton Variant="Variant.Text"
-                                           Color="Color.Primary"
-                                           StartIcon="@Icons.Material.Filled.Add"
-                                           OnClick="OpenCreateDrawer">
-                                    Add Business Function
-                                </MudButton>
-                            </ToolBarContent>
+                            <MudButton Variant="Variant.Text"
+                                       Color="Color.Primary"
+                                       StartIcon="@Icons.Material.Filled.Add"
+                                       OnClick="OpenCreateDrawer">
+                                Add Business Function
+                            </MudButton>
+                        </ToolBarContent>
 
-                            <Columns>
+                        <Columns>
+                            @if (viewableColumns.Contains(nameof(BusinessFunctionMaster.BusinessFunctionName)))
+                            {
                                 <PropertyColumn Property="x => x.BusinessFunctionName"
                                                 Title="Business Function Name"
                                                 Width="240px"
@@ -91,7 +93,10 @@
                                         </div>
                                     </CellTemplate>
                                 </PropertyColumn>
+                            }
 
+                            @if (viewableColumns.Contains(nameof(BusinessFunctionMaster.BusinessFunctionLtMember)))
+                            {
                                 <PropertyColumn Property="x => x.BusinessFunctionLtMember"
                                                 Title="LT Member"
                                                 Width="180px"
@@ -99,7 +104,10 @@
                                                 Hideable="true"
                                                 HeaderStyle="white-space: nowrap;"
                                                 CellStyle="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" />
+                            }
 
+                            @if (viewableColumns.Contains(nameof(BusinessFunctionMaster.BusinessFunctionOwner)))
+                            {
                                 <PropertyColumn Property="x => x.BusinessFunctionOwner"
                                                 Title="Owner"
                                                 Width="180px"
@@ -107,7 +115,10 @@
                                                 Hideable="true"
                                                 HeaderStyle="white-space: nowrap;"
                                                 CellStyle="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" />
+                            }
 
+                            @if (viewableColumns.Contains(nameof(BusinessFunctionMaster.BusinessFunctionSpoc)))
+                            {
                                 <PropertyColumn Property="x => x.BusinessFunctionSpoc"
                                                 Title="SPOC"
                                                 Width="220px"
@@ -115,7 +126,10 @@
                                                 Hideable="true"
                                                 HeaderStyle="white-space: nowrap;"
                                                 CellStyle="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" />
+                            }
 
+                            @if (viewableColumns.Contains(nameof(BusinessFunctionMaster.BusinessFunctionGroupDl)))
+                            {
                                 <PropertyColumn Property="x => x.BusinessFunctionGroupDl"
                                                 Title="Group DL"
                                                 Width="240px"
@@ -123,7 +137,10 @@
                                                 Hideable="true"
                                                 HeaderStyle="white-space: nowrap;"
                                                 CellStyle="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" />
+                            }
 
+                            @if (viewableColumns.Contains(nameof(BusinessFunctionMaster.BusinessTagValue)))
+                            {
                                 <TemplateColumn T="BusinessFunctionMaster"
                                                 Title="Business Tags"
                                                 Width="260px"
@@ -134,7 +151,10 @@
                                         context.Item.BusinessTags.Select(x => $"{x.TagName}-{x.TagValue}"))
                                     </CellTemplate>
                                 </TemplateColumn>
+                            }
 
+                            @if (viewableColumns.Contains(nameof(BusinessFunctionMaster.Remarks)))
+                            {
                                 <PropertyColumn Property="x => x.Remarks"
                                                 Title="Remarks"
                                                 Width="260px"
@@ -142,47 +162,51 @@
                                                 Hideable="true"
                                                 HeaderStyle="white-space: nowrap;"
                                                 CellStyle="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" />
-                            </Columns>
+                            }
+                        </Columns>
 
-                            <NoRecordsContent>
-                                <MudText Class="pa-4" Style="color: #5A6A85;">
-                                    No business Functions found
-                                    Click "Add Business Function" to create your Business Function
-                                </MudText>
-                            </NoRecordsContent>
+                        <NoRecordsContent>
+                            <MudText Class="pa-4" Style="color: #5A6A85;">
+                                No business Functions found
+                                Click "Add Business Function" to create your Business Function
+                            </MudText>
+                        </NoRecordsContent>
 
-                            <PagerContent>
-                                <MudDataGridPager T="BusinessFunctionMaster"
-                                                  PageSizeOptions="@PageSizeOptions" />
-                            </PagerContent>
-                        </MudDataGrid>
-                    </div>
+                        <PagerContent>
+                            <MudDataGridPager T="BusinessFunctionMaster"
+                                              PageSizeOptions="@PageSizeOptions" />
+                        </PagerContent>
+                    </MudDataGrid>
                 </div>
             </div>
         </div>
     </div>
+</div>
 
     
-    <div class="drawer-container @(drawerOpen ? "open" : "") @(drawerFullscreen ? "fullscreen" : "")">
-        @if (drawerOpen)
-        {
-            <div class="drawer-content">
-                <div class="drawer-header">
-                    <div class="drawer-title">@(isCreate ? "Add Business Function" : "Edit Business Function")</div>
-                    <div class="drawer-buttons">
-                        <MudIconButton Icon="@(drawerFullscreen ? Icons.Material.Filled.FullscreenExit : Icons.Material.Filled.Fullscreen)"
-                                       Size="Size.Medium"
-                                       Color="Color.Default"
-                                       OnClick="ToggleFullscreen" />
-                        <MudIconButton Icon="@Icons.Material.Filled.Close"
-                                       Size="Size.Medium"
-                                       Color="Color.Default"
-                                       OnClick="CloseDrawer" />
-                    </div>
+<div class="drawer-container @(drawerOpen ? "open" : "") @(drawerFullscreen ? "fullscreen" : "")">
+    @if (drawerOpen)
+    {
+        <div class="drawer-content">
+            <div class="drawer-header">
+                <div class="drawer-title">@(isCreate ? "Add Business Function" : "Edit Business Function")</div>
+                <div class="drawer-buttons">
+                    <MudIconButton Icon="@(drawerFullscreen ? Icons.Material.Filled.FullscreenExit : Icons.Material.Filled.Fullscreen)"
+                                   Size="Size.Medium"
+                                   Color="Color.Default"
+                                   OnClick="ToggleFullscreen" />
+                    <MudIconButton Icon="@Icons.Material.Filled.Close"
+                                   Size="Size.Medium"
+                                   Color="Color.Default"
+                                   OnClick="CloseDrawer" />
                 </div>
+            </div>
 
-                <div style="flex: 1; overflow-y: auto; padding-right: 8px;">
-                    <MudStack Spacing="2">
+            <div style="flex: 1; overflow-y: auto; padding-right: 8px;">
+                <MudStack Spacing="2">
+
+                    @if (CanView(nameof(BusinessFunctionMaster.BusinessFunctionName)))
+                    {
                         <MudAutocomplete T="string"
                                          @key="@("bfname")"
                                          Label="Business Function Name"
@@ -195,8 +219,12 @@
                                          Strict="false"
                                          CoerceText="false"
                                          CoerceValue="true"
-                                         Required="true" />
+                                         Required="true"
+                                         Disabled="@(!CanEdit(nameof(BusinessFunctionMaster.BusinessFunctionName)))" />
+                    }
 
+                    @if (CanView(nameof(BusinessFunctionMaster.BusinessFunctionLtMember)))
+                    {
                         <MudAutocomplete T="string"
                                          @key="@("ltmember")"
                                          Label="LT Member"
@@ -209,8 +237,12 @@
                                          Strict="false"
                                          CoerceText="false"
                                          CoerceValue="true"
-                                         Required="true" />
+                                         Required="true"
+                                         Disabled="@(!CanEdit(nameof(BusinessFunctionMaster.BusinessFunctionLtMember)))" />
+                    }
 
+                    @if (CanView(nameof(BusinessFunctionMaster.BusinessFunctionOwner)))
+                    {
                         <MudAutocomplete T="string"
                                          @key="@("owner")"
                                          Label="Owner"
@@ -223,8 +255,12 @@
                                          Strict="false"
                                          CoerceText="false"
                                          CoerceValue="true"
-                                         Required="true" />
+                                         Required="true"
+                                         Disabled="@(!CanEdit(nameof(BusinessFunctionMaster.BusinessFunctionOwner)))" />
+                    }
 
+                    @if (CanView(nameof(BusinessFunctionMaster.BusinessFunctionSpoc)))
+                    {
                         <MudAutocomplete T="string"
                                          Label="Add SPOC"
                                          SearchFunc="SearchSpocs"
@@ -237,18 +273,22 @@
                                          CoerceValue="true"
                                          ResetValueOnEmptyText="false"
                                          OnBlur="AddCurrentSpoc"
-                                         OnKeyDown="HandleSpocKeyDown" />
+                                         OnKeyDown="HandleSpocKeyDown"
+                                         Disabled="@(!CanEdit(nameof(BusinessFunctionMaster.BusinessFunctionSpoc)))" />
 
                         <MudChipSet T="string" Class="mb-3">
                             @foreach (var spoc in SelectedSpocs)
                             {
                                 <MudChip T="string"
                                          Text="@spoc"
-                                         Closeable="true"
+                                         Closeable="@CanEdit(nameof(BusinessFunctionMaster.BusinessFunctionSpoc))"
                                          OnClose="@(() => RemoveSpoc(spoc))" />
                             }
                         </MudChipSet>
+                    }
 
+                    @if (CanView(nameof(BusinessFunctionMaster.BusinessFunctionGroupDl)))
+                    {
                         <MudAutocomplete T="string"
                                          Label="Group DL"
                                          Variant="Variant.Outlined"
@@ -259,10 +299,21 @@
                                          ResetValueOnEmptyText="false"
                                          Strict="false"
                                          CoerceText="false"
-                                         CoerceValue="true" />
+                                         CoerceValue="true"
+                                         Disabled="@(!CanEdit(nameof(BusinessFunctionMaster.BusinessFunctionGroupDl)))" />
+                    }
 
-                        <MudText Typo="Typo.subtitle2" Class="mb-2 mt-2" Style="color: #1A1D2E; font-size: 13px; font-weight: 600;">Business Tags</MudText>
-                        <MudText Typo="Typo.body2" Class="mb-3" Style="color: #5A6A85; font-size: 12px;">
+                    @if (CanView(nameof(BusinessFunctionMaster.BusinessTagValue)))
+                    {
+                        <MudText Typo="Typo.subtitle2"
+                                 Class="mb-2 mt-2"
+                                 Style="color: #1A1D2E; font-size: 13px; font-weight: 600;">
+                            Business Tags
+                        </MudText>
+
+                        <MudText Typo="Typo.body2"
+                                 Class="mb-3"
+                                 Style="color: #5A6A85; font-size: 12px;">
                             Tags are name/value pairs that enable you to categorize resources and view consolidated billing
                         </MudText>
 
@@ -276,6 +327,7 @@
                                                          Label="Name"
                                                          Variant="Variant.Outlined"
                                                          Dense="true"
+                                                         Margin="Margin.Dense"
                                                          @bind-Value="tag.Name"
                                                          Placeholder="e.g., Environment"
                                                          SearchFunc="SearchTagNames"
@@ -284,7 +336,8 @@
                                                          Strict="false"
                                                          CoerceText="false"
                                                          CoerceValue="true"
-                                                         Class="compact-input" />
+                                                         Class="compact-tag-input"
+                                                         Disabled="@(!CanEdit(nameof(BusinessFunctionMaster.BusinessTagValue)))" />
                                     </MudItem>
 
                                     <MudItem xs="5">
@@ -293,6 +346,7 @@
                                                          Label="Value"
                                                          Variant="Variant.Outlined"
                                                          Dense="true"
+                                                         Margin="Margin.Dense"
                                                          @bind-Value="tag.Value"
                                                          Placeholder="e.g., Production"
                                                          SearchFunc="@( (value, token) => SearchTagValues(tag.Name, value, token) )"
@@ -301,14 +355,16 @@
                                                          Strict="false"
                                                          CoerceText="false"
                                                          CoerceValue="true"
-                                                         Class="compact-input" />
+                                                         Class="compact-tag-input"
+                                                         Disabled="@(!CanEdit(nameof(BusinessFunctionMaster.BusinessTagValue)))" />
                                     </MudItem>
 
                                     <MudItem xs="2" Class="d-flex align-center">
                                         <MudIconButton Icon="@Icons.Material.Filled.Delete"
                                                        Color="Color.Error"
                                                        Size="Size.Small"
-                                                       OnClick="@(() => RemoveTag(tag))" />
+                                                       OnClick="@(() => RemoveTag(tag))"
+                                                       Disabled="@(!CanEdit(nameof(BusinessFunctionMaster.BusinessTagValue)))" />
                                     </MudItem>
                                 </MudGrid>
                             }
@@ -318,35 +374,40 @@
                                        OnClick="AddTag"
                                        Size="Size.Small"
                                        Class="mt-2"
-                                       Style="border-color: #00A3FF; color: #00A3FF; font-size: 11px; padding: 2px 8px;">
+                                       Style="border-color: #00A3FF; color: #00A3FF; font-size: 11px; padding: 2px 8px;"
+                                       Disabled="@(!CanEdit(nameof(BusinessFunctionMaster.BusinessTagValue)))">
                                 Add Tag
                             </MudButton>
                         </div>
+                    }
 
+                    @if (CanView(nameof(BusinessFunctionMaster.Remarks)))
+                    {
                         <MudTextField T="string"
                                       @bind-Value="editingItem.Remarks"
                                       Label="Remarks"
                                       Variant="Variant.Outlined"
-                                      Lines="3" />
-                    </MudStack>
-                </div>
-
-                <div class="drawer-footer">
-                    <MudButton Variant="Variant.Text"
-                               OnClick="CloseDrawer"
-                               Style="color: #5A6A85;">
-                        Cancel
-                    </MudButton>
-
-                    <MudButton Variant="Variant.Filled"
-                               Style="background: #00A3FF; color: white; font-weight: 600;"
-                               OnClick="Save">
-                        Save
-                    </MudButton>
-                </div>
+                                      Lines="3"
+                                      Disabled="@(!CanEdit(nameof(BusinessFunctionMaster.Remarks)))" />
+                    }
+                </MudStack>
             </div>
-        }
-    </div>
+
+            <div class="drawer-footer">
+                <MudButton Variant="Variant.Text"
+                           OnClick="CloseDrawer"
+                           Style="color: #5A6A85;">
+                    Cancel
+                </MudButton>
+
+                <MudButton Variant="Variant.Filled"
+                           Style="background: #00A3FF; color: white; font-weight: 600;"
+                           OnClick="Save">
+                    Save
+                </MudButton>
+            </div>
+        </div>
+    }
 </div>
 
 @if (showColumnDialog)
@@ -383,17 +444,12 @@
 </MudMenu>
 
 <style>
-
-    ::deep .mud-layout {
-        padding: 0 !important;
-        margin: 0 !important;
-    }
-
+    /* Reset layouts */
+    ::deep .mud-layout,
     ::deep .mud-main-content {
         padding: 0 !important;
         margin: 0 !important;
     }
-
 
     .full-page-container {
         width: 100%;
@@ -406,14 +462,12 @@
         flex-direction: column;
     }
 
-
     .main-wrapper {
         flex: 1;
         display: flex;
         overflow: hidden;
         transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
-
 
     .pushed-content {
         flex: 1;
@@ -424,7 +478,92 @@
         transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
+    /* Grid container - SIMPLIFIED */
+    .grid-container {
+        flex: 1;
+        min-height: 0;
+        display: flex;
+        flex-direction: column;
+        padding: 20px !important;
+        overflow: hidden;
+    }
 
+    .data-grid-wrapper {
+        flex: 1;
+        min-height: 0;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+    }
+
+    /* Force MudDataGrid to use flex layout */
+    ::deep .mud-data-grid {
+        display: flex !important;
+        flex-direction: column !important;
+        flex: 1 !important;
+        min-height: 0 !important;
+        overflow: hidden !important;
+    }
+
+    /* Table container - THIS DOES THE SCROLLING */
+    ::deep .mud-table-container {
+        flex: 1 !important;
+        overflow-y: auto !important;
+        overflow-x: auto !important;
+        min-height: 0 !important;
+    }
+
+    /* Keep header sticky */
+    ::deep .mud-table-head {
+        position: sticky !important;
+        top: 0 !important;
+        z-index: 15 !important;
+        background: #F8F9FC !important;
+    }
+
+    /* Keep filter row sticky */
+    ::deep .mud-table-filter-row {
+        position: sticky !important;
+        top: 48px !important;
+        z-index: 14 !important;
+        background: #F8F9FC !important;
+    }
+
+    /* Keep footer sticky at bottom */
+    ::deep .mud-table-pagination {
+        flex-shrink: 0 !important;
+        background: white !important;
+        border-top: 1px solid #E2E8F0 !important;
+        position: sticky !important;
+        bottom: 0 !important;
+        z-index: 10 !important;
+    }
+
+    /* Sticky first column */
+    ::deep .mud-table-head .mud-table-cell:first-child,
+    ::deep .mud-table-body .mud-table-row .mud-table-cell:first-child,
+    ::deep .mud-table-filter-row .mud-table-cell:first-child {
+        position: sticky !important;
+        left: 0 !important;
+        z-index: 20 !important;
+    }
+
+    ::deep .mud-table-head .mud-table-cell:first-child {
+        background: #F8F9FC !important;
+        z-index: 25 !important;
+    }
+
+    ::deep .mud-table-body .mud-table-row .mud-table-cell:first-child {
+        background: white !important;
+        z-index: 15 !important;
+    }
+
+    ::deep .mud-table-filter-row .mud-table-cell:first-child {
+        background: #F8F9FC !important;
+        z-index: 30 !important;
+    }
+
+    /* Keep your existing drawer and other styles below */
     .drawer-container {
         width: 0;
         flex-shrink: 0;
@@ -506,7 +645,7 @@
         flex-shrink: 0;
     }
 
-
+    /* Your existing styles for tags, chips, scrollbar, etc. */
     .tags-container {
         background: #F8F9FC;
         border-radius: 6px;
@@ -541,7 +680,6 @@
         min-height: 28px !important;
     }
 
-
     .mud-chip {
         background: #F0F4F9 !important;
         color: #1A1D2E !important;
@@ -550,7 +688,6 @@
         padding: 2px 8px !important;
         border-radius: 4px !important;
     }
-
 
     .mud-input {
         color: #1A1D2E !important;
@@ -574,7 +711,6 @@
         font-size: 12px !important;
         font-weight: 500 !important;
     }
-
 
     .column-selector-dialog {
         position: fixed;
@@ -601,27 +737,25 @@
         z-index: 1999;
     }
 
-
     .mud-switch {
-        --mud-switch-checked-color: #00A3FF !important;
+        --mud-switch-checked-color: #00A3FF;
     }
 
         .mud-switch .mud-switch-track {
-            background-color: #E2E8F0 !important;
+            background-color: #E2E8F0;
         }
 
         .mud-switch .mud-switch-thumb {
-            background-color: white !important;
+            background-color: white;
         }
 
         .mud-switch.mud-switch-checked .mud-switch-track {
-            background-color: #00A3FF !important;
+            background-color: #00A3FF;
         }
 
         .mud-switch.mud-switch-checked .mud-switch-thumb {
-            background-color: white !important;
+            background-color: white;
         }
-
 
     ::-webkit-scrollbar {
         width: 8px;
@@ -641,31 +775,6 @@
             background: #94A3B8;
         }
 
-    .grid-container {
-        flex: 1;
-        min-height: 0;
-        overflow: hidden;
-        display: flex;
-        flex-direction: column;
-    }
-
-    .grid-container {
-        flex: 1;
-        min-width: 0;
-        display: flex;
-        flex-direction: column;
-        min-height: 0;
-        padding: 20px;
-    }
-
-    .data-grid-wrapper {
-        height: 100%;
-        display: flex;
-        flex-direction: column;
-        position: relative;
-    }
-
-    /* Styles for fixed/sticky business function name column with edit button */
     .business-function-name-cell {
         display: flex;
         align-items: center;
@@ -681,14 +790,8 @@
 
         .edit-button-inline:hover {
             transform: scale(1.1);
-            background-color: rgba(0, 163, 255, 0.1) !important;
+            background-color: rgba(0, 163, 255, 0.1);
         }
-
-    .business-function-name-cell .cell-content {
-        flex: 1;
-        min-width: 0;
-        padding: 0;
-    }
 
     .truncate-text {
         white-space: nowrap;
@@ -698,32 +801,36 @@
         display: block;
     }
 
-    /* Ensure the sticky header and cells work properly */
-    ::deep .mud-table-container {
-        overflow-x: auto !important;
+    .compact-tag-input ::deep .mud-input-slot {
+        min-height: 20px;
+        height: 20px;
+        padding-top: 0;
+        padding-bottom: 0;
+        align-items: center;
     }
 
-    ::deep .mud-table-head .mud-table-cell:first-child {
-        position: sticky !important;
-        left: 0 !important;
-        z-index: 15 !important;
-        background: #F8F9FC !important;
+    .compact-tag-input ::deep .mud-input-root {
+        min-height: 20px;
     }
 
-    ::deep .mud-table-body .mud-table-row .mud-table-cell:first-child {
-        position: sticky !important;
-        left: 0 !important;
-        z-index: 10 !important;
-        background: white !important;
+    .compact-tag-input ::deep .mud-input > input {
+        padding-top: 4px;
+        padding-bottom: 4px;
+        font-size: 12px;
     }
 
-    /* Filter row sticky positioning */
-    ::deep .mud-table-filter-row .mud-table-cell:first-child {
-        position: sticky !important;
-        left: 0 !important;
-        z-index: 20 !important;
-        background: #F8F9FC !important;
-        overflow: visible !important;
+    .compact-tag-input ::deep .mud-input-label {
+        font-size: 11px;
+        top: -6px;
+    }
+
+    .compact-tag-input ::deep .mud-icon-button {
+        padding: 2px;
+    }
+
+    .compact-tag-input {
+        margin-top: 0;
+        margin-bottom: 0;
     }
 </style>
 
@@ -749,6 +856,14 @@
     private int[] PageSizeOptions = new[] { 10, 25, 50, 100 };
     private bool drawerFullscreen = false;
     private bool showColumnDialog = false;
+    private List<string> viewableColumns = new();
+    private List<string> editableColumns = new();
+
+    private bool CanView(string columnName)
+        => viewableColumns.Contains(columnName) || editableColumns.Contains(columnName);
+
+    private bool CanEdit(string columnName)
+        => editableColumns.Contains(columnName);
 
     // private const string ApiBase = "api/BusinessFunction";
     private List<BusinessFunctionMaster> businessFunctions = new();
@@ -813,6 +928,12 @@
 
     protected override async Task OnInitializedAsync()
     {
+        viewableColumns = TableConfigService
+        .GetViewableColumns(nameof(BusinessFunctionMaster))
+        .ToList();
+        editableColumns = TableConfigService
+        .GetEditableColumns(nameof(BusinessFunctionMaster))
+        .ToList();
         await LoadData();
     }
 

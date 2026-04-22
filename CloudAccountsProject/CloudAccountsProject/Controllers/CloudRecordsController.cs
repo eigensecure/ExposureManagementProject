@@ -23,6 +23,11 @@ public class CloudRecordsController(ICloudRecordsRepository cloudAccountRepo, IB
         });
     }
 
+    public class UploadAttachmentRequest
+    {
+        public IFormFile file { get; set; }
+    }
+
     [Authorize]
     [HttpPost("savedetails")]
     public async Task<IActionResult> SaveBusManDetailsAsync([FromBody] CloudAccountDetailsDTO item)
@@ -43,17 +48,15 @@ public class CloudRecordsController(ICloudRecordsRepository cloudAccountRepo, IB
     [Authorize]
     [HttpPost("uploadattachment")]
     [Consumes("multipart/form-data")]
-    public async Task<IActionResult> UploadAttachment(
-      [FromForm] IFormFile file,
-      [FromForm] string cloudAccountId)
+    public async Task<IActionResult> UploadAttachment([FromForm] UploadAttachmentRequest attachment, [FromForm] string cloudAccountId)
     {
         try
         {
-            if (file == null || file.Length == 0)
+            if (attachment.file == null || attachment.file.Length == 0)
                 return BadRequest("No file selected.");
 
             var blobPath = await _blobStorageRepository
-                .UploadCloudRecordAttachmentAsync(file, cloudAccountId);
+                .UploadCloudRecordAttachmentAsync(attachment.file, cloudAccountId);
 
             return Ok(blobPath);
         }

@@ -48,7 +48,8 @@ public class CloudAccountsTransactionConfig
             },
             new() {
                 Name = nameof(CloudAccountsTransaction.AttachmentPath),
-                Permissions = [ColumnPermission.View, ColumnPermission.Edit]
+                Permissions = [ColumnPermission.View, ColumnPermission.Edit],
+                AuditVisibility = AuditVisibility.Hidden
             },
             new() {
                 Name = nameof(CloudAccountsTransaction.DateCreated),

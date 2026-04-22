@@ -55,6 +55,29 @@ namespace CloudAccountsProject.Controllers
             return Ok(result);
         }
 
+        [HttpGet("accountids")]
+        public async Task<IActionResult> GetAllAccountIds([FromQuery] int businessFunctionId, [FromQuery] string provider)
+        {
+            var result = await _repository.GetAllAccountIdsAsync(businessFunctionId, provider);
+
+            return Ok(result);
+        }
+
+        [HttpPost("patch/{id}")]
+        public async Task<IActionResult> PatchGroup(int id)
+        {
+            try
+            {
+                await _repository.PatchGroupAsync(id);
+
+                return Ok("Patched successfully");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
         [Authorize]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)

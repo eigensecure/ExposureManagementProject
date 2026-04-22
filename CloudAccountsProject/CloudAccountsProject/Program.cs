@@ -56,6 +56,8 @@ builder.Services.AddDbContext<CloudAccountsDbContext>(options =>
 builder.Services.AddDbContext<CloudAccountsDbSPContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("AzureConnection")));
 
+builder.Services.AddHttpClient();
+
 builder.Services.AddDIServices();
 
 builder.Services.AddEndpointsApiExplorer();

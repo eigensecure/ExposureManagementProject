@@ -3,6 +3,8 @@
 @using CloudAccountsUI.Services.Contracts
 @using CloudAccountsUI.Dialogs.AuditDialogs
 @using System.Net.Http.Json
+@using CloudAccountsShared.Configuration.Services.Contracts
+@inject ITableConfigService TableConfigService
 @inject ICrowdGroupMasterService CrowdGroupService
 @inject ICloudHistoryService CloudHistoryService
 @inject IBusinessFunctionService BusinessFunctionService
@@ -37,7 +39,6 @@
                                      FixedFooter="true"
                                      @bind-PageSize="PageSize"
                                      RowsPerPageOptions="@PageSizeOptions"
-                                     Height="calc(100vh - 170px)"
                                      Width="100%"
                                      RowContextMenuClick="OpenContextMenu"
                                      DragDropColumnReordering="true"
@@ -70,45 +71,69 @@
                             </ToolBarContent>
 
                             <Columns>
-                                <!-- CRWD Group Name with Edit Button - FIXED/STICKY -->
-                                <PropertyColumn Property="x => x.CrwdgroupName"
-                                                Title="CRWD Group Name"
-                                                Width="240px"
-                                                Resizable="true"
-                                                Hideable="true"
-                                                StickyLeft="true"
-                                                HeaderStyle="white-space: nowrap; position: sticky; left: 0; background: #F8F9FC; z-index: 10;"
-                                                CellStyle="position: sticky; left: 0; background: white; z-index: 5;">
-                                    <CellTemplate Context="context">
-                                        <div class="crowd-group-name-cell">
-                                            <MudIconButton Icon="@Icons.Material.Filled.Edit"
-                                                           Size="Size.Small"
-                                                           Class="edit-button-inline"
-                                                           OnClick="() => EditGroup(context.Item)"
-                                                           Style="color: #00A3FF; margin-right: 8px;" />
+                                @if (viewableColumns.Contains(nameof(CrowdGroupMaster.CrwdgroupName)))
+                                {
+                                    <PropertyColumn Property="x => x.CrwdgroupName"
+                                                    Title="CRWD Group Name"
+                                                    Width="240px"
+                                                    Resizable="true"
+                                                    Hideable="true"
+                                                    StickyLeft="true"
+                                                    HeaderStyle="white-space: nowrap; position: sticky; left: 0; background: #F8F9FC; z-index: 10;"
+                                                    CellStyle="position: sticky; left: 0; background: white; z-index: 5;">
+                                        <CellTemplate Context="context">
+                                            <div class="crowd-group-name-cell">
+                                                <MudIconButton Icon="@Icons.Material.Filled.Edit"
+                                                               Size="Size.Small"
+                                                               Class="edit-button-inline"
+                                                               OnClick="() => EditGroup(context.Item)"
+                                                               Style="color: #00A3FF; margin-right: 8px;" />
 
-                                            <MudTooltip Text="@context.Item.CrwdgroupName" Placement="Placement.Top">
-                                                <span class="truncate-text">@context.Item.CrwdgroupName</span>
-                                            </MudTooltip>
-                                        </div>
-                                    </CellTemplate>
-                                </PropertyColumn>
+                                                <MudTooltip Text="@context.Item.CrwdgroupName" Placement="Placement.Top">
+                                                    <span class="truncate-text">@context.Item.CrwdgroupName</span>
+                                                </MudTooltip>
+                                            </div>
+                                        </CellTemplate>
+                                    </PropertyColumn>
+                                }
 
-                                <PropertyColumn Property="x => x.GroupType" Title="Group Type" Resizable="true" Hideable="true"/>
-                                <PropertyColumn Property="x => x.GroupId" Title="Group ID" Resizable="true" Hideable="true" />
-                                <PropertyColumn Property="x => x.Provider" Title="Provider" Resizable="true" Hideable="true" />
-                                <PropertyColumn Property="x => x.BusinessFunction.BusinessFunctionName" Title="Business Function" Resizable="true" Hideable="true" />
-                                <PropertyColumn Property="x => x.AllAccountIds" Title="All Account IDs" Resizable="true" Hideable="true" />
-                                <PropertyColumn Property="x => x.DateCreated" Title="Created Date" Resizable="true" Hideable="true">
-                                    <CellTemplate Context="cell">
-                                        <span>@(cell.Item.DateCreated == default ? "-" : cell.Item.DateCreated.ToString("dd MMM yyyy, hh:mm tt"))</span>
-                                    </CellTemplate>
-                                </PropertyColumn>
-                                <PropertyColumn Property="x => x.DateModified" Title="Updated Date" Resizable="true" Hideable="true">
-                                    <CellTemplate Context="cell">
-                                        <span>@(cell.Item.DateModified == default ? "-" : cell.Item.DateModified.ToString("dd MMM yyyy, hh:mm tt"))</span>
-                                    </CellTemplate>
-                                </PropertyColumn>
+                                @if (viewableColumns.Contains(nameof(CrowdGroupMaster.GroupType)))
+                                {
+                                    <PropertyColumn Property="x => x.GroupType" Title="Group Type" Resizable="true" Hideable="true" />
+                                }
+                                @if (viewableColumns.Contains(nameof(CrowdGroupMaster.GroupId)))
+                                {
+                                    <PropertyColumn Property="x => x.GroupId" Title="Group ID" Resizable="true" Hideable="true" />
+                                }
+                                @if (viewableColumns.Contains(nameof(CrowdGroupMaster.Provider)))
+                                {
+                                    <PropertyColumn Property="x => x.Provider" Title="Provider" Resizable="true" Hideable="true" />
+                                }
+                                @if (viewableColumns.Contains(nameof(CrowdGroupMaster.BusinessFunction.BusinessFunctionName)))
+                                {
+                                    <PropertyColumn Property="x => x.BusinessFunction.BusinessFunctionName" Title="Business Function" Resizable="true" Hideable="true" />
+                                }
+                                @if (viewableColumns.Contains(nameof(CrowdGroupMaster.AllAccountIds)))
+                                {
+                                    <PropertyColumn Property="x => x.AllAccountIds" Title="All Account IDs" Resizable="true" Hideable="true" />
+                                }
+                                @if (viewableColumns.Contains(nameof(CrowdGroupMaster.DateCreated)))
+                                {
+                                    <PropertyColumn Property="x => x.DateCreated" Title="Created Date" Resizable="true" Hideable="true">
+
+                                        <CellTemplate Context="cell">
+                                            <span>@(cell.Item.DateCreated == default ? "-" : cell.Item.DateCreated.ToString("dd MMM yyyy, hh:mm tt"))</span>
+                                        </CellTemplate>
+                                    </PropertyColumn>
+                                }
+                                @if (viewableColumns.Contains(nameof(CrowdGroupMaster.DateModified)))
+                                {
+                                    <PropertyColumn Property="x => x.DateModified" Title="Updated Date" Resizable="true" Hideable="true">
+                                        <CellTemplate Context="cell">
+                                            <span>@(cell.Item.DateModified == default ? "-" : cell.Item.DateModified.ToString("dd MMM yyyy, hh:mm tt"))</span>
+                                        </CellTemplate>
+                                    </PropertyColumn>
+                                }
                             </Columns>
 
                             <NoRecordsContent>
@@ -169,20 +194,23 @@
         </div>
     </div>
 
-    <!-- Context Menu -->
+    @* Context Menu *@
     <MudMenu PositionAtCursor="true" @ref="_contextMenu" id="_contextMenu">
         <MudMenuItem Icon="@Icons.Material.Filled.Edit" OnClick="@(() => EditFromContext())">
             Edit @_contextRow?.CrwdgroupName
         </MudMenuItem>
-        <MudMenuItem Icon="@Icons.Material.Filled.Delete" OnClick="@(() => DeleteFromContext())">
+        @* <MudMenuItem Icon="@Icons.Material.Filled.Delete" OnClick="@(() => DeleteFromContext())">
             Delete @_contextRow?.CrwdgroupName
-        </MudMenuItem>
+        </MudMenuItem> *@
+        @* <MudMenuItem Icon="@Icons.Material.Filled.Sync" OnClick="@(() => PatchSelectedGroup())">
+            Patch @_contextRow?.CrwdgroupName
+        </MudMenuItem> *@
         <MudMenuItem Icon="@Icons.Material.Filled.Info" OnClick="@(() => ShowAudits())">
             View Audits @_contextRow?.CrwdgroupName
         </MudMenuItem>
     </MudMenu>
 
-    <!-- Drawer for Add/Edit - Splits the page -->
+    @* Drawer *@
     <div class="drawer-container @(drawerOpen ? "open" : "") @(drawerFullscreen ? "fullscreen" : "")">
         @if (drawerOpen)
         {
@@ -190,7 +218,7 @@
                 <div class="drawer-header">
                     <div class="drawer-title">@(isEdit ? "Edit Crowd Group" : "Add Crowd Group")</div>
                     <div class="drawer-buttons">
-                        <MudIconButton Icon="@(drawerFullscreen? Icons.Material.Filled.FullscreenExit : Icons.Material.Filled.Fullscreen)"
+                        <MudIconButton Icon="@(drawerFullscreen ? Icons.Material.Filled.FullscreenExit : Icons.Material.Filled.Fullscreen)"
                                        Size="Size.Medium"
                                        Color="Color.Default"
                                        OnClick="ToggleFullscreen" />
@@ -203,67 +231,95 @@
 
                 <div style="flex: 1; overflow-y: auto; padding-right: 8px;">
                     <MudStack Spacing="2">
-                        <MudTextField T="string"
-                                      Label="CRWD Group Name"
-                                      Variant="Variant.Outlined"
-                                      @bind-Value="editingGroup.CrwdgroupName"
-                                      Dense="true"
-                                      Required="true" />
+                        @if (CanView(nameof(CrowdGroupMaster.CrwdgroupName)))
+                        {
+                            <MudTextField T="string"
+                                          Label="CRWD Group Name"
+                                          Variant="Variant.Outlined"
+                                          @bind-Value="editingGroup.CrwdgroupName"
+                                          Dense="true"
+                                          Required="true"
+                                          Disabled="@(!CanEdit(nameof(CrowdGroupMaster.CrwdgroupName)))" />
+                        }
 
-                        <MudSelect T="string"
-                                   Label="Group Type"
-                                   Variant="Variant.Outlined"
-                                   @bind-Value="editingGroup.GroupType"
-                                   Dense="true"
-                                   Required="true">
-                            <MudSelectItem Value="@("Host_Group")">Host_Group</MudSelectItem>
-                            <MudSelectItem Value="@("Cloud_Group")">Cloud_Group</MudSelectItem>
-                        </MudSelect>
+                        @if (CanView(nameof(CrowdGroupMaster.GroupType)))
+                        {
+                            <MudSelect T="string"
+                                       Label="Group Type"
+                                       Variant="Variant.Outlined"
+                                       @bind-Value="editingGroup.GroupType"
+                                       Dense="true"
+                                       Required="true"
+                                       Disabled="@(!CanEdit(nameof(CrowdGroupMaster.GroupType)))">
+                                <MudSelectItem Value="@("Host_Group")">Host_Group</MudSelectItem>
+                                <MudSelectItem Value="@("Cloud_Group")">Cloud_Group</MudSelectItem>
+                            </MudSelect>
+                        }
 
-                        <MudTextField T="string"
-                                      Label="Group ID"
-                                      Variant="Variant.Outlined"
-                                      @bind-Value="editingGroup.GroupId"
-                                      Dense="true"
-                                      Required="true" />
+                        @if (CanView(nameof(CrowdGroupMaster.GroupId)))
+                        {
+                            <MudTextField T="string"
+                                          Label="Group ID"
+                                          Variant="Variant.Outlined"
+                                          @bind-Value="editingGroup.GroupId"
+                                          Dense="true"
+                                          Required="true"
+                                          Disabled="@(!CanEdit(nameof(CrowdGroupMaster.GroupId)))" />
+                        }
 
-                        <MudSelect T="string"
-                                   Label="Provider"
-                                   Variant="Variant.Outlined"
-                                   @bind-Value="editingGroup.Provider"
-                                   Dense="true"
-                                   Required="true">
-                            <MudSelectItem Value="@("AWS")">AWS</MudSelectItem>
-                            <MudSelectItem Value="@("Azure")">Azure</MudSelectItem>
-                            <MudSelectItem Value="@("GCP")">GCP</MudSelectItem>
-                        </MudSelect>
+                        @if (CanView(nameof(CrowdGroupMaster.Provider)))
+                        {
+                            <MudSelect T="string"
+                                       Label="Provider"
+                                       Variant="Variant.Outlined"
+                                       Value="editingGroup.Provider"
+                                       ValueChanged="OnProviderChanged"
+                                       Dense="true"
+                                       Required="true"
+                                       Disabled="@(!CanEdit(nameof(CrowdGroupMaster.Provider)))">
+                                <MudSelectItem Value="@("AWS")">AWS</MudSelectItem>
+                                <MudSelectItem Value="@("Azure")">Azure</MudSelectItem>
+                                <MudSelectItem Value="@("GCP")">GCP</MudSelectItem>
+                            </MudSelect>
+                        }
 
-                        <!-- Business Function Autocomplete -->
-                        <MudAutocomplete T="BusinessFunctionMaster"
-                                         Label="Business Function"
-                                         Variant="Variant.Outlined"
-                                         Dense="true"
-                                         Required="true"
-                                         Value="selectedBusinessFunction"
-                                         ValueChanged="OnBusinessFunctionChanged"
-                                         SearchFunc="SearchBusinessFunctions"
-                                         ToStringFunc="@(x => x?.BusinessFunctionName ?? string.Empty)"
-                                         Clearable="false" />
+                        @if (CanView(nameof(CrowdGroupMaster.BusinessFunction.BusinessFunctionName)))
+                        {
+                            <MudAutocomplete T="BusinessFunctionMaster"
+                                             Label="Business Function"
+                                             Variant="Variant.Outlined"
+                                             Dense="true"
+                                             Required="true"
+                                             Disabled="@(!CanEdit(nameof(CrowdGroupMaster.BusinessFunction.BusinessFunctionName)))"
+                                             Value="selectedBusinessFunction"
+                                             ValueChanged="OnBusinessFunctionChanged"
+                                             SearchFunc="SearchBusinessFunctions"
+                                             ToStringFunc="@(x => x?.BusinessFunctionName ?? string.Empty)"
+                                             Clearable="false" />
+                        }
 
-                        <MudTextField T="string"
-                                      Label="All Account IDs"
-                                      Variant="Variant.Outlined"
-                                      @bind-Value="editingGroup.AllAccountIds"
-                                      Dense="true"
-                                      HelperText="Comma-separated account IDs"
-                                      Lines="2" />
+                        @if (CanView(nameof(CrowdGroupMaster.AllAccountIds)))
+                        {
+                            <MudTextField T="string"
+                                          Label="All Account IDs"
+                                          Variant="Variant.Outlined"
+                                          @bind-Value="editingGroup.AllAccountIds"
+                                          Dense="true"
+                                          HelperText="Comma-separated account IDs"
+                                          Lines="2"
+                                          Disabled="@(!CanEdit(nameof(CrowdGroupMaster.AllAccountIds)))" />
+                        }
 
-                        <MudTextField T="string"
-                                      Label="Remarks"
-                                      Variant="Variant.Outlined"
-                                      @bind-Value="editingGroup.Remarks"
-                                      Lines="3"
-                                      Dense="true" />
+                        @if (CanView(nameof(CrowdGroupMaster.Remarks)))
+                        {
+                            <MudTextField T="string"
+                                          Label="Remarks"
+                                          Variant="Variant.Outlined"
+                                          @bind-Value="editingGroup.Remarks"
+                                          Lines="3"
+                                          Dense="true"
+                                          Disabled="@(!CanEdit(nameof(CrowdGroupMaster.Remarks)))" />
+                        }
                     </MudStack>
                 </div>
 
@@ -332,23 +388,92 @@
         transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
+    /* Grid container - FIXED */
     .grid-container {
         flex: 1;
-        min-width: 0;
+        min-height: 0; /* CRITICAL: allows flex child to shrink */
         display: flex;
         flex-direction: column;
-        min-height: 0;
-        position: relative;
-        padding: 20px;
+        padding: 20px !important;
+        overflow: hidden;
     }
 
     .data-grid-wrapper {
-        height: 100%;
+        flex: 1;
+        min-height: 0; /* CRITICAL: allows flex child to shrink */
         display: flex;
         flex-direction: column;
-        position: relative;
+        overflow: hidden;
     }
 
+    /* Force MudDataGrid to use flex layout */
+    ::deep .mud-data-grid {
+        display: flex !important;
+        flex-direction: column !important;
+        flex: 1 !important;
+        min-height: 0 !important;
+        overflow: hidden !important;
+    }
+
+    /* Table container - THIS DOES THE SCROLLING */
+    ::deep .mud-table-container {
+        flex: 1 !important;
+        overflow-y: auto !important;
+        overflow-x: auto !important;
+        min-height: 0 !important;
+    }
+
+    /* Keep header sticky */
+    ::deep .mud-table-head {
+        position: sticky !important;
+        top: 0 !important;
+        z-index: 15 !important;
+        background: #F8F9FC !important;
+    }
+
+    /* Keep filter row sticky */
+    ::deep .mud-table-filter-row {
+        position: sticky !important;
+        top: 48px !important;
+        z-index: 14 !important;
+        background: #F8F9FC !important;
+    }
+
+    /* Keep footer sticky at bottom */
+    ::deep .mud-table-pagination {
+        flex-shrink: 0 !important;
+        background: white !important;
+        border-top: 1px solid #E2E8F0 !important;
+        position: sticky !important;
+        bottom: 0 !important;
+        z-index: 10 !important;
+    }
+
+    /* Sticky first column */
+    ::deep .mud-table-head .mud-table-cell:first-child,
+    ::deep .mud-table-body .mud-table-row .mud-table-cell:first-child,
+    ::deep .mud-table-filter-row .mud-table-cell:first-child {
+        position: sticky !important;
+        left: 0 !important;
+        z-index: 20 !important;
+    }
+
+    ::deep .mud-table-head .mud-table-cell:first-child {
+        background: #F8F9FC !important;
+        z-index: 25 !important;
+    }
+
+    ::deep .mud-table-body .mud-table-row .mud-table-cell:first-child {
+        background: white !important;
+        z-index: 15 !important;
+    }
+
+    ::deep .mud-table-filter-row .mud-table-cell:first-child {
+        background: #F8F9FC !important;
+        z-index: 30 !important;
+    }
+
+    /* Drawer styles */
     .drawer-container {
         width: 0;
         flex-shrink: 0;
@@ -460,34 +585,7 @@
         display: block;
     }
 
-    /* Ensure the sticky header and cells work properly */
-    ::deep .mud-table-container {
-        overflow-x: auto !important;
-    }
-
-    ::deep .mud-table-head .mud-table-cell:first-child {
-        position: sticky !important;
-        left: 0 !important;
-        z-index: 15 !important;
-        background: #F8F9FC !important;
-    }
-
-    ::deep .mud-table-body .mud-table-row .mud-table-cell:first-child {
-        position: sticky !important;
-        left: 0 !important;
-        z-index: 10 !important;
-        background: white !important;
-    }
-
-    /* Filter row sticky positioning */
-    ::deep .mud-table-filter-row .mud-table-cell:first-child {
-        position: sticky !important;
-        left: 0 !important;
-        z-index: 20 !important;
-        background: #F8F9FC !important;
-        overflow: visible !important;
-    }
-
+    /* Scrollbar styles */
     ::-webkit-scrollbar {
         width: 8px;
         height: 8px;
@@ -515,6 +613,9 @@
     private List<CrowdGroupMaster> groups = new();
     private List<BusinessFunctionMaster> businessFunctions = new();
     private BusinessFunctionMaster? selectedBusinessFunction;
+    private List<string> viewableColumns = new();
+    private List<string> editableColumns = new();
+
 
     private bool isLoading = true;
     private bool isSaving = false;
@@ -524,9 +625,22 @@
     private int PageSize = 10;
     private int[] PageSizeOptions = new[] { 10, 25, 50, 100 };
     private CrowdGroupMaster editingGroup = new();
+    private bool CanView(string columnName)
+        => viewableColumns.Contains(columnName) || editableColumns.Contains(columnName);
+
+    private bool CanEdit(string columnName)
+        => editableColumns.Contains(columnName);
+
 
     protected override async Task OnInitializedAsync()
     {
+        viewableColumns = TableConfigService
+        .GetViewableColumns(nameof(CrowdGroupMaster))
+        .ToList();
+
+        editableColumns = TableConfigService
+            .GetEditableColumns(nameof(CrowdGroupMaster))
+            .ToList();
         await LoadData();
     }
 
@@ -588,16 +702,62 @@
         );
     }
 
-    private void OnBusinessFunctionChanged(BusinessFunctionMaster? value)
+    private async Task OnBusinessFunctionChanged(BusinessFunctionMaster? value)
     {
         selectedBusinessFunction = value;
 
         if (value is null)
+        {
+            editingGroup.BusinessFunctionId = null;
+            editingGroup.AllAccountIds = string.Empty;
             return;
+        }
 
         editingGroup.BusinessFunctionId = value.Id;
 
+        await RefreshAllAccountIds();
     }
+
+    private async Task OnProviderChanged(string value)
+    {
+        editingGroup.Provider = value;
+
+        await RefreshAllAccountIds();
+    }
+
+    private async Task RefreshAllAccountIds()
+    {
+        if (editingGroup.BusinessFunctionId.HasValue &&
+            !string.IsNullOrWhiteSpace(editingGroup.Provider))
+        {
+            editingGroup.AllAccountIds = await CrowdGroupService.GetAllAccountIdsAsync(
+                editingGroup.BusinessFunctionId.Value,
+                editingGroup.Provider);
+
+            StateHasChanged();
+        }
+    }
+
+    // private async Task PatchSelectedGroup()
+    // {
+    //     if (_contextRow is null)
+    //         return;
+
+    //     try
+    //     {
+    //         await CrowdGroupService.PatchGroupAsync(_contextRow.Id);
+
+    //         Snackbar.Add(
+    //             $"Patched {_contextRow.CrwdgroupName} successfully",
+    //             Severity.Success);
+
+    //         await LoadData();
+    //     }
+    //     catch (Exception ex)
+    //     {
+    //         Snackbar.Add($"Patch failed: {ex.Message}", Severity.Error);
+    //     }
+    // }
 
     private async Task OpenContextMenu(DataGridRowClickEventArgs<CrowdGroupMaster> args)
     {

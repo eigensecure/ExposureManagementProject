@@ -47,6 +47,21 @@ namespace CloudAccountsUI.Services
                    ?? throw new Exception("Failed to update crowd group");
         }
 
+        public async Task<string> GetAllAccountIdsAsync(int businessFunctionId, string provider)
+        {
+            return await _httpClient.GetStringAsync(
+                $"api/CrowdGroupMaster/accountids?businessFunctionId={businessFunctionId}&provider={provider}");
+        }
+
+        public async Task PatchGroupAsync(int id)
+        {
+            var response = await _httpClient.PostAsync(
+                $"api/CrowdGroupMaster/patch/{id}",
+                null);
+
+            response.EnsureSuccessStatusCode();
+        }
+
         public async Task DeleteAsync(int id)
         {
             var response = await _httpClient.DeleteAsync(
