@@ -35,6 +35,10 @@ public class CloudAccountsTransactionConfig
                 AuditVisibility = AuditVisibility.Hidden
             },
             new() {
+                Name = nameof(CloudAccountsTransaction.BusFuncRefNavigation.BusinessFunctionName), //for audit only
+                Permissions= []
+            },
+            new() {
                 Name = nameof(CloudAccountsTransaction.AccountType),
                 Permissions = [ColumnPermission.View, ColumnPermission.Edit]
             },

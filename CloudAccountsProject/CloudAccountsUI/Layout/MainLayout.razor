@@ -1,5 +1,142 @@
 ﻿@inherits LayoutComponentBase
 @using MudBlazor
+@inject NavigationManager Nav
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
+
+<MudThemeProvider />
+<MudPopoverProvider />
+<MudDialogProvider />
+<MudSnackbarProvider />
+
+<MudLayout>
+    <CascadingValue Value="this">
+
+        <MudAppBar Elevation="0" Class="custom-appbar">
+            <MudIconButton Icon="@Icons.Material.Filled.Menu"
+                           Color="Color.Inherit"
+                           Edge="Edge.Start"
+                           OnClick="@((e) => DrawerToggle())"
+                           Style="color: white;" />
+
+            
+
+            <MudSpacer />
+
+            <MudIconButton Icon="@Icons.Material.Filled.Notifications"
+                           Color="Color.Inherit"
+                           Style="color: white; margin-right: 8px;" />
+
+            <MudMenu AnchorOrigin="Origin.BottomRight"
+                     TransformOrigin="Origin.TopRight">
+
+                <ActivatorContent>
+                    <MudAvatar Style="background: rgba(255,255,255,0.2); cursor: pointer;" Size="Size.Small">
+                        <MudIcon Icon="@Icons.Material.Filled.Person" Style="color: white;" />
+                    </MudAvatar>
+                </ActivatorContent>
+
+                <ChildContent>
+                    @if (!isLoggedIn)
+                    {
+                        <MudMenuItem Icon="@Icons.Material.Filled.Login"
+                                     OnClick="GoToLogin">
+                            Login
+                        </MudMenuItem>
+                    }
+                    else
+                    {
+                        <MudMenuItem Icon="@Icons.Material.Filled.Person">
+                            @username
+                        </MudMenuItem>
+
+                        <MudDivider />
+
+                        <MudMenuItem Icon="@Icons.Material.Filled.Logout"
+                                     OnClick="Logout">
+                            Logout
+                        </MudMenuItem>
+                    }
+                </ChildContent>
+
+            </MudMenu>
+        </MudAppBar>
+
+        <MudDrawer @bind-Open="_drawerOpen"
+                   Elevation="2"
+                   ClipMode="DrawerClipMode.Always"
+                   Class="custom-drawer"
+                   Style="background: linear-gradient(180deg, #1a1a2e 0%, #16213e 100%);">
+            <NavMenu />
+        </MudDrawer>
+
+        <MudMainContent Class="main-content">
+            <MudContainer MaxWidth="MaxWidth.False" Class="mt-4">
+                @Body
+            </MudContainer>
+        </MudMainContent>
+
+    </CascadingValue>
+</MudLayout>
+
+@code {
+    private bool _drawerOpen = true;
+
+    private bool isLoggedIn = false;
+    private string username = "User";
+
+    private bool _initialized = false;
+
+    void DrawerToggle()
+    {
+        _drawerOpen = !_drawerOpen;
+    }
+
+    public void OpenNav()
+    {
+        _drawerOpen = true;
+        StateHasChanged();
+    }
+
+    public void CloseNav()
+    {
+        _drawerOpen = false;
+        StateHasChanged();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!_initialized)
+        {
+            await CheckLogin();
+            _initialized = true;
+            StateHasChanged();
+        }
+    }
+
+    private async Task CheckLogin()
+    {
+        var token = await localStorage.GetItemAsync<string>("authToken");
+        isLoggedIn = !string.IsNullOrWhiteSpace(token);
+
+        if (isLoggedIn)
+        {
+            username = "Logged User";
+        }
+    }
+
+    private void GoToLogin()
+    {
+        Nav.NavigateTo("/login");
+    }
+
+    private async Task Logout()
+    {
+        await localStorage.RemoveItemAsync("authToken");
+        isLoggedIn = false;
+        Nav.NavigateTo("/login", true);
+    }
+}
+
 
 <style>
     .custom-appbar {
@@ -21,64 +158,12 @@
         color: #e0e0e0 !important;
     }
 
-    .custom-drawer .mud-drawer {
-        background: linear-gradient(180deg, #1a1a2e 0%, #16213e 100%) !important;
-    }
+        .custom-drawer .mud-drawer {
+            background: linear-gradient(180deg, #1a1a2e 0%, #16213e 100%) !important;
+        }
 
     .main-content {
         background: #f8f9fa;
         min-height: 100vh;
     }
 </style>
-
-<MudThemeProvider />
-<MudPopoverProvider />
-<MudDialogProvider />
-<MudSnackbarProvider />
-
-<MudLayout>
-    <MudAppBar Elevation="0" Class="custom-appbar">
-        <MudIconButton Icon="@Icons.Material.Filled.Menu"
-                       Color="Color.Inherit"
-                       Edge="Edge.Start"
-                       OnClick="@((e) => DrawerToggle())"
-                       Style="color: white;" />
-
-        <MudText Typo="Typo.h6" Class="ml-4 appbar-title" Style="color: white;">
-            ☁️ Cloud Accounts UI
-        </MudText>
-
-        <MudSpacer />
-
-        <MudIconButton Icon="@Icons.Material.Filled.Notifications"
-                       Color="Color.Inherit"
-                       Style="color: white; margin-right: 8px;" />
-
-        <MudAvatar Style="background: rgba(255,255,255,0.2); cursor: pointer;" Size="Size.Small">
-            <MudIcon Icon="@Icons.Material.Filled.Person" Style="color: white;" />
-        </MudAvatar>
-    </MudAppBar>
-
-    <MudDrawer @bind-Open="_drawerOpen"
-               Elevation="2"
-               ClipMode="DrawerClipMode.Always"
-               Class="custom-drawer"
-               Style="background: linear-gradient(180deg, #1a1a2e 0%, #16213e 100%);">
-        <NavMenu />
-    </MudDrawer>
-
-    <MudMainContent Class="main-content">
-        <MudContainer MaxWidth="MaxWidth.False" Class="mt-4">
-            @Body
-        </MudContainer>
-    </MudMainContent>
-</MudLayout>
-
-@code {
-    private bool _drawerOpen = true;
-
-    void DrawerToggle()
-    {
-        _drawerOpen = !_drawerOpen;
-    }
-}

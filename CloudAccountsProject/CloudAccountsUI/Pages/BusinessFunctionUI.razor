@@ -10,6 +10,7 @@
 @inject ICloudHistoryService cloudhistoryservice
 @inject IBusinessFunctionService BusinessFunctionService
 @inject ITableConfigService TableConfigService
+@inherits LayoutComponentBase
 
 <div class="full-page-container">
     
@@ -855,6 +856,8 @@
     private int PageSize = 10;
     private int[] PageSizeOptions = new[] { 10, 25, 50, 100 };
     private bool drawerFullscreen = false;
+    [CascadingParameter]
+    public MainLayout? Layout { get; set; }
     private bool showColumnDialog = false;
     private List<string> viewableColumns = new();
     private List<string> editableColumns = new();
@@ -961,6 +964,14 @@
     private void ToggleFullscreen()
     {
         drawerFullscreen = !drawerFullscreen;
+        if (drawerFullscreen)
+        {
+            Layout?.CloseNav();
+        }
+        else
+        {
+            Layout?.OpenNav();
+        }
         StateHasChanged();
     }
 

@@ -10,6 +10,7 @@
 @inject IBusinessFunctionService BusinessFunctionService
 @inject ISnackbar Snackbar
 @inject IDialogService DialogService
+@inherits LayoutComponentBase
 
 <div class="full-page-container">
     <div class="main-wrapper @(drawerOpen && !drawerFullscreen ? "drawer-open" : "") @(drawerFullscreen ? "fullscreen-active" : "")">
@@ -621,6 +622,8 @@
     private bool isSaving = false;
     private bool drawerOpen = false;
     private bool drawerFullscreen = false;
+    [CascadingParameter]
+    public MainLayout? Layout { get; set; }
     private bool isEdit = false;
     private int PageSize = 10;
     private int[] PageSizeOptions = new[] { 10, 25, 50, 100 };
@@ -859,6 +862,14 @@
     private void ToggleFullscreen()
     {
         drawerFullscreen = !drawerFullscreen;
+        if (drawerFullscreen)
+        {
+            Layout?.CloseNav();
+        }
+        else
+        {
+            Layout?.OpenNav();
+        }
         StateHasChanged();
     }
 

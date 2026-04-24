@@ -3,6 +3,8 @@ using CloudAccountsProjects.Data;
 using CloudAccountsShared.Models;
 using CloudAccountsShared.Models.DTOs;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace CloudAccountsProject.Repositories;
 
@@ -33,33 +35,43 @@ public class CloudHistoryRepository(CloudAccountsDbContext context) : ICloudHist
     public async Task<List<AuditHistoryDTO>> GetManAuditByRef(int Id)
     {
         var manId = await _context.CloudAccountsTransactions
-        .Where(x => x.CloudAccRef == Id)
-        .Select(x => x.Id)
-        .FirstOrDefaultAsync();
+            .Where(x => x.CloudAccRef == Id)
+            .Select(x => x.Id)
+            .FirstOrDefaultAsync();
 
         var auditEntities = await _context.AuditTableTransactions
-        .FromSqlRaw(@"
+            .FromSqlRaw(@"
             SELECT * 
             FROM AuditTableTransaction
             WHERE JSON_VALUE(PrimaryKey, '$.Id') = {0} 
               AND TableName = {1}
             ORDER BY DateTime DESC",
-            manId,
-            nameof(CloudAccountsTransaction))
-        .ToListAsync();
+                manId,
+                nameof(CloudAccountsTransaction))
+            .ToListAsync();
 
-        return [.. auditEntities.Select(x => new AuditHistoryDTO
+        var result = new List<AuditHistoryDTO>();
+
+        foreach (var x in auditEntities)
         {
-            Id = x.Id,
-            TableName = x.TableName,
-            PrimaryKey = x.PrimaryKey,
-            ModifiedByUser = x.ModifiedByUser,
-            Type = x.Type,
-            DateTime = x.DateTime,
-            OldValues = x.OldValues,
-            NewValues = x.NewValues,
-            AffectedColumns = x.AffectedColumns
-        })];
+            var oldValues = await EnrichBusinessFunctionAsync(x.OldValues);
+            var newValues = await EnrichBusinessFunctionAsync(x.NewValues);
+
+            result.Add(new AuditHistoryDTO
+            {
+                Id = x.Id,
+                TableName = x.TableName,
+                PrimaryKey = x.PrimaryKey,
+                ModifiedByUser = x.ModifiedByUser,
+                Type = x.Type,
+                DateTime = x.DateTime,
+                OldValues = oldValues,
+                NewValues = newValues,
+                AffectedColumns = x.AffectedColumns
+            });
+        }
+
+        return result;
     }
 
     public async Task<List<AuditHistoryDTO>> GetBusAuditByRef(int Id)
@@ -114,5 +126,36 @@ public class CloudHistoryRepository(CloudAccountsDbContext context) : ICloudHist
             NewValues = x.NewValues,
             AffectedColumns = x.AffectedColumns
         })];
+    }
+
+    private async Task<string?> EnrichBusinessFunctionAsync(string? json)
+    {
+        var businessForeignKeyName = nameof(CloudAccountsTransaction.BusFuncRef);
+        var businessFunctionName = nameof(CloudAccountsTransaction.BusFuncRefNavigation.BusinessFunctionName);
+
+        if (string.IsNullOrWhiteSpace(json))
+            return json;
+
+        var jObj = JObject.Parse(json);
+
+        if (jObj.TryGetValue(businessForeignKeyName, out JToken token) &&
+        token.Type != JTokenType.Null)
+        {
+            int id = token.Value<int>();
+
+            var name = await _context.BusinessFunctionMasters
+                .Where(x => x.Id == id)
+                .Select(x => x.BusinessFunctionName)
+                .FirstOrDefaultAsync();
+
+            jObj[businessFunctionName] = !string.IsNullOrEmpty(name) ? name : null;
+        }
+        else
+        {
+            // Key missing OR value is null
+            jObj[businessFunctionName] = null;
+        }
+
+        return jObj.ToString(Formatting.None);
     }
 }

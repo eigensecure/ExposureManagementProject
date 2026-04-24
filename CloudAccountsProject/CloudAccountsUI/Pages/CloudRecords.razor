@@ -15,6 +15,7 @@
 @inject ISnackbar Snackbar
 @inject IBusinessFunctionService BusinessFunctionService
 @inject ITableConfigService TableConfigService
+@inherits LayoutComponentBase
 
 <div class="full-page-container">
     <div class="main-wrapper @(drawerOpen && !drawerFullscreen ? "drawer-open" : "") @(drawerFullscreen ? "fullscreen-active" : "")">
@@ -246,6 +247,66 @@
                                                 Width="240px"
                                                 Resizable="true"
                                                 Hideable="true" />
+                            }
+
+                            @if (!ShouldHideColumn("BusinessFunctionName"))
+                            {
+                                <PropertyColumn Property="x => x.BusinessFunctionName"
+                                                Title="@GetColumnTitle("BusinessFunctionName")"
+                                                Width="240px"
+                                                Resizable="true"
+                                                Hideable="true" />
+                            }
+
+                            @if (!ShouldHideColumn("AccountType"))
+                            {
+                                <PropertyColumn Property="x => x.AccountType"
+                                                Title="@GetColumnTitle("AccountType")"
+                                                Width="160px"
+                                                Resizable="true"
+                                                Hideable="true" />
+                            }
+
+                            @if (!ShouldHideColumn("OverallStatus"))
+                            {
+                                <PropertyColumn Property="x => x.OverallStatus"
+                                                Title="@GetColumnTitle("OverallStatus")"
+                                                Width="160px"
+                                                Resizable="true"
+                                                Hideable="true" />
+                            }
+
+                            @if (!ShouldHideColumn("ManualRemarks"))
+                            {
+                                <PropertyColumn Property="x => x.ManualRemarks"
+                                                Title="@GetColumnTitle("ManualRemarks")"
+                                                Width="260px"
+                                                Resizable="true"
+                                                Hideable="true"
+                                                CellStyle="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" />
+                            }
+
+                            @if (!ShouldHideColumn("AttachmentPath"))
+                            {
+                                <PropertyColumn Property="x => x.AttachmentPath"
+                                                Title="@GetColumnTitle("AttachmentPath")"
+                                                Width="260px"
+                                                Resizable="true"
+                                                Hideable="true">
+
+                                    <CellTemplate Context="context">
+                                        @if (!string.IsNullOrWhiteSpace(context.Item.AttachmentPath))
+                                        {
+                                            var fileNames = context.Item.AttachmentPath
+                                            .Split(';', StringSplitOptions.RemoveEmptyEntries)
+                                            .Select(f => Path.GetFileName(f));
+
+                                            <span class="truncate-text">
+                                                @string.Join(", ", fileNames)
+                                            </span>
+                                        }
+                                    </CellTemplate>
+                                </PropertyColumn>
                             }
 
                         </Columns>
@@ -1020,6 +1081,8 @@
 
     private bool drawerOpen;
     private bool drawerFullscreen = false;
+    [CascadingParameter]
+    public MainLayout? Layout { get; set; }
     private bool isUploadingAttachment = false;
 
     private List<CloudAccountDetailsDTO> cloudAccounts = new();
@@ -1267,6 +1330,14 @@
     private void ToggleFullscreen()
     {
         drawerFullscreen = !drawerFullscreen;
+        if (drawerFullscreen)
+        {
+            Layout?.CloseNav();
+        }
+        else
+        {
+            Layout?.OpenNav();
+        }
         StateHasChanged();
     }
 

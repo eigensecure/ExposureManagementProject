@@ -45,7 +45,7 @@
                       AdornmentIcon="@Icons.Material.Filled.Lock"
                       Disabled="@isLoading"
                       Class="mb-6"
-                      AdornmentEndIcon="@(showPassword? Icons.Material.Filled.VisibilityOff : Icons.Material.Filled.Visibility)"
+                      AdornmentEndIcon="@(showPassword ? Icons.Material.Filled.VisibilityOff : Icons.Material.Filled.Visibility)"
                       OnAdornmentClick="@TogglePasswordVisibility" />
 
         <MudButton Variant="Variant.Filled"
@@ -130,11 +130,10 @@
                 var result = await response.Content.ReadFromJsonAsync<TokenResponse>();
 
                 await localStorage.SetItemAsync("authToken", result?.token);
-                await localStorage.SetItemAsync("username", username);
 
                 Snackbar.Add("Login successful", Severity.Success);
 
-                nav.NavigateTo("/");
+                nav.NavigateTo("/", true);
             }
             else
             {

@@ -1,7 +1,270 @@
 ﻿@page "/"
 
-<PageTitle>Home</PageTitle>
+<PageTitle>Home | Cloud Dashboard</PageTitle>
 
-<h1>Hello, world!</h1>
+<div class="home-container">
+    <!-- Compact Header -->
+    <div class="hero-section">
+        <MudText Typo="Typo.h4" Class="home-title">
+            Cloud Accounts Dashboard
+        </MudText>
+        <MudText Typo="Typo.body2" Class="home-subtitle">
+            Manage cloud accounts, business functions, and crowd groups
+        </MudText>
+    </div>
 
-Welcome to your new app.
+    <!-- Cards with Modern Effects -->
+    <MudGrid Class="cards-grid">
+
+        <!-- Cloud Accounts -->
+        <MudItem xs="12" sm="6" md="4">
+            <MudPaper Class="home-card card-1" Elevation="0" @onclick="@(() => NavigateTo("/cloudrecords"))">
+                <div class="card-icon-wrapper">
+                    <MudIcon Icon="@Icons.Material.Filled.CloudQueue" Size="Size.Medium" Class="card-icon" />
+                </div>
+                <MudText Typo="Typo.h6" Class="card-title">Cloud Accounts</MudText>
+                <MudText Typo="Typo.body2" Class="card-desc">
+                    AWS, Azure, GCP management
+                </MudText>
+                <div class="card-footer">
+                    <span class="learn-more">Access →</span>
+                </div>
+            </MudPaper>
+        </MudItem>
+
+        <!-- Business Function -->
+        <MudItem xs="12" sm="6" md="4">
+            <MudPaper Class="home-card card-2" Elevation="0" @onclick="@(() => NavigateTo("/businessfunction"))">
+                <div class="card-icon-wrapper">
+                    <MudIcon Icon="@Icons.Material.Filled.AccountTree" Size="Size.Medium" Class="card-icon" />
+                </div>
+                <MudText Typo="Typo.h6" Class="card-title">Business Function</MudText>
+                <MudText Typo="Typo.body2" Class="card-desc">
+                    Owners, SPOCs & tags
+                </MudText>
+                <div class="card-footer">
+                    <span class="learn-more">Access →</span>
+                </div>
+            </MudPaper>
+        </MudItem>
+
+        <!-- Crowd Groups -->
+        <MudItem xs="12" sm="6" md="4">
+            <MudPaper Class="home-card card-3" Elevation="0" @onclick="@(() => NavigateTo("/crowdgroupmaster"))">
+                <div class="card-icon-wrapper">
+                    <MudIcon Icon="@Icons.Material.Filled.Diversity3" Size="Size.Medium" Class="card-icon" />
+                </div>
+                <MudText Typo="Typo.h6" Class="card-title">Crowd Groups Master</MudText>
+                <MudText Typo="Typo.body2" Class="card-desc">
+                    Monitor & manage groups
+                </MudText>
+                <div class="card-footer">
+                    <span class="learn-more">Access →</span>
+                </div>
+            </MudPaper>
+        </MudItem>
+
+    </MudGrid>
+
+    <!-- Subtle Decorative Elements -->
+    <div class="bg-gradient-blur"></div>
+</div>
+
+@code {
+    [Inject] private NavigationManager Nav { get; set; } = default!;
+
+    private void NavigateTo(string url)
+    {
+        Nav.NavigateTo(url);
+    }
+}
+
+<style>
+    /* Base Container */
+    .home-container {
+        min-height: calc(100vh - 100px);
+        position: relative;
+        overflow-x: hidden;
+    }
+
+    /* Hero Section - Compact Version */
+    .hero-section {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 20px;
+        padding: 1.75rem 2rem;
+        margin-bottom: 2rem;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 4px 20px rgba(102, 126, 234, 0.15);
+    }
+
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -10%;
+            width: 60%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0) 70%);
+            transform: rotate(25deg);
+            pointer-events: none;
+        }
+
+    .home-title {
+        color: white !important;
+        font-weight: 500 !important;
+        margin-bottom: 0.25rem !important;
+    }
+
+    .home-subtitle {
+        color: rgba(255,255,255,0.85) !important;
+        font-size: 0.875rem !important;
+    }
+
+    /* Cards Grid */
+    .cards-grid {
+        position: relative;
+        z-index: 2;
+    }
+
+    /* Modern Cards - Compact Version */
+    .home-card {
+        border-radius: 20px;
+        padding: 1.25rem 1rem;
+        cursor: pointer;
+        text-align: center;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        background: white;
+        border: 1px solid rgba(0,0,0,0.05);
+        position: relative;
+        overflow: hidden;
+    }
+
+        .home-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .home-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .home-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px rgba(0,0,0,0.1);
+            border-color: rgba(102, 126, 234, 0.2);
+        }
+
+    .card-icon-wrapper {
+        width: 52px;
+        height: 52px;
+        background: linear-gradient(135deg, #f5f7ff 0%, #eef2ff 100%);
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 0.75rem;
+        transition: all 0.3s ease;
+    }
+
+    .home-card:hover .card-icon-wrapper {
+        transform: scale(1.05);
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+
+    .card-icon {
+        color: #667eea !important;
+        transition: all 0.3s ease;
+    }
+
+    .home-card:hover .card-icon {
+        color: white !important;
+    }
+
+    .card-title {
+        font-weight: 600 !important;
+        color: #1a1f36;
+        margin-bottom: 0.25rem !important;
+        font-size: 1rem !important;
+    }
+
+    .card-desc {
+        color: #6b7280 !important;
+        margin-bottom: 1rem !important;
+        font-size: 0.75rem !important;
+    }
+
+    .card-footer {
+        border-top: 1px solid rgba(0,0,0,0.05);
+        padding-top: 0.75rem;
+        margin-top: 0;
+    }
+
+    .learn-more {
+        font-size: 0.75rem;
+        font-weight: 500;
+        color: #667eea;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: gap 0.3s ease;
+    }
+
+    .home-card:hover .learn-more {
+        gap: 0.75rem;
+        color: #764ba2;
+    }
+
+    /* Card-specific subtle differences */
+    .card-2 .card-icon-wrapper {
+        background: linear-gradient(135deg, #fef3c7 0%, #fffbeb 100%);
+    }
+
+    .card-2 .card-icon {
+        color: #f59e0b !important;
+    }
+
+    .card-2:hover .card-icon-wrapper {
+        background: linear-gradient(135deg, #f59e0b 0%, #f97316 100%);
+    }
+
+    .card-2 .learn-more {
+        color: #f59e0b;
+    }
+
+    .card-3 .card-icon-wrapper {
+        background: linear-gradient(135deg, #e0f2fe 0%, #f0f9ff 100%);
+    }
+
+    .card-3 .card-icon {
+        color: #0ea5e9 !important;
+    }
+
+    .card-3:hover .card-icon-wrapper {
+        background: linear-gradient(135deg, #0ea5e9 0%, #3b82f6 100%);
+    }
+
+    .card-3 .learn-more {
+        color: #0ea5e9;
+    }
+
+    /* Decorative Background */
+    .bg-gradient-blur {
+        position: fixed;
+        bottom: -20%;
+        left: -10%;
+        width: 70%;
+        height: 70%;
+        background: radial-gradient(circle, rgba(102,126,234,0.05) 0%, rgba(118,75,162,0.05) 100%);
+        filter: blur(80px);
+        pointer-events: none;
+        z-index: 0;
+    }
+</style>

@@ -1,4 +1,51 @@
-﻿<style>
+﻿<MudNavMenu>
+    <div class="nav-section">
+        <div class="nav-section-title">Welcome Back!</div>
+
+        <MudNavLink Href="/"
+                    Match="NavLinkMatch.All"
+                    IconColor="Color.Inherit"
+                    Icon="@Icons.Material.Filled.Home"
+                    Class="custom-nav-link">
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <span>Home</span>
+            </div>
+        </MudNavLink>
+
+        <MudNavLink Href="/cloudrecords"
+                    Match="NavLinkMatch.All"
+                    IconColor="Color.Inherit"
+                    Icon="@Icons.Material.Filled.Cloud"
+                    Class="custom-nav-link">
+            <div style="display: flex; align-items: center; gap: 12px;">
+                
+                <span>Cloud Accounts</span>
+            </div>
+        </MudNavLink>
+
+        <MudNavLink Href="/businessfunction"
+                    Match="NavLinkMatch.All"
+                    IconColor="Color.Inherit"
+                    Icon="@Icons.Material.Filled.Business"
+                    Class="custom-nav-link">
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <span>Business Function</span>
+            </div>
+        </MudNavLink>
+
+        <MudNavLink Href="/crowdgroupmaster"
+                    Match="NavLinkMatch.All"
+                    IconColor="Color.Inherit"
+                    Icon="@Icons.Material.Filled.Groups"
+                    Class="custom-nav-link">
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <span>Crowd Group Master</span>
+            </div>
+        </MudNavLink>
+    </div>
+</MudNavMenu>
+
+<style>
     .nav-header {
         padding: 24px 16px 16px 16px;
         text-align: center;
@@ -74,40 +121,3 @@
         color: rgba(255, 255, 255, 0.4);
     }
 </style>
-
-<MudNavMenu>
-    <div class="nav-section">
-        <div class="nav-section-title">NAVIGATION</div>
-
-        <MudNavLink Href="/cloudrecords"
-                    Match="NavLinkMatch.All"
-                    IconColor="Color.Inherit"
-                    Icon="@Icons.Material.Filled.Cloud"
-                    Class="custom-nav-link">
-            <div style="display: flex; align-items: center; gap: 12px;">
-                
-                <span>Cloud Accounts</span>
-            </div>
-        </MudNavLink>
-
-        <MudNavLink Href="/businessfunction"
-                    Match="NavLinkMatch.All"
-                    IconColor="Color.Inherit"
-                    Icon="@Icons.Material.Filled.Business"
-                    Class="custom-nav-link">
-            <div style="display: flex; align-items: center; gap: 12px;">
-                <span>Business Function</span>
-            </div>
-        </MudNavLink>
-
-        <MudNavLink Href="/crowdgroupmaster"
-                    Match="NavLinkMatch.All"
-                    IconColor="Color.Inherit"
-                    Icon="@Icons.Material.Filled.Groups"
-                    Class="custom-nav-link">
-            <div style="display: flex; align-items: center; gap: 12px;">
-                <span>Crowd Group Master</span>
-            </div>
-        </MudNavLink>
-    </div>
-</MudNavMenu>
