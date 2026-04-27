@@ -24,6 +24,7 @@
 
             <MudIconButton Icon="@Icons.Material.Filled.Notifications"
                            Color="Color.Inherit"
+                           OnClick="ToggleNotifications"
                            Style="color: white; margin-right: 8px;" />
 
             <MudMenu AnchorOrigin="Origin.BottomRight"
@@ -64,10 +65,14 @@
         <MudDrawer @bind-Open="_drawerOpen"
                    Elevation="2"
                    ClipMode="DrawerClipMode.Always"
+                   Variant="DrawerVariant.Persistent"
                    Class="custom-drawer"
-                   Style="background: linear-gradient(180deg, #1a1a2e 0%, #16213e 100%);">
+                   Style="background: white;">
+
             <NavMenu />
         </MudDrawer>
+
+        <NotificationDrawer Open="@_notificationDrawerOpen" />
 
         <MudMainContent Class="main-content">
             <MudContainer MaxWidth="MaxWidth.False" Class="mt-4">
@@ -134,6 +139,13 @@
         await localStorage.RemoveItemAsync("authToken");
         isLoggedIn = false;
         Nav.NavigateTo("/login", true);
+    }
+
+    private bool _notificationDrawerOpen = false;
+
+    private void ToggleNotifications()
+    {
+        _notificationDrawerOpen = !_notificationDrawerOpen;
     }
 }
 

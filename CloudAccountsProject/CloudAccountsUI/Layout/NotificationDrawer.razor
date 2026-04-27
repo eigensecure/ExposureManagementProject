@@ -1,0 +1,30 @@
+﻿<MudDrawer Anchor="Anchor.Right"
+           Open="@Open"
+           Elevation="2"
+           Width="400px"
+           Variant="DrawerVariant.Persistent"
+           ClipMode="DrawerClipMode.Always">
+
+    <div class="notif-header">
+        <MudText Typo="Typo.h6">Notifications</MudText>
+    </div>
+
+    <MudDivider />
+
+</MudDrawer>
+
+@code {
+    [Parameter] public bool Open { get; set; }
+}
+
+<style>
+    .notif-header {
+        padding: 16px;
+        font-weight: 600;
+        background: #f8f9fc;
+    }
+
+    .notif-body {
+        padding: 10px;
+    }
+</style>

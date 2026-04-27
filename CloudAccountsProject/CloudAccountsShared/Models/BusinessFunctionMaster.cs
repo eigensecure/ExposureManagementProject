@@ -25,7 +25,7 @@ public partial class BusinessFunctionMaster
 
     public DateTime DateModified { get; set; }
 
-    public virtual ICollection<BusinessTag> BusinessTags { get; set; } = new List<BusinessTag>();
+    //public virtual ICollection<BusinessTag> BusinessTags { get; set; } = new List<BusinessTag>();
 
     public virtual ICollection<CloudAccountsTransaction> CloudAccountsTransactions { get; set; } = new List<CloudAccountsTransaction>();
 

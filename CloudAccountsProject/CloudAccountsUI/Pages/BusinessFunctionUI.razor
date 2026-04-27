@@ -142,16 +142,13 @@
 
                             @if (viewableColumns.Contains(nameof(BusinessFunctionMaster.BusinessTagValue)))
                             {
-                                <TemplateColumn T="BusinessFunctionMaster"
-                                                Title="Business Tags"
+                                <PropertyColumn Property="x => x.BusinessTagValue"
+                                                Title="Business Tag"
                                                 Width="260px"
                                                 Resizable="true"
-                                                Hideable="true">
-                                    <CellTemplate Context="context">
-                                        @string.Join(", ",
-                                        context.Item.BusinessTags.Select(x => $"{x.TagName}-{x.TagValue}"))
-                                    </CellTemplate>
-                                </TemplateColumn>
+                                                Hideable="true"
+                                                HeaderStyle="white-space: nowrap;"
+                                                CellStyle="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" />
                             }
 
                             @if (viewableColumns.Contains(nameof(BusinessFunctionMaster.Remarks)))
@@ -306,81 +303,31 @@
 
                     @if (CanView(nameof(BusinessFunctionMaster.BusinessTagValue)))
                     {
-                        <MudText Typo="Typo.subtitle2"
+                        @* <MudText Typo="Typo.subtitle2"
                                  Class="mb-2 mt-2"
                                  Style="color: #1A1D2E; font-size: 13px; font-weight: 600;">
-                            Business Tags
+                            Business Tag
                         </MudText>
 
                         <MudText Typo="Typo.body2"
                                  Class="mb-3"
                                  Style="color: #5A6A85; font-size: 12px;">
                             Tags are name/value pairs that enable you to categorize resources and view consolidated billing
-                        </MudText>
-
-                        <div class="tags-container">
-                            @foreach (var tag in BusinessTags)
-                            {
-                                <MudGrid Class="mb-2" @key="tag">
-                                    <MudItem xs="5">
-                                        <MudAutocomplete T="string"
-                                                         @key="@($"name-{BusinessTags.IndexOf(tag)}")"
-                                                         Label="Name"
-                                                         Variant="Variant.Outlined"
-                                                         Dense="true"
-                                                         Margin="Margin.Dense"
-                                                         @bind-Value="tag.Name"
-                                                         Placeholder="e.g., Environment"
-                                                         SearchFunc="SearchTagNames"
-                                                         Clearable="true"
-                                                         ResetValueOnEmptyText="false"
-                                                         Strict="false"
-                                                         CoerceText="false"
-                                                         CoerceValue="true"
-                                                         Class="compact-tag-input"
-                                                         Disabled="@(!CanEdit(nameof(BusinessFunctionMaster.BusinessTagValue)))" />
-                                    </MudItem>
-
-                                    <MudItem xs="5">
-                                        <MudAutocomplete T="string"
-                                                         @key="@($"value-{BusinessTags.IndexOf(tag)}")"
-                                                         Label="Value"
-                                                         Variant="Variant.Outlined"
-                                                         Dense="true"
-                                                         Margin="Margin.Dense"
-                                                         @bind-Value="tag.Value"
-                                                         Placeholder="e.g., Production"
-                                                         SearchFunc="@( (value, token) => SearchTagValues(tag.Name, value, token) )"
-                                                         Clearable="true"
-                                                         ResetValueOnEmptyText="false"
-                                                         Strict="false"
-                                                         CoerceText="false"
-                                                         CoerceValue="true"
-                                                         Class="compact-tag-input"
-                                                         Disabled="@(!CanEdit(nameof(BusinessFunctionMaster.BusinessTagValue)))" />
-                                    </MudItem>
-
-                                    <MudItem xs="2" Class="d-flex align-center">
-                                        <MudIconButton Icon="@Icons.Material.Filled.Delete"
-                                                       Color="Color.Error"
-                                                       Size="Size.Small"
-                                                       OnClick="@(() => RemoveTag(tag))"
-                                                       Disabled="@(!CanEdit(nameof(BusinessFunctionMaster.BusinessTagValue)))" />
-                                    </MudItem>
-                                </MudGrid>
-                            }
-
-                            <MudButton Variant="Variant.Outlined"
-                                       StartIcon="@Icons.Material.Filled.Add"
-                                       OnClick="AddTag"
-                                       Size="Size.Small"
-                                       Class="mt-2"
-                                       Style="border-color: #00A3FF; color: #00A3FF; font-size: 11px; padding: 2px 8px;"
-                                       Disabled="@(!CanEdit(nameof(BusinessFunctionMaster.BusinessTagValue)))">
-                                Add Tag
-                            </MudButton>
-                        </div>
+                        </MudText> *@
                     }
+
+                    <MudAutocomplete T="string"
+                                     Label="Business Tag"
+                                     Variant="Variant.Outlined"
+                                     @bind-Value="editingItem.BusinessTagValue"
+                                     SearchFunc="SearchBusinessTags"
+                                     Dense="true"
+                                     Clearable="true"
+                                     ResetValueOnEmptyText="false"
+                                     Strict="false"
+                                     CoerceText="false"
+                                     CoerceValue="true"
+                                     Disabled="@(!CanEdit(nameof(BusinessFunctionMaster.BusinessTagValue)))" />
 
                     @if (CanView(nameof(BusinessFunctionMaster.Remarks)))
                     {
@@ -836,11 +783,11 @@
 </style>
 
 @code {
-    public class BusinessTagItem
-    {
-        public string? Name { get; set; }
-        public string? Value { get; set; }
-    }
+    // public class BusinessTagItem
+    // {
+    //     public string? Name { get; set; }
+    //     public string? Value { get; set; }
+    // }
 
     public class ColumnDefinition
     {
@@ -874,7 +821,7 @@
     private bool drawerOpen;
     private bool isCreate;
     private List<string> SelectedSpocs = new();
-    private List<BusinessTagItem> BusinessTags = new();
+    // private List<BusinessTagItem> BusinessTags = new();
     private string? spocInput;
 
     private List<ColumnDefinition> AvailableColumns = new()
@@ -951,7 +898,7 @@
 
             foreach (var item in businessFunctions)
             {
-                item.BusinessTags ??= new List<BusinessTag>();
+                // item.BusinessTags ??= new List<BusinessTag>();
             }
         }
         finally
@@ -1156,49 +1103,63 @@
         StateHasChanged();
     }
 
-    private void AddTag()
-    {
-        BusinessTags.Add(new BusinessTagItem());
-    }
+    // private void AddTag()
+    // {
+    //     BusinessTags.Add(new BusinessTagItem());
+    // }
 
-    private void RemoveTag(BusinessTagItem tag)
-    {
-        BusinessTags.Remove(tag);
-    }
+    // private void RemoveTag(BusinessTagItem tag)
+    // {
+    //     BusinessTags.Remove(tag);
+    // }
 
-    private Task<IEnumerable<string>> SearchTagNames(string value, CancellationToken token)
+    // private Task<IEnumerable<string>> SearchTagNames(string value, CancellationToken token)
+    // {
+    //     IEnumerable<string> result = businessFunctions
+    //         .SelectMany(x => x.BusinessTags ?? Enumerable.Empty<BusinessTag>())
+    //         .Where(x => !string.IsNullOrWhiteSpace(x.TagName))
+    //         .Select(x => x.TagName!)
+    //         .Distinct();
+
+    //     if (!string.IsNullOrWhiteSpace(value))
+    //     {
+    //         result = result.Where(x =>
+    //             x.Contains(value, StringComparison.OrdinalIgnoreCase));
+    //     }
+
+    //     return Task.FromResult(result);
+    // }
+
+    // private Task<IEnumerable<string>> SearchTagValues(string? tagName, string value, CancellationToken token)
+    // {
+    //     IEnumerable<string> result = businessFunctions
+    //         .SelectMany(x => x.BusinessTags ?? Enumerable.Empty<BusinessTag>())
+    //         .Where(x =>
+    //             !string.IsNullOrWhiteSpace(x.TagValue) &&
+    //             (string.IsNullOrWhiteSpace(tagName) ||
+    //              string.Equals(x.TagName, tagName, StringComparison.OrdinalIgnoreCase)))
+    //         .Select(x => x.TagValue!)
+    //         .Distinct();
+
+    //     if (!string.IsNullOrWhiteSpace(value))
+    //     {
+    //         result = result.Where(x =>
+    //             x.Contains(value, StringComparison.OrdinalIgnoreCase));
+    //     }
+
+    //     return Task.FromResult(result);
+    // }
+
+    private Task<IEnumerable<string>> SearchBusinessTags(string value, CancellationToken token)
     {
         IEnumerable<string> result = businessFunctions
-            .SelectMany(x => x.BusinessTags ?? Enumerable.Empty<BusinessTag>())
-            .Where(x => !string.IsNullOrWhiteSpace(x.TagName))
-            .Select(x => x.TagName!)
+            .Where(x => !string.IsNullOrWhiteSpace(x.BusinessTagValue))
+            .Select(x => x.BusinessTagValue!)
             .Distinct();
 
         if (!string.IsNullOrWhiteSpace(value))
-        {
             result = result.Where(x =>
                 x.Contains(value, StringComparison.OrdinalIgnoreCase));
-        }
-
-        return Task.FromResult(result);
-    }
-
-    private Task<IEnumerable<string>> SearchTagValues(string? tagName, string value, CancellationToken token)
-    {
-        IEnumerable<string> result = businessFunctions
-            .SelectMany(x => x.BusinessTags ?? Enumerable.Empty<BusinessTag>())
-            .Where(x =>
-                !string.IsNullOrWhiteSpace(x.TagValue) &&
-                (string.IsNullOrWhiteSpace(tagName) ||
-                 string.Equals(x.TagName, tagName, StringComparison.OrdinalIgnoreCase)))
-            .Select(x => x.TagValue!)
-            .Distinct();
-
-        if (!string.IsNullOrWhiteSpace(value))
-        {
-            result = result.Where(x =>
-                x.Contains(value, StringComparison.OrdinalIgnoreCase));
-        }
 
         return Task.FromResult(result);
     }
@@ -1212,8 +1173,8 @@
         isCreate = true;
         editingItem = new BusinessFunctionMaster();
         SelectedSpocs = new List<string>();
-        BusinessTags = new List<BusinessTagItem>();
-        BusinessTags.Add(new BusinessTagItem());
+        // BusinessTags = new List<BusinessTagItem>();
+        // BusinessTags.Add(new BusinessTagItem());
         spocInput = string.Empty;
         drawerOpen = true;
         StateHasChanged();
@@ -1234,7 +1195,7 @@
             BusinessFunctionOwner = item.BusinessFunctionOwner,
             BusinessFunctionSpoc = item.BusinessFunctionSpoc,
             BusinessFunctionGroupDl = item.BusinessFunctionGroupDl,
-            BusinessTags = item.BusinessTags?.ToList() ?? new List<BusinessTag>(),
+            // BusinessTags = item.BusinessTags?.ToList() ?? new List<BusinessTag>(),
             Remarks = item.Remarks
         };
 
@@ -1244,19 +1205,19 @@
                 .Split(';', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
                 .ToList();
 
-        BusinessTags = editingItem.BusinessTags?
-    .Select(x => new BusinessTagItem
-    {
-        Name = x.TagName,
-        Value = x.TagValue
-    })
-    .ToList()
-    ?? new List<BusinessTagItem>();
+    //     BusinessTags = editingItem.BusinessTags?
+    // .Select(x => new BusinessTagItem
+    // {
+    //     Name = x.TagName,
+    //     Value = x.TagValue
+    // })
+    // .ToList()
+    // ?? new List<BusinessTagItem>();
 
-        if (!BusinessTags.Any())
-        {
-            BusinessTags.Add(new BusinessTagItem());
-        }
+    //     if (!BusinessTags.Any())
+    //     {
+    //         BusinessTags.Add(new BusinessTagItem());
+    //     }
 
         spocInput = string.Empty;
         drawerOpen = true;
@@ -1269,25 +1230,25 @@
         drawerFullscreen = false;
         editingItem = new BusinessFunctionMaster();
         SelectedSpocs = new List<string>();
-        BusinessTags = new List<BusinessTagItem>();
+        // BusinessTags = new List<BusinessTagItem>();
         spocInput = string.Empty;
         StateHasChanged();
     }
 
     private async Task Save()
     {
-        editingItem.BusinessTags = BusinessTags
-            .Where(x => !string.IsNullOrWhiteSpace(x.Name))
-            .Select(x => new BusinessTag
-            {
-                Id = 0,
-                BusinessFunctionId = editingItem.Id,
-                TagName = x.Name?.Trim(),
-                TagValue = x.Value?.Trim(),
-                DateCreated = DateTime.UtcNow,
-                DateModified = DateTime.UtcNow
-            })
-            .ToList();
+        // editingItem.BusinessTags = BusinessTags
+        //     .Where(x => !string.IsNullOrWhiteSpace(x.Name))
+        //     .Select(x => new BusinessTag
+        //     {
+        //         Id = 0,
+        //         BusinessFunctionId = editingItem.Id,
+        //         TagName = x.Name?.Trim(),
+        //         TagValue = x.Value?.Trim(),
+        //         DateCreated = DateTime.UtcNow,
+        //         DateModified = DateTime.UtcNow
+        //     })
+        //     .ToList();
 
         try
         {
