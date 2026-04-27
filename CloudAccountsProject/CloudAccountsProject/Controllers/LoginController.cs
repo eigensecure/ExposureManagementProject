@@ -19,9 +19,9 @@ public class LoginController(CloudAccountsDbContext Dbcontext) : BaseApiControll
     private readonly CloudAccountsDbContext _context = Dbcontext;
 
     [HttpPost]
-    public async Task<IActionResult> Login(UserTable model)
+    public async Task<IActionResult> Login(UserLoginTable model)
     {
-        var user = await _context.UserTables
+        var user = await _context.UserLoginTables
             .FirstOrDefaultAsync(x => x.Username == model.Username);
 
         if (user == null || !VerifyPassword(model.Pass, user.Pass))

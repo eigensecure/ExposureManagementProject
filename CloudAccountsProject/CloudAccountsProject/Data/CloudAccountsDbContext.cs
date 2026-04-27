@@ -22,13 +22,13 @@ public partial class CloudAccountsDbContext : DbContext
 
     public virtual DbSet<BusinessFunctionMaster> BusinessFunctionMasters { get; set; }
 
-    //public virtual DbSet<BusinessTag> BusinessTags { get; set; }
-
     public virtual DbSet<CloudAccountsMaster> CloudAccountsMasters { get; set; }
 
     public virtual DbSet<CloudAccountsTransaction> CloudAccountsTransactions { get; set; }
 
     public virtual DbSet<CrowdGroupMaster> CrowdGroupMasters { get; set; }
+
+    public virtual DbSet<UserLoginTable> UserLoginTables { get; set; }
 
     public virtual DbSet<UserTable> UserTables { get; set; }
 
@@ -75,19 +75,6 @@ public partial class CloudAccountsDbContext : DbContext
             entity.Property(e => e.BusinessFunctionOwner).HasMaxLength(255);
             entity.Property(e => e.BusinessTagValue).HasMaxLength(255);
         });
-
-        //modelBuilder.Entity<BusinessTag>(entity =>
-        //{
-        //    entity.HasKey(e => e.Id).HasName("PK_Business_Tags");
-
-        //    entity.Property(e => e.TagName).HasMaxLength(250);
-        //    entity.Property(e => e.TagValue).HasMaxLength(250);
-
-        //    entity.HasOne(d => d.BusinessFunction).WithMany(p => p.BusinessTags)
-        //        .HasForeignKey(d => d.BusinessFunctionId)
-        //        .OnDelete(DeleteBehavior.ClientSetNull)
-        //        .HasConstraintName("FK_Business_Function");
-        //});
 
         modelBuilder.Entity<CloudAccountsMaster>(entity =>
         {
@@ -164,15 +151,60 @@ public partial class CloudAccountsDbContext : DbContext
                 .HasConstraintName("FK_CrowdGroupMaster_BusinessFunction");
         });
 
-        modelBuilder.Entity<UserTable>(entity =>
+        modelBuilder.Entity<UserLoginTable>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PK_User_Table");
 
-            entity.ToTable("UserTable");
+            entity.ToTable("UserLoginTable");
 
             entity.Property(e => e.Username).HasMaxLength(50);
         });
 
+        modelBuilder.Entity<UserTable>(entity =>
+        {
+            entity.HasKey(e => e.UserId).HasName("PK_UserTable_1");
+
+            entity.ToTable("UserTable");
+
+            entity.Property(e => e.UserId)
+                .HasMaxLength(24)
+                .HasColumnName("UserID");
+            entity.Property(e => e.AdminRole).HasDefaultValue(false, "DF_UserTable_AdminRole");
+            entity.Property(e => e.AzureObjectId)
+                .HasMaxLength(512)
+                .HasColumnName("AzureObjectID");
+            entity.Property(e => e.BcdrgroupOf)
+                .HasMaxLength(512)
+                .HasColumnName("BCDRGroupOf");
+            entity.Property(e => e.BusinessUnit).HasMaxLength(1024);
+            entity.Property(e => e.Category).HasMaxLength(16);
+            entity.Property(e => e.Country).HasMaxLength(255);
+            entity.Property(e => e.CountryCode).HasMaxLength(255);
+            entity.Property(e => e.Department).HasMaxLength(255);
+            entity.Property(e => e.Email).HasMaxLength(250);
+            entity.Property(e => e.FirstName).HasMaxLength(2048);
+            entity.Property(e => e.GroupOf).HasMaxLength(512);
+            entity.Property(e => e.IsManager).HasDefaultValue(false, "DF_UserTable_IsManager");
+            entity.Property(e => e.LastName).HasMaxLength(2048);
+            entity.Property(e => e.ManagerUserId)
+                .HasMaxLength(24)
+                .HasColumnName("ManagerUserID");
+            entity.Property(e => e.PersonId)
+                .HasMaxLength(100)
+                .HasColumnName("PersonID");
+            entity.Property(e => e.PhoneNumber).HasMaxLength(24);
+            entity.Property(e => e.Region).HasMaxLength(24);
+            entity.Property(e => e.RiskGroupOf).HasMaxLength(512);
+            entity.Property(e => e.SegroupOf)
+                .HasMaxLength(512)
+                .HasColumnName("SEGroupOf");
+            entity.Property(e => e.SiteCode).HasMaxLength(255);
+            entity.Property(e => e.Status).HasMaxLength(10);
+            entity.Property(e => e.Title).HasMaxLength(1024);
+            entity.Property(e => e.Upn)
+                .HasMaxLength(2048)
+                .HasColumnName("UPN");
+        });
 
         OnModelCreatingPartial(modelBuilder);
     }
